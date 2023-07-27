@@ -1,0 +1,20 @@
+{% extends "bibblio/layout.html" %}
+{% load static %}
+
+
+{% block react_components%}
+
+{% endblock %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+        {% comment %} container for react rendered form for new post {% endcomment %}
+        <div class="m-2" id="{{new_post_container_id}}">Authenticated</div>
+    {% endif %}
+    {% comment %} container for react rendered posts {% endcomment %}
+    <h1>Hello, {{user.username}}</h1>
+{% endblock %}
+
+{% block json_data %}
+
+{% endblock %}

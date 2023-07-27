@@ -1,0 +1,96 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Bibbl.io{% endblock %}</title>
+        {% comment %} including bootstrap 5 {% endcomment %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+        {% comment %} adding bootstrap icons for button icons{% endcomment %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        {% comment %} importing latest react, react-dom and babel from unpkg following lecture example {% endcomment %}
+        <script src="https://unpkg.com/react@18.2.0/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+        {% block react_components %}
+        {% endblock %}
+        
+        {% comment %} js-cookie for csrf token in JS, following this example:
+        https://docs.djangoproject.com/en/4.0/ref/csrf/ from
+        https://stackoverflow.com/questions/50732815/how-to-use-csrf-token-in-django-restful-api-and-react {% endcomment %}
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+
+    </head>
+    <body class="wizard-bg-color">
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'index' %}">
+                    <img src="{% static 'assets/howler-icon.png' %}" alt="Logo" class="d-inline-block align-text-top">
+                    Bibbl.io
+                </a>
+            
+                <div>
+                <ul class="navbar-nav mr-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profiles_w_username' user.username %}"><strong>{{ user.username }}</strong></a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">All Books</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container w-75 wizard-bg-color">
+            {% comment %} way to pass through messages simply from:
+            https://medium.com/analytics-vidhya/how-to-use-react-in-django-the-hard-way-6ef2bf8c5d6f {% endcomment %}
+            {% comment %} <div class="content">
+                <div class="container-fluid">
+                {% if messages %}
+                    {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                        <div class="messages alert alert-danger" role="alert">
+                    {% else %}
+                        <div class="messages alert alert-{{ message.tags }}" role="alert">
+                    {% endif %}
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div> {% endcomment %}
+            {% block body %}
+            {% endblock %}
+            {% comment %} <div class="clear"></div>
+            <div class="card position-fixed w-100 start-0 bottom-0">
+                <div class="d-flex justify-content-center card-footer text-body-secondary">
+                    <div class="d-flex flex-column">
+                        <span class="card-text">Created by David Alban for <a class="card-link" href="https://cs50.harvard.edu/summer/web/2023/" title="course link">CSCI S-33A @ Harvard</a>.</span>
+                        <span class="card-text">Howler icon by Locad <a class="card-link" href="https://thenounproject.com/browse/icons/term/howler/">Noun Project</a> (CC BY 3.0)</span
+                        <span class="card-text">Profile Icon by Dave Robson <a href="https://thenounproject.com/browse/icons/term/profile/" target="_blank" title="profile Icons">Noun Project</a>(CC BY 3.0)</span>
+                    </div>
+                </div>
+            </div> {% endcomment %}
+            
+            {% block json_data %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
