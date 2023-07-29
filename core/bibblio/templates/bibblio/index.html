@@ -3,8 +3,14 @@
 
 
 {% block react_components%}
-    <script src="{% static 'js/components/my_nav_bar.js' %}" type="text/babel"></script>
+    {% comment %} logged in components {% endcomment %}
+    <script src="{% static 'js/components/add_book.js' %}" type="text/babel"></script>
+    <script src="{% static 'js/components/logged_in_view.js' %}" type="text/babel"></script>
+    {% comment %} logged out components {% endcomment %}
     <script src="{% static 'js/components/login_form.js' %}" type="text/babel"></script>
+    <script src="{% static 'js/components/logged_out_view.js' %}" type="text/babel"></script>
+    <script src="{% static 'js/components/my_nav_bar.js' %}" type="text/babel"></script>
+    
     <script src="{% static 'js/components/app.js' %}" type="text/babel"></script>
 {% endblock %}
 

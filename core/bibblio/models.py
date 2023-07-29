@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+import re
+import datetime
 
 
 class User(AbstractUser):
@@ -36,6 +38,17 @@ class Book(models.Model):
     publication_year = models.IntegerField()
 
     image_url = models.URLField(blank=True)
+
+    def is_valid(self):
+        if self.title and self.authors:
+            
+            # check if year is valid
+            pattern = r'^\d{4}$'
+            if not re.match(pattern, str(self.publication_year)) or int(self.publication_year) > datetime.datetime.today().year or int(self.publication_year) < 0:
+                return False
+            return True
+        else:
+            return False
 
 
     def serialize(self):

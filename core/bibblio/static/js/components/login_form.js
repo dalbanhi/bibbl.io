@@ -33,7 +33,7 @@ const ModeSwitch = (props) => {
 }
 
 
-const LoginRegister = (props) => {
+const LogInForm = (props) => {
 
     const [state, setState] = React.useState({
         url_to_follow: "",
@@ -52,8 +52,8 @@ const LoginRegister = (props) => {
         if(Object.entries(props.action_urls).length !== 0){
             setState({
                 ...state,
-                url_to_follow: props.action_urls.register.url,
-                title: props.action_urls.register.name,
+                url_to_follow: props.is_register_view ? props.action_urls.register.url : props.action_urls.login.url,
+                title: props.is_register_view? props.action_urls.register.name: props.action_urls.login.name,
                 is_registering: props.is_register_view,
                 is_logging_in: !props.is_register_view,
                 title: props.is_register_view ? props.action_urls.register.name : props.action_urls.login.name,
@@ -73,14 +73,14 @@ const LoginRegister = (props) => {
             ...state,
             is_registering: !state.is_registering,
             is_logging_in: !state.is_logging_in,
-            url_to_follow: state.is_registering ? props.action_urls.login.url : props.action_urls.register.url,
+            url_to_follow: !state.is_registering ? props.action_urls.register.url : props.action_urls.login.url,
             title: state.is_registering ? props.action_urls.login.name : props.action_urls.register.name,
         })
     }
 
     const handle_submit = (event) => {
         event.preventDefault();
-
+        // console.log(state);
         fetch(state.url_to_follow, {
             method: 'POST',
             headers: {
@@ -97,7 +97,6 @@ const LoginRegister = (props) => {
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log("DATA HERE", data);
             if (data.error){
                 setState({
                     ...state,
@@ -106,7 +105,7 @@ const LoginRegister = (props) => {
             }
             else{
                 //if no error, tell app to change state to logged in
-                props.auth_change("login");
+                props.auth_change("login", data.user_id);
             }
         })
         .catch(error => {
@@ -175,7 +174,6 @@ const LoginRegister = (props) => {
                 <button
                     type="submit"
                     className="btn btn-primary"
-                    // onClick={() => handleClick(state.url_to_follow)}
                 >
                     {state.title}
                 </button>

@@ -53,6 +53,7 @@ def index(request):
 
     user = None
     if request.user.is_authenticated:
+        print("here")
         user = User.objects.get(username=request.user.username)
         user= user.serialize()
         print(user)
@@ -66,17 +67,6 @@ def index(request):
         "app_container": "app_container",
         "menu_urls": obj_of_menu_urls(user),
     })
-    if request.user.is_authenticated:
-        return render(request, "bibblio/index.html", {
-            "user": request.user,
-            "shelves": request.user.shelves.all(),
-            "books": Book.objects.all(),
-        })
-    else:
-        return render(request, "bibblio/index.html", {
-            "login_register": {"choice": "register"},
-            "login_register_container": "login_register_container",
-        })
 
 def login_view(request):
     if request.method == "POST":
@@ -90,7 +80,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return JsonResponse({"message": "Login successful."}, status=200)
+            return JsonResponse({"message": "Login successful.", "user_id": user.id}, status=200)
         else:
             return JsonResponse({"error": "Invalid username and/or password."}, status=400)
     else:
@@ -140,10 +130,23 @@ def register(request):
             return JsonResponse({"error": "Username already taken."}, status=400)
         
         login(request, user)
-        return JsonResponse({"message": "success"}, status=200)
+        return JsonResponse({"message": "Registration and Login succesful", "user_id": user.id}, status=200)
     
     return HttpResponseRedirect(reverse("index"))
 
 @login_required
 def my_profile(request):
     return render(request, "bibblio/index.html")
+
+
+# backends
+def users(request, user_id):
+    if request.method == "GET":
+        user = User.objects.get(id=user_id)
+        return JsonResponse(user.serialize())
+    elif request.method == "PUT":
+        pass
+    elif request.method == "DELETE":
+        pass
+    else:
+        return JsonResponse({"error": "GET, PUT, or DELETE request required."}, status=400)

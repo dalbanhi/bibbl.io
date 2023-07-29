@@ -9,5 +9,6 @@ urlpatterns = [
     path("register", views.register, name="register"),
     path("my_profile", views.my_profile, name="my_profile"),
     # backends
+    path("users/<int:user_id>", views.users, name="users"),
     # path("login_register", views.login_register, name="login_register")
 ]

@@ -36,22 +36,31 @@ const App = () => {
         }
     }, []);
 
-    const handle_login = (login_or_out) => {
-        console.log("handle_login/out");
-        // console.log(event.target.name);
-        // console.log(event.target.value);
-        setState({
-            ...state,
-            is_authenticated: login_or_out==="login" ? true : false,
-        });
-    }
+    const handle_login = (login_or_out, user_id) => {
 
-    const handle_logout = (event) => {
-
+        //get user data and update url name for my profile
+        let user;
+        if (login_or_out==="login"){
+            fetch(`/users/${user_id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': Cookies.get('csrftoken'),
+                },
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                user = data;
+                setState({
+                    ...state,
+                    is_authenticated: login_or_out==="login" ? true : false,
+                    user: user,
+                });
+            });
+        }        
     }
 
     const logged_out_view = () => {
-        // console.log(state.menu_urls)
         const no_user_urls = Object.keys(state.menu_urls).reduce((acc, key) => {
             if (state.menu_urls[key].auth === "not_authenticated"){
               acc[key] = state.menu_urls[key];
@@ -59,20 +68,16 @@ const App = () => {
             return acc;
           }, {});
         return (
-            <LoginRegister
-                is_register_view={state.is_register_view}
-                action_urls={no_user_urls} 
-                auth_change={handle_login}
-            />
+            <div>
+                <h1>Welcome</h1>
+                <LogInForm
+                    is_register_view={state.is_register_view}
+                    action_urls={no_user_urls} 
+                    auth_change={handle_login}
+                />
+            </div>
         )
     }
-
-    const logged_in_view = () => {
-        return (
-            <p>books and stuff here</p>
-        )
-    }
-
     return (
         <div>
             <MyNavBar 
@@ -82,8 +87,14 @@ const App = () => {
                 auth_change={handle_login}
             />
             <div className="container w-75 wizard-bg-color">
-                <h1>Welcome</h1>
-                {!state.is_authenticated? logged_out_view() : logged_in_view()}
+                {
+                    !state.is_authenticated? 
+                    <LoggedOutView 
+                        is_register_view={state.is_register_view}
+                        menu_urls={state.menu_urls} 
+                        auth_change={handle_login}/> : 
+                        <LoggedInView user={state.user}/>
+                }
             </div>
         </div>
     )

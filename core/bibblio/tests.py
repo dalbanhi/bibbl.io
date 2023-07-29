@@ -14,6 +14,12 @@ class BibblioTestCase(TestCase):
 
         book_reading = Book.objects.create(title="book_reading", authors="testauthor", publication_year=2021, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
 
+        bad_book_1 = Book.objects.create(title="bad_book_1", authors="testauthor", publication_year=2030, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+
+        bad_book_2 = Book.objects.create(title="bad_book_2", authors="testauthor", publication_year=-1000, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+
+        bad_book_3 = Book.objects.create(title="bad_book_3", authors="testauthor", publication_year=999, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+
         user1.books_read.add(book_read)
         user1.books_to_read.add(book_to_read)
         user1.books_reading.add(book_reading)
@@ -65,6 +71,15 @@ class BibblioTestCase(TestCase):
         user1 = User.objects.get(username="testuser")
         book_reading = Book.objects.get(title="book_reading")
         self.assertEqual(book_reading.in_reading.get(username="testuser"), user1)
+
+    def test_invalid_books(self):
+        bad_book_1 = Book.objects.get(title="bad_book_1")
+        bad_book_2 = Book.objects.get(title="bad_book_2")
+        bad_book_3 = Book.objects.get(title="bad_book_3")
+
+        self.assertFalse(bad_book_1.is_valid())
+        self.assertFalse(bad_book_2.is_valid())
+        self.assertFalse(bad_book_3.is_valid())
 
 
     def test_user_shelves(self):
