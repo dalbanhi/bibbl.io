@@ -7,7 +7,7 @@ class User(AbstractUser):
     """
     books_read = models.ManyToManyField('Book', blank=True, related_name="in_read")
     books_reading = models.ManyToManyField('Book', blank=True, related_name="in_reading")
-    books_to_read = models.ManyToManyField('Book', blank=True, related_name="to_read")
+    books_to_read = models.ManyToManyField('Book', blank=True, related_name="in_to_read")
 
     # followers = models.ManyToManyField('User', blank=True, related_name="following", null=True)
 
@@ -16,9 +16,9 @@ class User(AbstractUser):
         return {
             "id": self.id,
             "username": self.username,
-            "books_read": [self.books_read.all()],
-            "books_reading": [self.books_reading.all()],
-            "books_to_read": [self.books_to_read.all()],
+            "books_read": [book for book in self.books_read.all()],
+            "books_reading": [book for book in self.books_reading.all()],
+            "books_to_read": [book for book in self.books_to_read.all()],
         }
 
     def __str__(self) -> str:

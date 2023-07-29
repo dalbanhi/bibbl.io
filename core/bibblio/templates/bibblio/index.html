@@ -3,18 +3,21 @@
 
 
 {% block react_components%}
-
+    <script src="{% static 'js/components/my_nav_bar.js' %}" type="text/babel"></script>
+    <script src="{% static 'js/components/login_form.js' %}" type="text/babel"></script>
+    <script src="{% static 'js/components/app.js' %}" type="text/babel"></script>
 {% endblock %}
 
 {% block body %}
-    {% if user.is_authenticated %}
-        {% comment %} container for react rendered form for new post {% endcomment %}
-        <div class="m-2" id="{{new_post_container_id}}">Authenticated</div>
-    {% endif %}
-    {% comment %} container for react rendered posts {% endcomment %}
-    <h1>Hello, {{user.username}}</h1>
+    <div id="{{app_container}}"></div>
 {% endblock %}
 
 {% block json_data %}
+    {{is_authenticated| json_script:"is_authenticated_data"}}
+    {{is_register_view| json_script:"is_register_view_data"}}
+
+    {{user| json_script:"user_data"}}
+
+    {{menu_urls| json_script:"menu_urls_data"}}
 
 {% endblock %}
