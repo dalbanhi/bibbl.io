@@ -11,4 +11,6 @@ urlpatterns = [
     # backends
     path("users/<int:user_id>", views.users, name="users"),
     # path("login_register", views.login_register, name="login_register")
+    path("book", views.book, name="book"),
+    path("shelf", views.shelf, name="shelf"),
 ]

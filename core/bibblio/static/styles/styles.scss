@@ -1,0 +1,72 @@
+//info on how to add custom sass colors here:
+// https://getbootstrap.com/docs/5.3/customize/sass/#maps-and-loops
+
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../..//node_modules/bootstrap/scss/variables-dark";
+
+// Default variable overrides
+// Required
+// $btn-bg-white: #f8f8ff; 
+// $wizard-bg-color: #eae8e0;
+// $light-grey: #bebebe;
+// $custom-colors: (
+//     "wizard-bg-color": $wizard-bg-color,
+//     "btn-bg-white": $btn-bg-white,
+//     "light-grey": $light-grey
+// );
+
+
+// // Merge the maps
+// $theme-colors: map-merge($theme-colors, $custom-colors);
+
+@import "../../node_modules/bootstrap/scss/maps";
+@import "../../node_modules/bootstrap/scss/mixins";
+@import "../../node_modules/bootstrap/scss/root";
+
+// .clear{
+//     padding-bottom: 10rem;
+// }
+
+// .bg-secondary{
+//     background-color: var(--bs-light-grey)!important;
+// }
+
+// .btn-outline-primary{
+//     background-color: var(--bs-btn-bg-white);
+// }
+
+// .wizard-bg-color{
+//     background-color: var(--bs-wizard-bg-color);
+// }
+
+// textarea {
+//     min-height: 150px;
+// }
+
+// .row-card{
+//     flex-direction: row!important;
+// }
+
+.dissappearing-message{
+    animation-name: dissappear;
+    animation-duration: 3s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes dissappear{
+    0%{
+        opacity: 1;
+    }
+    75%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 0;
+        height:0;
+        max-height: 0;
+        height: 0;
+        padding: 0;
+        margin: 0;
+    }
+}

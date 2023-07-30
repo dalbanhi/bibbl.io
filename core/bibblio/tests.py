@@ -8,17 +8,23 @@ class BibblioTestCase(TestCase):
         user1= User.objects.create(username="testuser", email="example@mail.com", password="testpassword")
         
         # test image url from: https://www.mobileread.com/forums/showthread.php?t=222754
-        book_read = Book.objects.create(title="book_read", authors="testauthor", publication_year=2021, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+        book_read = Book.objects.create(title="book_read", authors="testauthor", publication_year=2021, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
 
-        book_to_read = Book.objects.create(title="book_to_read", authors="testauthor", publication_year=2021, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+        book_to_read = Book.objects.create(title="book_to_read", authors="testauthor", publication_year=2021, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
 
-        book_reading = Book.objects.create(title="book_reading", authors="testauthor", publication_year=2021, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+        book_reading = Book.objects.create(title="book_reading", authors="testauthor", publication_year=2021, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
 
-        bad_book_1 = Book.objects.create(title="bad_book_1", authors="testauthor", publication_year=2030, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+        bad_book_1 = Book.objects.create(title="bad_book_1", authors="testauthor", publication_year=2030, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
 
-        bad_book_2 = Book.objects.create(title="bad_book_2", authors="testauthor", publication_year=-1000, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+        bad_book_2 = Book.objects.create(title="bad_book_2", authors="testauthor", publication_year=-1000, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
 
-        bad_book_3 = Book.objects.create(title="bad_book_3", authors="testauthor", publication_year=999, image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+        bad_book_3 = Book.objects.create(title="bad_book_3", authors="testauthor", publication_year=9, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+
+        bad_book_4 = Book.objects.create(title="bad_book_4", authors="An! Incorrect Author", publication_year=2021, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+
+        bad_book_5 = Book.objects.create(title="bad_book_5", authors="An Incorrect Authorlist, e. e. cummings", publication_year=2021, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
+
+        tricky_book_1 = Book.objects.create(title="tricky_book_1", authors="Author One,e. e. cummings", publication_year=2021, cover_image_url="https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884")
 
         user1.books_read.add(book_read)
         user1.books_to_read.add(book_to_read)
@@ -76,10 +82,16 @@ class BibblioTestCase(TestCase):
         bad_book_1 = Book.objects.get(title="bad_book_1")
         bad_book_2 = Book.objects.get(title="bad_book_2")
         bad_book_3 = Book.objects.get(title="bad_book_3")
+        bad_book_4 = Book.objects.get(title="bad_book_4")
+        bad_book_5 = Book.objects.get(title="bad_book_5")
+        tricky_book_1 = Book.objects.get(title="tricky_book_1")
 
         self.assertFalse(bad_book_1.is_valid())
         self.assertFalse(bad_book_2.is_valid())
         self.assertFalse(bad_book_3.is_valid())
+        self.assertFalse(bad_book_4.is_valid())
+        self.assertFalse(bad_book_5.is_valid())
+        self.assertTrue(tricky_book_1.is_valid())
 
 
     def test_user_shelves(self):

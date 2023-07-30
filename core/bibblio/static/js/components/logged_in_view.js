@@ -7,6 +7,7 @@
 const LoggedInView = (props) => {
     const [state, setState] = React.useState({
         user: {},
+        api_urls: {},
     })
 
     React.useEffect(() => {
@@ -15,6 +16,7 @@ const LoggedInView = (props) => {
             setState({
                 ...state,
                 user: props.user,
+                api_urls: props.api_urls,
             })
         }
     }, [props])
@@ -23,26 +25,32 @@ const LoggedInView = (props) => {
         return false;
     }
     return (
-        <div className="text-center">
-            <window.ReactBootstrap.Button>Launch Demo</window.ReactBootstrap.Button>
-            <h1>{props.user.username}'s Library</h1>
-            <div className="btn-group w-100 mx-2" role="group" aria-label="Adding actions">
-                <AddBook user={state.user} />
-                <button 
-                    type="button" 
-                    className="btn btn-outline-primary"
-                >
-                    <i className="bi bi-bookshelf">{` `}</i>
-                    Add Shelf
-                </button>
-                <button 
-                    type="button" 
-                    className="btn btn-outline-primary"
-                >
-                    <i className="bi bi-bookmark">{` `}</i>
-                    Add Book to Shelf
-                </button>
+        <div>
+            <div className="text-center">
+                <h1>{props.user.username}'s Library</h1>
+                <div className="btn-group w-100 mx-2" role="group" aria-label="Adding actions">
+                    <AddBook 
+                        user={state.user}
+                        add_book_url={state.api_urls.book} 
+                    />
+                    <button 
+                        type="button" 
+                        className="btn btn-outline-primary"
+                    >
+                        <i className="bi bi-bookshelf">{` `}</i>
+                        Add Shelf
+                    </button>
+                    <button 
+                        type="button" 
+                        className="btn btn-outline-primary"
+                    >
+                        <i className="bi bi-bookmark">{` `}</i>
+                        Add Book to Shelf
+                    </button>
+                </div>
             </div>
+            <div>Filter Bar</div>
+            <div>Books to Show</div>
         </div>
     )
 }

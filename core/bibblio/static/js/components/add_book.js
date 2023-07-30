@@ -6,10 +6,12 @@ const AddBook = (props) => {
         user: {},
         show_modal: false,
         book_title: '',
-        book_author: '',
-        book_year_published: '',
+        book_authors: '',
+        book_publication_year: '',
         book_cover_image_url: '',
         book_read_category: 'read',
+        error:'',
+        message:''
     })
 
     React.useEffect(() => {
@@ -44,8 +46,50 @@ const AddBook = (props) => {
     }
 
     const handle_submit = (event) => {
-        console.log("submit")
+        console.log("submit");
         event.preventDefault();
+        console.log(props.add_book_url)
+
+        fetch(props.add_book_url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': Cookies.get('csrftoken'),
+            },
+            body: JSON.stringify({
+                title: state.book_title,
+                authors: state.book_authors,
+                publication_year: state.book_publication_year,
+                cover_image_url: state.book_cover_image_url,
+                read_category: state.book_read_category,
+                user: state.user.id,
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.error){
+                setState({
+                    ...state,
+                    error: data.error,
+                })
+            }
+            else{
+                //if not error, tell app to show message, update state, and close modal
+                // props.update_book_list(data.book);
+                setState({
+                    ...state,
+                    message: data.message,
+                    book_title: '',
+                    book_authors: '',
+                    book_publication_year: '',
+                    book_cover_image_url: '',
+                    book_read_category: 'read',
+                    error:'',
+                    show_modal: false,
+                })
+            }
+        })
     }
 
     if(Object.entries(state.user).length === 0){
@@ -61,11 +105,13 @@ const AddBook = (props) => {
                 <i className="bi bi-book">{` `}</i>
                 Add Book
             </ReactBootstrap.Button>
+            {state.message && <div className="dissappearing-message alert alert-success" role="alert">{state.message}</div>}
             <ReactBootstrap.Modal show={state.show_modal} onHide={handle_close}>
                 <ReactBootstrap.Modal.Header closeButton>
                     <ReactBootstrap.Modal.Title>Add a Book to Your Library</ReactBootstrap.Modal.Title>
                 </ReactBootstrap.Modal.Header>
                 <ReactBootstrap.Modal.Body>
+                    {state.error && <div className="alert alert-danger" role="alert">{state.error}</div>}
                     <ReactBootstrap.Form onSubmit={handle_submit}>
                         <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.title">
                             <ReactBootstrap.Form.Label>Book Title</ReactBootstrap.Form.Label>
@@ -78,29 +124,29 @@ const AddBook = (props) => {
                                 autoFocus
                             />
                         </ReactBootstrap.Form.Group>
-                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.author">
-                            <ReactBootstrap.Form.Label>Author</ReactBootstrap.Form.Label>
+                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.authors">
+                            <ReactBootstrap.Form.Label>Author(s)<br/> <small>If there are many authors, separate names with commas, with no spaces in between</small></ReactBootstrap.Form.Label>
                             <ReactBootstrap.Form.Control
                                 type="text"
-                                name="book_author"
-                                placeholder="Author"
+                                name="book_authors"
+                                placeholder="Author(s)"
                                 defaultValue={state.book_author}
                                 onChange={handle_input_change}
                             />
                         </ReactBootstrap.Form.Group>
                         <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.year_published">
-                            <ReactBootstrap.Form.Label>Year Published</ReactBootstrap.Form.Label>
+                            <ReactBootstrap.Form.Label>Publication Year</ReactBootstrap.Form.Label>
                             <ReactBootstrap.Form.Control
                                 type="text"
-                                name="book_year_published"
-                                placeholder="Year Published"
-                                defaultValue={state.book_year_published}
+                                name="book_publication_year"
+                                placeholder="Publication Year"
+                                defaultValue={state.book_publication_year}
                                 onChange={handle_input_change}
                                 
                             />
                         </ReactBootstrap.Form.Group>
                         <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.image_url">
-                            <ReactBootstrap.Form.Label>Book Cover</ReactBootstrap.Form.Label>
+                            <ReactBootstrap.Form.Label>Book Cover Image</ReactBootstrap.Form.Label>
                             <ReactBootstrap.Form.Control
                                 type="text"
                                 name="book_cover_image_url"

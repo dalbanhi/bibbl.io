@@ -5,6 +5,7 @@ const App = () => {
         user: null,
         menu_urls: {},
         is_register_view: null,
+        api_urls: {},
     })
 
     React.useEffect(() => {
@@ -15,6 +16,8 @@ const App = () => {
         const menu_urls = JSON.parse(document.querySelector("#menu_urls_data").textContent);
 
         const is_register_view = JSON.parse(document.querySelector("#is_register_view_data").textContent);
+
+        const api_urls = JSON.parse(document.querySelector("#api_urls_data").textContent);
         
         if(is_authenticated){
             const user_data = JSON.parse(document.querySelector("#user_data").textContent);
@@ -24,6 +27,7 @@ const App = () => {
                 user: user_data,
                 menu_urls: menu_urls,
                 is_register_view: is_register_view,
+                api_urls: api_urls,
             })
         }
         else{
@@ -32,6 +36,7 @@ const App = () => {
                 is_authenticated: is_authenticated,
                 menu_urls: menu_urls,
                 is_register_view: is_register_view,
+                api_urls: api_urls,
             })
         }
     }, []);
@@ -60,24 +65,6 @@ const App = () => {
         }        
     }
 
-    const logged_out_view = () => {
-        const no_user_urls = Object.keys(state.menu_urls).reduce((acc, key) => {
-            if (state.menu_urls[key].auth === "not_authenticated"){
-              acc[key] = state.menu_urls[key];
-            }
-            return acc;
-          }, {});
-        return (
-            <div>
-                <h1>Welcome</h1>
-                <LogInForm
-                    is_register_view={state.is_register_view}
-                    action_urls={no_user_urls} 
-                    auth_change={handle_login}
-                />
-            </div>
-        )
-    }
     return (
         <div>
             <MyNavBar 
@@ -92,8 +79,12 @@ const App = () => {
                     <LoggedOutView 
                         is_register_view={state.is_register_view}
                         menu_urls={state.menu_urls} 
-                        auth_change={handle_login}/> : 
-                        <LoggedInView user={state.user}/>
+                        auth_change={handle_login}
+                    /> : 
+                    <LoggedInView 
+                        user={state.user}
+                        api_urls={state.api_urls}
+                    />
                 }
             </div>
         </div>
