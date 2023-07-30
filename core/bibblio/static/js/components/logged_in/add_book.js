@@ -11,7 +11,6 @@ const AddBook = (props) => {
         book_cover_image_url: '',
         book_read_category: 'read',
         error:'',
-        message:''
     })
 
     React.useEffect(() => {
@@ -77,9 +76,9 @@ const AddBook = (props) => {
             else{
                 //if not error, tell app to show message, update state, and close modal
                 // props.update_book_list(data.book);
+                props.set_success_message(data.message);
                 setState({
                     ...state,
-                    message: data.message,
                     book_title: '',
                     book_authors: '',
                     book_publication_year: '',
@@ -105,7 +104,7 @@ const AddBook = (props) => {
                 <i className="bi bi-book">{` `}</i>
                 Add Book
             </ReactBootstrap.Button>
-            {state.message && <div className="dissappearing-message alert alert-success" role="alert">{state.message}</div>}
+            
             <ReactBootstrap.Modal show={state.show_modal} onHide={handle_close}>
                 <ReactBootstrap.Modal.Header closeButton>
                     <ReactBootstrap.Modal.Title>Add a Book to Your Library</ReactBootstrap.Modal.Title>

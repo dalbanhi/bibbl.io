@@ -27,9 +27,9 @@ class User(AbstractUser):
         return {
             "id": self.id,
             "username": self.username,
-            "books_read": [str(book) for book in self.books_read.all()],
-            "books_reading": [str(book) for book in self.books_reading.all()],
-            "books_to_read": [str(book) for book in self.books_to_read.all()],
+            "books_read": [book.serialize() for book in self.books_read.all()],
+            "books_reading": [book.serialize() for book in self.books_reading.all()],
+            "books_to_read": [book.serialize() for book in self.books_to_read.all()],
         }
 
     def __str__(self) -> str:
@@ -73,13 +73,26 @@ class Book(models.Model):
 
 
     def serialize(self):
-        authors_list = self.authors.split(",")
+
+        authors_list = self.authors.split(",") if self.authors else []
+        main_author = ""
+        if len(authors_list) == 1:
+            main_author = authors_list[0]
+        elif len(authors_list) > 1:
+            main_author = authors_list[0] + " et al."
+
+
+        
+
+        pub_year = self.publication_year if self.publication_year else ""
+        cover_image_url = self.cover_image_url if self.cover_image_url else ""
         return {
             "id": self.id,
             "title": self.title,
             "authors": authors_list,
-            "publication_year": self.publication_year,
-            "image_url": self.image_url,
+            "main_author": main_author,
+            "publication_year": pub_year,
+            "cover_image_url": cover_image_url,
         }
     
     def __str__(self):

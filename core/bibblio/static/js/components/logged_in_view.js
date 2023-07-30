@@ -8,6 +8,7 @@ const LoggedInView = (props) => {
     const [state, setState] = React.useState({
         user: {},
         api_urls: {},
+        message: '',
     })
 
     React.useEffect(() => {
@@ -21,25 +22,31 @@ const LoggedInView = (props) => {
         }
     }, [props])
 
+    const set_message = (message) => {
+        setState({
+            ...state,
+            message: message,
+        })
+    }
+
     if(Object.entries(state.user).length === 0){
         return false;
     }
     return (
-        <div>
             <div className="text-center">
                 <h1>{props.user.username}'s Library</h1>
+                {state.message && <div className="dissappearing-message alert alert-success" role="alert">{state.message}</div>}
                 <div className="btn-group w-100 mx-2" role="group" aria-label="Adding actions">
                     <AddBook 
                         user={state.user}
-                        add_book_url={state.api_urls.book} 
+                        add_book_url={state.api_urls.book}
+                        set_success_message={set_message} 
                     />
-                    <button 
-                        type="button" 
-                        className="btn btn-outline-primary"
-                    >
-                        <i className="bi bi-bookshelf">{` `}</i>
-                        Add Shelf
-                    </button>
+                    <AddShelf 
+                        user={state.user}
+                        // add_book_url={state.api_urls.book}
+                        set_success_message={set_message} 
+                    />
                     <button 
                         type="button" 
                         className="btn btn-outline-primary"
@@ -48,10 +55,9 @@ const LoggedInView = (props) => {
                         Add Book to Shelf
                     </button>
                 </div>
+                <div>Filter Bar</div>
+                <div>Books to Show</div>
             </div>
-            <div>Filter Bar</div>
-            <div>Books to Show</div>
-        </div>
     )
 }
 

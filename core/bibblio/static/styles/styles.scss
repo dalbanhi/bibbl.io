@@ -1,9 +1,9 @@
 //info on how to add custom sass colors here:
 // https://getbootstrap.com/docs/5.3/customize/sass/#maps-and-loops
 
-@import "../../node_modules/bootstrap/scss/functions";
-@import "../../node_modules/bootstrap/scss/variables";
-@import "../..//node_modules/bootstrap/scss/variables-dark";
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+@import "../../..//node_modules/bootstrap/scss/variables-dark";
 
 // Default variable overrides
 // Required
@@ -20,9 +20,9 @@
 // // Merge the maps
 // $theme-colors: map-merge($theme-colors, $custom-colors);
 
-@import "../../node_modules/bootstrap/scss/maps";
-@import "../../node_modules/bootstrap/scss/mixins";
-@import "../../node_modules/bootstrap/scss/root";
+@import "../../../node_modules/bootstrap/scss/maps";
+@import "../../../node_modules/bootstrap/scss/mixins";
+@import "../../../node_modules/bootstrap/scss/root";
 
 // .clear{
 //     padding-bottom: 10rem;
@@ -50,7 +50,7 @@
 
 .dissappearing-message{
     animation-name: dissappear;
-    animation-duration: 3s;
+    animation-duration: 4s;
     animation-fill-mode: forwards;
 }
 

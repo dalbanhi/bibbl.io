@@ -146,7 +146,7 @@ def register(request):
 
 @login_required
 def my_profile(request):
-    return render(request, "bibblio/index.html")
+    return HttpResponseRedirect(reverse("index"))
 
 
 # backends
