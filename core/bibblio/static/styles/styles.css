@@ -181,6 +181,10 @@
 @keyframes dissappear {
   0% {
     opacity: 1;
+    height: auto;
+    max-height: 100%;
+    padding: auto;
+    margin: auto;
   }
   75% {
     opacity: 0;

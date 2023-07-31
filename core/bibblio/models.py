@@ -30,6 +30,7 @@ class User(AbstractUser):
             "books_read": [book.serialize() for book in self.books_read.all()],
             "books_reading": [book.serialize() for book in self.books_reading.all()],
             "books_to_read": [book.serialize() for book in self.books_to_read.all()],
+            "shelves": [shelf.serialize() for shelf in self.shelves.all()],
         }
 
     def __str__(self) -> str:
@@ -106,4 +107,17 @@ class Shelf(models.Model):
     name = models.CharField(max_length=140)
 
     books = models.ManyToManyField(Book, blank=True, related_name="in_shelf")
+
+    def __str__(self):
+        return f"{self.name} by {self.owner} containing {self.books.all().count()} books."
+
+    def serialize(self):
+        books = self.books.all()
+        return {
+            "id": self.id,
+            "owner": self.owner.username,
+            "name": self.name,
+            "books": [book.serialize() for book in books],
+            "book_count": books.count(),
+        }
     

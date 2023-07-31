@@ -6,6 +6,7 @@
 
 const LoggedInView = (props) => {
     const [state, setState] = React.useState({
+        view_title: '',
         user: {},
         api_urls: {},
         message: '',
@@ -18,6 +19,7 @@ const LoggedInView = (props) => {
                 ...state,
                 user: props.user,
                 api_urls: props.api_urls,
+                view_title: `${props.user.username}'s Library`,
             })
         }
     }, [props])
@@ -34,7 +36,8 @@ const LoggedInView = (props) => {
     }
     return (
             <div className="text-center">
-                <h1>{props.user.username}'s Library</h1>
+                <h1>{state.view_title}</h1>
+                <h6>Quick Actions</h6>
                 {state.message && <div className="dissappearing-message alert alert-success" role="alert">{state.message}</div>}
                 <div className="btn-group w-100 mx-2" role="group" aria-label="Adding actions">
                     <AddBook 
@@ -44,7 +47,7 @@ const LoggedInView = (props) => {
                     />
                     <AddShelf 
                         user={state.user}
-                        // add_book_url={state.api_urls.book}
+                        add_shelf_url={state.api_urls.shelf}
                         set_success_message={set_message} 
                     />
                     <button 
@@ -52,7 +55,7 @@ const LoggedInView = (props) => {
                         className="btn btn-outline-primary"
                     >
                         <i className="bi bi-bookmark">{` `}</i>
-                        Add Book to Shelf
+                        Add Book(s) to Shelf
                     </button>
                 </div>
                 <div>Filter Bar</div>

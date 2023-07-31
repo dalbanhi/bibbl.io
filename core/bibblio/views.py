@@ -161,22 +161,33 @@ def users(request, user_id):
     else:
         return JsonResponse({"error": "GET, PUT, or DELETE request required."}, status=400)
 
-def add_book_to_category(data, book, user):
+def relate_book_to_user(data, book, user):
     # if a book is already in any category, don't add it again
-        if user.books_read.filter(id=book.id).exists() or user.books_reading.filter(id=book.id).exists() or user.books_to_read.filter(id=book.id).exists():
-            return JsonResponse({"error": "You already have this book in your Library. If you want to switch it's reading category, view it in your Library and edit it there. "}, status=400)
+    if user.books_read.filter(id=book.id).exists() or user.books_reading.filter(id=book.id).exists() or user.books_to_read.filter(id=book.id).exists():
+        return JsonResponse({"error": "You already have this book in your Library. If you want to switch it's reading category, view it in your Library and edit it there. "}, status=400)
 
-        # add book to users read_category
-        if data.get("read_category") == "read":
-            user.books_read.add(book)
-        elif data.get("read_category") == "reading":
-            user.books_reading.add(book)
-        elif data.get("read_category") == "to_read":
-            user.books_to_read.add(book)
-        else:
-            return JsonResponse({"error": "Read category required."}, status=400)
-        
-        return JsonResponse({"message": "Book added to your library successfully."}, status=200)
+    # add book to users read_category
+    if data.get("read_category") == "read":
+        user.books_read.add(book)
+    elif data.get("read_category") == "reading":
+        user.books_reading.add(book)
+    elif data.get("read_category") == "to_read":
+        user.books_to_read.add(book)
+    else:
+        return JsonResponse({"error": "Read category required."}, status=400)
+    
+    #add the book to any shelves that were passed in
+    print(data.get("shelves"))
+    if data.get("shelves"):
+        print("shelves:", data.get("shelves"))
+        for shelf in data.get("shelves"):
+            try:
+                shelf = Shelf.objects.get(id=shelf)
+                shelf.books.add(book)
+            except Shelf.DoesNotExist:
+                return JsonResponse({"error": "Shelf does not exist."}, status=400)
+
+    return JsonResponse({"message": "Book added to your library successfully."}, status=200)
 
 
 def get_or_create_book(data):
@@ -184,11 +195,8 @@ def get_or_create_book(data):
     make_new_book = False
     #check if at least one book by that title already exist in the database
     if Book.objects.filter(title=data.get("title")).exists():
-        print(Book.objects.filter(title=data.get("title")).count())
         # if there is one book by that title, get it
         if Book.objects.filter(title=data.get("title")).count() < 2:
-            print("here")
-
             # is that book already in the db the same one the user is trying to add?
             db_book = Book.objects.get(title=data.get("title"))
             if data.get("authors") != '':
@@ -203,6 +211,8 @@ def get_or_create_book(data):
                     make_new_book = True
                 else:
                     book = db_book
+            else:
+                return JsonResponse({"error": "There's a book by that title already in the database, but since no author or publication year was given, it's unclear if you're trying to add a new book of the same title. Please enter an author and/or publication year to further specify a book."}, status=400)
         
         # if there are multiple books by that title, get the one that matches the authors or publication year        
         else:
@@ -213,7 +223,7 @@ def get_or_create_book(data):
                 if Book.objects.filter(title=data.get("title")).filter(publication_year=data.get("publication_year")).exists():
                     book = Book.objects.get(title=data.get("title")).filter(publication_year=data.get("publication_year"))
             else:
-                return JsonResponse({"error": "There are multiple books by that title. Please enter an author or publication year to narrow your search."}, status=400)
+                return JsonResponse({"error": "There are multiple books by that title. Please enter an author and/or publication year to further specify a book."}, status=400)
     else:
         make_new_book = True
     if make_new_book == True:
@@ -236,10 +246,10 @@ def get_or_create_book(data):
 @login_required
 def book(request):
     if request.method == "GET":
+        # try to get information about a certain book?
         pass
     elif request.method == "POST":
         data = json.loads(request.body)
-        print(data)
         # get the user
         user = User.objects.get(username=request.user.username)
 
@@ -247,23 +257,66 @@ def book(request):
             return JsonResponse({"error": "Title required."}, status=400)
         
         book = get_or_create_book(data)
+        print(book)
         if type(book) != Book:
             return book
-        # have ensured that a book exists, now add it to the user's read_category 
-        return add_book_to_category(data, book, user)
+        # have ensured that a book exists, now relate the book to user. including shelves
+        return relate_book_to_user(data, book, user)
         
     elif request.method == "PUT":
+        # try to edit information about a certain book?
         print("PUT")
     else:
         return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)
     
+
+def get_books_to_add(data):
+    # get and combine books from all categories
+        books_to_add = []
+        if data.get("books_read"):
+            books_to_add += data.get("books_read")
+        if data.get("books_reading"):
+            books_to_add += data.get("books_reading")
+        if data.get("books_to_read"):
+            books_to_add += data.get("books_to_read")
+        
+         #get books from ids
+        books = [Book.objects.get(id=int(book_id)) for book_id in books_to_add]
+
+        return books
 
 @login_required
 def shelf(request):
     if request.method == "GET":
         pass
     elif request.method == "POST":
-        pass
+        #load data from request
+        data = json.loads(request.body)
+        print("data", data)
+        # get the user
+        user = User.objects.get(username=request.user.username)
+        # get the name
+        if data.get("name") == '':
+            return JsonResponse({"error": "Name required for shelf."}, status=400)
+        
+        # if shelf already exists
+        if Shelf.objects.filter(name=data.get("name")).exists():
+            return JsonResponse({"error": "You already have a shelf with that name. Please choose another name."}, status=400)
+        
+        # create the shelf
+        shelf = Shelf.objects.create(
+            name=data.get("name"),
+            owner=user,
+        )
+        # set books of shelf because cannot forward set MTM field
+        shelf.books.set(get_books_to_add(data))
+
+        shelf.save()
+
+        return JsonResponse({"message": "Shelf created successfully!"}, status=200)
+
+
+
     elif request.method == "PUT":
         pass
     else:

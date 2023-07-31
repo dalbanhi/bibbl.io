@@ -4,11 +4,12 @@
 const AddShelf = (props) => {
     const [state, setState] = React.useState({
         user: {},
+        add_shelf_url: '',
         show_modal: false,
         shelf_name: '',
-        books_read_selected: [],
-        books_reading_selected: [],
-        books_to_read_selected: [],
+        books_read: [],
+        books_reading: [],
+        books_to_read: [],
         error:'',
     })
 
@@ -18,6 +19,7 @@ const AddShelf = (props) => {
             setState({
                 ...state,
                 user: props.user,
+                add_shelf_url: props.add_shelf_url,
             })
         }
     }, [props])
@@ -37,10 +39,6 @@ const AddShelf = (props) => {
     }
 
     const handle_select_change = (event) => {
-        // e => setField([].slice.call(e.target.selectedOptions).map(item => item.value))
-        console.log(event.target.selectedOptions);
-        console.log(typeof(event.target.selectedOptions));
-
         let selected_items = [].slice.call(event.target.selectedOptions).map(item => item.value);
         setState({
             ...state,
@@ -55,62 +53,64 @@ const AddShelf = (props) => {
         })
     }
     const handle_submit = (event) => {
-        console.log("submit");
+        event.preventDefault();
+
+        //try to add shelf
+        fetch(props.add_shelf_url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': Cookies.get('csrftoken'),
+            },
+            body: JSON.stringify({
+                name: state.shelf_name,
+                books_read: state.books_read,
+                books_reading: state.books_reading,
+                books_to_read: state.books_to_read,
+                user: state.user.id,
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            //if there's an error
+            if (data.error){
+                setState({
+                    ...state,
+                    error: data.error,
+                })
+            }
+            //if there's no error
+            else{
+                //tell app to show message update state, clear form, close modal
+                props.set_success_message(data.message);
+                //props.update_shelf_list();
+                setState({
+                    ...state,
+                    show_modal: false,
+                    shelf_name: '',
+                    books_read: [],
+                    books_reading: [],
+                    books_to_read: [],
+                    error:'',
+                });
+
+            }
+        })
     }
 
-    // const handle_submit = (event) => {
-    //     console.log("submit");
-    //     event.preventDefault();
-    //     console.log(props.add_book_url)
-
-    //     fetch(props.add_book_url, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'X-CSRFToken': Cookies.get('csrftoken'),
-    //         },
-    //         body: JSON.stringify({
-    //             title: state.book_title,
-    //             authors: state.book_authors,
-    //             publication_year: state.book_publication_year,
-    //             cover_image_url: state.book_cover_image_url,
-    //             read_category: state.book_read_category,
-    //             user: state.user.id,
-    //         })
-    //     })
-    //     .then(response => response.json())
-    //     .then(data => {
-
-    //         if (data.error){
-    //             setState({
-    //                 ...state,
-    //                 error: data.error,
-    //             })
-    //         }
-    //         else{
-    //             //if not error, tell app to show message, update state, and close modal
-    //             // props.update_book_list(data.book);
-    //             props.set_success_message(data.message);
-    //             setState({
-    //                 ...state,
-    //                 book_title: '',
-    //                 book_authors: '',
-    //                 book_publication_year: '',
-    //                 book_cover_image_url: '',
-    //                 book_read_category: 'read',
-    //                 error:'',
-    //                 show_modal: false,
-    //             })
-    //         }
-    //     })
-    // }
+    const capitalize_name = (name) => {
+        const arr = name.split("_");
+        for (let i = 0; i < arr.length; i++){
+            arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
+        }
+        return arr.join(" ");
+    }
 
     if(Object.entries(state.user).length === 0){
         return false;
     }
     return (
         <div>
-            {console.log(state)}
             <ReactBootstrap.Button
                 variant="outline-primary"
                 onClick={handle_show}
@@ -119,7 +119,7 @@ const AddShelf = (props) => {
                 Add Shelf
             </ReactBootstrap.Button>
             
-            <ReactBootstrap.Modal show={state.show_modal} onHide={handle_close}>
+            <ReactBootstrap.Modal fullscreen={state.fullscreen} show={state.show_modal} onHide={handle_close}>
                 <ReactBootstrap.Modal.Header closeButton>
                     <ReactBootstrap.Modal.Title>Add a Shelf to Your Library</ReactBootstrap.Modal.Title>
                 </ReactBootstrap.Modal.Header>
@@ -137,19 +137,36 @@ const AddShelf = (props) => {
                                 autoFocus
                             />
                         </ReactBootstrap.Form.Group>
-                        
-                        <ReactBootstrap.Form.Group className="mb-3" controlId="user_books_read">
-                            <ReactBootstrap.Form.Label>Your Read Books</ReactBootstrap.Form.Label>
-                            <ReactBootstrap.Form.Control as="select" name="books_read_selected" multiple value={state.books_read_selected} onChange={handle_select_change}>
-                                {state.user.books_read.map((book) => {
+                        <hr></hr>
+                        <ReactBootstrap.Form.Label>Add some books to this shelf (optional)!</ReactBootstrap.Form.Label>
+                        <p>If you don't see any books, add some to your library first!</p>
+                        <p><small>To select multiple books, hold the ctrl button (Windows) or the cmd button (macOS).</small></p>
+
+                        {
+                            Object.keys(state.user).map((key, index) => {
+                                //looping through user object, looking for keys that start with "books_"
+                                if(key.startsWith("books_")){
+                                    //a select for for each book category
                                     return (
-                                        <option 
-                                        key={book.id} 
-                                        value={book.id}>{`${book.title} by ${book.main_author}`}</option>
+                                        <ReactBootstrap.Form.Group
+                                        key={key} className="mb-3" controlId={`user_${key}`}>
+                                            <ReactBootstrap.Form.Label>{capitalize_name(key)}</ReactBootstrap.Form.Label>
+                                            <ReactBootstrap.Form.Control as="select" name={`${key}`} multiple value={state[key]} onChange={handle_select_change}>
+                                                {/* an option element for each book in the book category */}
+                                                {state.user[key].map((book) => {
+                                                    return (
+                                                        <option 
+                                                            key={`user_${key}_${book.id}`}
+                                                            value={book.id}>{`${book.title} by ${book.main_author}`}
+                                                        </option>
+                                                    )
+                                                })}
+                                            </ReactBootstrap.Form.Control>
+                                        </ReactBootstrap.Form.Group>
                                     )
-                                })}
-                            </ReactBootstrap.Form.Control>
-                        </ReactBootstrap.Form.Group>
+                                }
+                            })
+                        }
                         <ReactBootstrap.Modal.Footer>
                             <ReactBootstrap.Button variant="secondary" onClick={handle_close}>
                                 Close

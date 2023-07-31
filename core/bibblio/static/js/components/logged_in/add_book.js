@@ -5,12 +5,16 @@ const AddBook = (props) => {
     const [state, setState] = React.useState({
         user: {},
         show_modal: false,
+        //order in which form will be displayed
+        form_order: ['book_title', 'book_authors', 'book_publication_year', 'book_cover_image_url'],
         book_title: '',
         book_authors: '',
         book_publication_year: '',
         book_cover_image_url: '',
         book_read_category: 'read',
+        shelves: [],
         error:'',
+        fullscreen: true,
     })
 
     React.useEffect(() => {
@@ -45,9 +49,7 @@ const AddBook = (props) => {
     }
 
     const handle_submit = (event) => {
-        console.log("submit");
         event.preventDefault();
-        console.log(props.add_book_url)
 
         fetch(props.add_book_url, {
             method: 'POST',
@@ -61,6 +63,7 @@ const AddBook = (props) => {
                 publication_year: state.book_publication_year,
                 cover_image_url: state.book_cover_image_url,
                 read_category: state.book_read_category,
+                shelves: state.shelves,
                 user: state.user.id,
             })
         })
@@ -85,10 +88,32 @@ const AddBook = (props) => {
                     book_cover_image_url: '',
                     book_read_category: 'read',
                     error:'',
+                    shelves: [],
                     show_modal: false,
                 })
             }
         })
+    }
+
+    const handle_select_change = (event) => {
+        let selected_items = [].slice.call(event.target.selectedOptions).map(item => item.value);
+        setState({
+            ...state,
+            [event.target.name]: selected_items,
+        });
+    }
+
+    const book_field_titles = (field) => {
+        //capitalize each word and replace underscores with spaces
+        field = field.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        return field;
+    }
+
+    const book_read_category_titles = (category) => {
+        category = category.replace("books_", "").replace("_", " ");
+        //capitalize
+        category = category.charAt(0).toUpperCase() + category.slice(1);
+        return category;
     }
 
     if(Object.entries(state.user).length === 0){
@@ -96,7 +121,6 @@ const AddBook = (props) => {
     }
     return (
         <div>
-            {console.log(state)}
             <ReactBootstrap.Button
                 variant="outline-primary"
                 onClick={handle_show}
@@ -105,90 +129,82 @@ const AddBook = (props) => {
                 Add Book
             </ReactBootstrap.Button>
             
-            <ReactBootstrap.Modal show={state.show_modal} onHide={handle_close}>
+            <ReactBootstrap.Modal fullscreen={state.fullscreen} show={state.show_modal} onHide={handle_close}>
                 <ReactBootstrap.Modal.Header closeButton>
                     <ReactBootstrap.Modal.Title>Add a Book to Your Library</ReactBootstrap.Modal.Title>
                 </ReactBootstrap.Modal.Header>
                 <ReactBootstrap.Modal.Body>
                     {state.error && <div className="alert alert-danger" role="alert">{state.error}</div>}
+                    
                     <ReactBootstrap.Form onSubmit={handle_submit}>
-                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.title">
-                            <ReactBootstrap.Form.Label>Book Title</ReactBootstrap.Form.Label>
-                            <ReactBootstrap.Form.Control
-                                type="text"
-                                name="book_title"
-                                placeholder="Book Title"
-                                defaultValue={state.book_title}
-                                onChange={handle_input_change}
-                                autoFocus
-                            />
-                        </ReactBootstrap.Form.Group>
-                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.authors">
-                            <ReactBootstrap.Form.Label>Author(s)<br/> <small>If there are many authors, separate names with commas, with no spaces in between</small></ReactBootstrap.Form.Label>
-                            <ReactBootstrap.Form.Control
-                                type="text"
-                                name="book_authors"
-                                placeholder="Author(s)"
-                                defaultValue={state.book_author}
-                                onChange={handle_input_change}
-                            />
-                        </ReactBootstrap.Form.Group>
-                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.year_published">
-                            <ReactBootstrap.Form.Label>Publication Year</ReactBootstrap.Form.Label>
-                            <ReactBootstrap.Form.Control
-                                type="text"
-                                name="book_publication_year"
-                                placeholder="Publication Year"
-                                defaultValue={state.book_publication_year}
-                                onChange={handle_input_change}
-                                
-                            />
-                        </ReactBootstrap.Form.Group>
-                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.image_url">
-                            <ReactBootstrap.Form.Label>Book Cover Image</ReactBootstrap.Form.Label>
-                            <ReactBootstrap.Form.Control
-                                type="text"
-                                name="book_cover_image_url"
-                                placeholder="url to book cover"
-                                defaultValue={state.book_cover_image_url}
-                                onChange={handle_input_change}
-                                
-                            />
-                        </ReactBootstrap.Form.Group>
+                        {
+                            //for each field (in order, excluding radio button and shelf)
+                            state.form_order.map((field, index) => {
+                                //render a form group with a label and input
+                                return(
+                                    <ReactBootstrap.Form.Group className="mb-3" controlId={`add_book_form.${field}`} key={index}>
+                                        <ReactBootstrap.Form.Label>{book_field_titles(field)}</ReactBootstrap.Form.Label>
+                                        <ReactBootstrap.Form.Control
+                                            type="text"
+                                            name={field}
+                                            placeholder={book_field_titles(field)}
+                                            defaultValue={state[field]}
+                                            onChange={handle_input_change}
+                                            autoFocus={index === 0}
+                                        />
+                                    </ReactBootstrap.Form.Group>
+                                )
+                            })
+                            
+                        }
+                        {/* radio button for read category */}
                         <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.read_category">
                             <ReactBootstrap.Form.Label>Category</ReactBootstrap.Form.Label>
                             <br />
-                            <ReactBootstrap.Form.Check
-                                inline
-                                label="Read"
-                                name="book_read_category"
-                                type="radio"
-                                id={`inline-radio-1`}
-                                value="read"
-                                checked={state.book_read_category === "read"}
-                                onChange={handle_input_change}
-                            />
-                            <ReactBootstrap.Form.Check
-                                inline
-                                label="To Read"
-                                name="book_read_category"
-                                type="radio"
-                                id={`inline-radio-1`}
-                                value="to_read"
-                                checked={state.book_read_category === "to_read"}
-                                onChange={handle_input_change}
-                            />
-                            <ReactBootstrap.Form.Check
-                                inline
-                                label="Reading"
-                                name="book_read_category"
-                                type="radio"
-                                id={`inline-radio-1`}
-                                value="reading"
-                                checked={state.book_read_category === "reading"}
-                                onChange={handle_input_change}
-                            />
+                            {
+                                Object.keys(state.user).map((key, index) => {
+                                    //for reach key that starts with "books_", create a radio button
+                                    if(key.startsWith("books_")){
+                                        return(
+                                            <ReactBootstrap.Form.Check
+                                                key={key}
+                                                inline
+                                                label={book_read_category_titles(key)}
+                                                name="book_read_category"
+                                                type="radio"
+                                                id={`inline-radio-1`}
+                                                value={key.replace("books_", "")}
+                                                checked={state.book_read_category === key.replace("books_", "")}
+                                                onChange={handle_input_change}
+                                            />
+                                        )
+                                    }
+                                })
+                            }
                         </ReactBootstrap.Form.Group>
+                        {/* multi select for Shelf */}
+                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.shelf">
+                            <ReactBootstrap.Form.Label>
+                                Add this Book to your Shelves
+                                <br/>
+                                <small>If you don't see any shelves, add some to your library first!</small>
+                                <br/>
+                                <small>Hold down the ctrl/cmd key to select multiple shelves</small>
+                            </ReactBootstrap.Form.Label>
+                            <ReactBootstrap.Form.Control as="select" name="shelves" multiple value={state.shelves} onChange={handle_select_change}>
+                                {/* an option element for each shelf in the user shelves*/}
+                                {state.user.shelves.map((shelf) => {
+                                    return (
+                                        <option 
+                                            key={shelf.id}
+                                            value={shelf.id}>{`${shelf.name} (${shelf.book_count} books)`}
+                                        </option>
+                                    )
+                                })}
+                            </ReactBootstrap.Form.Control>
+                        </ReactBootstrap.Form.Group>
+
+
                         <ReactBootstrap.Modal.Footer>
                             <ReactBootstrap.Button variant="secondary" onClick={handle_close}>
                                 Close
