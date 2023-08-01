@@ -4,8 +4,10 @@
 
 {% block react_components%}
     {% comment %} logged in components {% endcomment %}
+    <script src="{% static 'js/components/logged_in/form_elements/multi_select.js' %}" type="text/babel"></script>
     <script src="{% static 'js/components/logged_in/add_book.js' %}" type="text/babel"></script>
     <script src="{% static 'js/components/logged_in/add_shelf.js' %}" type="text/babel"></script>
+    <script src="{% static 'js/components/logged_in/add_book_to_shelf.js' %}" type="text/babel"></script>
     <script src="{% static 'js/components/logged_in_view.js' %}" type="text/babel"></script>
     {% comment %} logged out components {% endcomment %}
     <script src="{% static 'js/components/logged_out/login_form.js' %}" type="text/babel"></script>

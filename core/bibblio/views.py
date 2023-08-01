@@ -177,9 +177,7 @@ def relate_book_to_user(data, book, user):
         return JsonResponse({"error": "Read category required."}, status=400)
     
     #add the book to any shelves that were passed in
-    print(data.get("shelves"))
     if data.get("shelves"):
-        print("shelves:", data.get("shelves"))
         for shelf in data.get("shelves"):
             try:
                 shelf = Shelf.objects.get(id=shelf)
@@ -238,7 +236,7 @@ def get_or_create_book(data):
         if book.is_valid():
             book.save()
         else:
-            return JsonResponse({"error": "Book is not valid. Check that your list of author or authors is separated by only a comma, and that your publication year, if known, is at least 10 and no greater than the current year. "}, status=400)
+            return JsonResponse({"error": "Book is not valid. If you have multiple authors, check that your list authors is separated by only a comma. Check that your publication year, if known, is at least 10 and no greater than the current year. "}, status=400)
     
     # if book is valid, return it
     return book
@@ -270,7 +268,7 @@ def book(request):
         return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)
     
 
-def get_books_to_add(data):
+def get_books_from_data(data):
     # get and combine books from all categories
         books_to_add = []
         if data.get("books_read"):
@@ -285,39 +283,78 @@ def get_books_to_add(data):
 
         return books
 
+
+def handle_shelf_post(request):
+     #load data from request
+    data = json.loads(request.body)
+    # get the user
+    user = User.objects.get(username=request.user.username)
+    # get the name
+    if data.get("name") == '':
+        return JsonResponse({"error": "Name required for shelf."}, status=400)
+    
+    # if shelf already exists
+    if Shelf.objects.filter(name=data.get("name")).exists():
+        return JsonResponse({"error": "You already have a shelf with that name. Please choose another name."}, status=400)
+    
+    # create the shelf
+    shelf = Shelf.objects.create(
+        name=data.get("name"),
+        owner=user,
+    )
+    # add books of shelf because cannot forward set MTM field
+    shelf.books.add(*get_books_from_data(data))
+
+    shelf.save()
+
+    return JsonResponse({"message": "Shelf created successfully!"}, status=200)
+
+
+def handle_shelf_put(request):
+    #load data from request
+    data = json.loads(request.body)
+    # get the user
+    user = User.objects.get(username=request.user.username)
+    # check if at least one book is being added
+    if data.get("books_read") == [] and data.get("books_reading") == [] and data.get("books_to_read") == []:
+        return JsonResponse({"error": "At least one book must be selected."}, status=400)
+    elif data.get("shelves") == []:
+        return JsonResponse({"error": "At least one shelf must be selected."}, status=400)
+    else:
+        #get if adding or removing books
+        if not data.get("add_or_remove"):
+            return JsonResponse({"error": "Add or remove must be specified."}, status=400)
+        else:
+            if data.get("add_or_remove") == "add" or data.get("add_or_remove") == "remove":
+                # get the shelves
+                shelves = [Shelf.objects.get(id=int(shelf_id)) for shelf_id in data.get("shelves")]
+
+                if data.get("add_or_remove") == "add":
+                # add books to shelves
+                    for shelf in shelves:
+                        print(shelf)
+                        shelf.books.add(*get_books_from_data(data))
+                        shelf.save()
+                    return JsonResponse({"message": "Books added to shelves successfully!"}, status=200)
+                else:
+                    return JsonResponse({"error": "Remove not yet implemented."}, status=400)
+                    # remove books from shelves
+                    for shelf in shelves:
+                        shelf.books.remove(*get_books_to_add(data))
+                        shelf.save()
+                    return JsonResponse({"message": "Books removed from shelves successfully!"}, status=200)          
+            else:
+                return JsonResponse({"error": "Add or remove must be specified."}, status=400)
+            
+
+
 @login_required
 def shelf(request):
     if request.method == "GET":
         pass
     elif request.method == "POST":
-        #load data from request
-        data = json.loads(request.body)
-        print("data", data)
-        # get the user
-        user = User.objects.get(username=request.user.username)
-        # get the name
-        if data.get("name") == '':
-            return JsonResponse({"error": "Name required for shelf."}, status=400)
-        
-        # if shelf already exists
-        if Shelf.objects.filter(name=data.get("name")).exists():
-            return JsonResponse({"error": "You already have a shelf with that name. Please choose another name."}, status=400)
-        
-        # create the shelf
-        shelf = Shelf.objects.create(
-            name=data.get("name"),
-            owner=user,
-        )
-        # set books of shelf because cannot forward set MTM field
-        shelf.books.set(get_books_to_add(data))
-
-        shelf.save()
-
-        return JsonResponse({"message": "Shelf created successfully!"}, status=200)
-
-
-
+       return handle_shelf_post(request)
     elif request.method == "PUT":
-        pass
+        return handle_shelf_put(request)
     else:
         return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)

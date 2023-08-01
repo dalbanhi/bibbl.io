@@ -135,7 +135,6 @@ const AddBook = (props) => {
                 </ReactBootstrap.Modal.Header>
                 <ReactBootstrap.Modal.Body>
                     {state.error && <div className="alert alert-danger" role="alert">{state.error}</div>}
-                    
                     <ReactBootstrap.Form onSubmit={handle_submit}>
                         {
                             //for each field (in order, excluding radio button and shelf)
@@ -155,9 +154,8 @@ const AddBook = (props) => {
                                     </ReactBootstrap.Form.Group>
                                 )
                             })
-                            
                         }
-                        {/* radio button for read category */}
+                        {/* radio buttons for read category */}
                         <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.read_category">
                             <ReactBootstrap.Form.Label>Category</ReactBootstrap.Form.Label>
                             <br />
@@ -183,28 +181,15 @@ const AddBook = (props) => {
                             }
                         </ReactBootstrap.Form.Group>
                         {/* multi select for Shelf */}
-                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.shelf">
-                            <ReactBootstrap.Form.Label>
-                                Add this Book to your Shelves
-                                <br/>
-                                <small>If you don't see any shelves, add some to your library first!</small>
-                                <br/>
-                                <small>Hold down the ctrl/cmd key to select multiple shelves</small>
-                            </ReactBootstrap.Form.Label>
-                            <ReactBootstrap.Form.Control as="select" name="shelves" multiple value={state.shelves} onChange={handle_select_change}>
-                                {/* an option element for each shelf in the user shelves*/}
-                                {state.user.shelves.map((shelf) => {
-                                    return (
-                                        <option 
-                                            key={shelf.id}
-                                            value={shelf.id}>{`${shelf.name} (${shelf.book_count} books)`}
-                                        </option>
-                                    )
-                                })}
-                            </ReactBootstrap.Form.Control>
-                        </ReactBootstrap.Form.Group>
-
-
+                        <MultiSelect
+                            control_id="add_book_form.shelf"
+                            label="Add this Book to your Shelves\nIf you don't see any shelves, add some to your library first!\nHold down the ctrl/cmd key to select multiple shelves"
+                            name="shelves"
+                            value={state.shelves}
+                            handle_change={handle_select_change}
+                            items_to_display={state.user.shelves}
+                            item_type="shelf"
+                        />
                         <ReactBootstrap.Modal.Footer>
                             <ReactBootstrap.Button variant="secondary" onClick={handle_close}>
                                 Close

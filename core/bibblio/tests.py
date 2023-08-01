@@ -1,10 +1,12 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import User, Book, Shelf
+from django.urls import reverse
 
 # Create your tests here.
 class BibblioTestCase(TestCase):
 
     def setUp(self) -> None:
+        client = Client()
         user1= User.objects.create(username="testuser", email="example@mail.com", password="testpassword")
         
         # test image url from: https://www.mobileread.com/forums/showthread.php?t=222754
@@ -128,5 +130,18 @@ class BibblioTestCase(TestCase):
         book_read = Book.objects.get(title="book_read")
         self.assertEqual(book_read.in_shelf.get(owner__username="testuser").owner.username, "testuser")
 
+    
+
+    # Client testing
+    def test_home_page(self):
+        """Test that the home page loads correctly"""
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_book_post_positive(self):
+        """ Test that the client can make a correct book post request """
+        response = self.client.post(reverse('book'), {'title': 'Forever', 'author': 'Pete Hammill', 'publication_year': '2011'})
+        self.assertEqual(response.status_code, 200)
+        # self.assertEqual(response.content, b'Book added successfully')
 
     
