@@ -82,11 +82,12 @@ const LoggedInView = (props) => {
                     </div>
                 </div>
                 
-                <ShelfLinks
+                {/* <ShelfLinks
                     user={state.user}
                     handle_book_list_change={handle_book_list_name_change}
                     title={state.subtitle}
-                />
+                /> */}
+                <p className="m-2">Hint: Select a single shelf to edit the shelf name or remove it from you library. </p>
                 <FilterableList
                     user={state.user}
                     edit_book_url={state.api_urls.book}

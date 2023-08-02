@@ -18,9 +18,8 @@ const ItemsList = (props) => {
         return false;
     }
     return (
-        <div>
-            {console.log("state, ", state)}
-            {console.log("props", props)}            
+        <div className="container m-2 text-center">
+            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">      
             {
                 state.items.map((item) => {
                     if(props.item_type === "book"){
@@ -29,6 +28,8 @@ const ItemsList = (props) => {
                                 book={item}
                                 key={item.id}
                                 user={state.user}
+                                on_category_change={props.on_category_change}
+                                on_shelf_change={props.on_shelf_change}
                             />
                         )
                     }
@@ -37,6 +38,7 @@ const ItemsList = (props) => {
                     }
                 })
             }
+            </div>
         </div>
     )
 }

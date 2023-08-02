@@ -55,7 +55,7 @@ const FilterableList = (props) => {
             }
             return false;
         });  
-        console.log("filtered books", filtered_books);
+        // console.log("filtered books", filtered_books);
         return filtered_books;
     }
 
@@ -75,9 +75,7 @@ const FilterableList = (props) => {
             //get initial books with new category
             books = new_category === 'all' ? oldState.user.books_read.concat(oldState.user.books_reading, oldState.user.books_to_read) : oldState.user[new_category];
             //filter by selected shelves of old state
-            books = filter_by_selected_shelves(books, oldState.selected_shelves_ids);
-            console.log("books category change", books);
-            
+            books = filter_by_selected_shelves(books, oldState.selected_shelves_ids);           
             return books;
         }
         else if(shelf_change){
@@ -85,28 +83,11 @@ const FilterableList = (props) => {
             books = oldState.selected_category === 'all' ? oldState.user.books_read.concat(oldState.user.books_reading, oldState.user.books_to_read) : oldState.user[oldState.selected_category];
             //filter by new shelves
             books = filter_by_selected_shelves(books, new_shelves);
-            console.log("books shelf change", books);
             return books;
         }
     }
 
-    //getting multiple selected checkboxes from a check collection
-    // https://www.geeksforgeeks.org/how-to-get-multiple-checkbox-values-in-react-js/
-    const on_shelf_select_change = (event) => {
-
-        const {value, checked} = event.target;
-
-        //get shelf
-        let clicked_shelf = state.user.shelves.find((shelf) => shelf.id === parseInt(value));
-        let shelves_to_show = [...state.selected_shelves_ids];
-        if(checked){
-            //add shelf to selected shelves
-            shelves_to_show.push(clicked_shelf.id);
-        }
-        else{
-            //remove shelf from selected shelves
-            shelves_to_show = shelves_to_show.filter(shelf_id => shelf_id !== clicked_shelf.id);
-        }
+    const update_shelves_to_show = (shelves_to_show) => {
 
         const options = {
             shelf_change: true,
@@ -125,8 +106,60 @@ const FilterableList = (props) => {
         })
     }
 
-    const set_category_callback = (category, event) => {
+    const on_shelf_select_click = (event) => {
 
+        //get shelf_id
+        const clicked_shelf_id = parseInt(event.target.attributes.value.value);
+
+        //clear shelves to show and only add the clicked shelf
+        let shelves_to_show = [];
+        shelves_to_show.push(clicked_shelf_id);
+
+        //clear all checkboxes except the one matching the clicked pill
+        // https://stackoverflow.com/questions/15148659/how-can-i-use-queryselector-on-to-pick-an-input-element-by-name
+        //get all checkboxes
+        let checkboxes = document.querySelectorAll('input[name="shelves_checked"]');
+        for(let i = 0; i < checkboxes.length; i++){
+            let checkbox = checkboxes[i];
+            if(parseInt(checkbox.value) === clicked_shelf_id){
+                checkbox.checked = true;
+            }
+            else{
+                checkbox.checked = false;
+            }
+        }
+        //update shelves with new shelves to show
+        update_shelves_to_show(shelves_to_show);
+        //reroute to top of the screen?
+    }
+
+    //getting multiple selected checkboxes from a check collection
+    // https://www.geeksforgeeks.org/how-to-get-multiple-checkbox-values-in-react-js/
+    const on_shelf_select_change = (event) => {
+        const {value, checked} = event.target;
+
+        const selected_shelf_id = parseInt(value);
+
+        let shelves_to_show = [...state.selected_shelves_ids];
+        if(checked){
+            //add shelf to selected shelves
+            shelves_to_show.push(selected_shelf_id);
+        }
+        else{
+            //remove shelf from selected shelves
+            shelves_to_show = shelves_to_show.filter(shelf_id => shelf_id !== selected_shelf_id);
+        }
+
+        //update shelves with new shelves to show
+        update_shelves_to_show(shelves_to_show);
+    }
+
+    const on_category_change_click = (event) => {
+        const category = event.target.attributes.value.value;
+        on_category_change(category);
+    }
+
+    const on_category_change = (category) => {
         const options = {
             category_change: true,
             new_category: category,
@@ -154,7 +187,7 @@ const FilterableList = (props) => {
         return false;
     }
     return (
-    <div className="m2">
+    <div className="m-2">
         <ReactBootstrap.Card className="text-center">
             <ReactBootstrap.Card.Header>
                 Filter
@@ -162,12 +195,11 @@ const FilterableList = (props) => {
             <ReactBootstrap.Card.Title>{state.initial_book_list_name}
             {state.selected_category !== "all" && <span>({capitalize_names(state.selected_category)})</span>}</ReactBootstrap.Card.Title>
             <ReactBootstrap.Card.Body>
-                {/* <div className="container"> */}
                     <ReactBootstrap.ToggleButtonGroup 
                         type="radio" 
                         name="read_category" 
                         value={state.selected_category} 
-                        onChange={set_category_callback}
+                        onChange={on_category_change}
                     >
                         {
                             state.read_categories.map((category, index) => {
@@ -184,7 +216,6 @@ const FilterableList = (props) => {
                             })
                         }
                     </ReactBootstrap.ToggleButtonGroup>
-                {/* </div> */}
             </ReactBootstrap.Card.Body>
             <ReactBootstrap.Card.Footer>
             <ReactBootstrap.Card.Title>Your Shelves</ReactBootstrap.Card.Title>
@@ -212,13 +243,21 @@ const FilterableList = (props) => {
             </ReactBootstrap.Card.Body>
             </ReactBootstrap.Card.Footer>
         </ReactBootstrap.Card>
-        {state.show_single_shelf && <p>Shelf editor</p>}
+        {
+            state.show_single_shelf && 
+            <ShelfEditor
+                user={state.user}
+                shelf_id={state.selected_shelves_ids[0]}
+            />
+        }
         
         <ItemsList
             user={state.user}
             edit_book_url={state.edit_book_url}
             items={state.items}
             item_type={state.item_type}
+            on_category_change={on_category_change_click}
+            on_shelf_change={on_shelf_select_click}
         />
     </div>
 
