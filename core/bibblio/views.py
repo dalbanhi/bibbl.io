@@ -58,6 +58,8 @@ def obj_of_api_urls():
 
 
 # Create your views here.
+# TODO: Add boolean register converter for register = true
+
 def index(request):
     print("index")
     user = None
@@ -70,7 +72,7 @@ def index(request):
         user = ""
 
     return render(request, "bibblio/index.html", {
-        "is_register_view": True,
+        "is_register_view": False,
         "is_authenticated": request.user.is_authenticated,
         "user": user,
         "app_container": "app_container",
@@ -185,7 +187,7 @@ def relate_book_to_user(data, book, user):
             except Shelf.DoesNotExist:
                 return JsonResponse({"error": "Shelf does not exist."}, status=400)
 
-    return JsonResponse({"message": "Book added to your library successfully."}, status=200)
+    return JsonResponse({"message": "Book added to your library successfully.", "user": user.serialize()}, status=200)
 
 
 def get_or_create_book(data):
@@ -307,7 +309,7 @@ def handle_shelf_post(request):
 
     shelf.save()
 
-    return JsonResponse({"message": "Shelf created successfully!"}, status=200)
+    return JsonResponse({"message": "Shelf created successfully!", "user": user.serialize()}, status=200)
 
 
 def handle_shelf_put(request):
@@ -335,14 +337,14 @@ def handle_shelf_put(request):
                         print(shelf)
                         shelf.books.add(*get_books_from_data(data))
                         shelf.save()
-                    return JsonResponse({"message": "Books added to shelves successfully!"}, status=200)
+                    return JsonResponse({"message": "Books added to shelves successfully!", "user": user.serialize()}, status=200)
                 else:
                     return JsonResponse({"error": "Remove not yet implemented."}, status=400)
                     # remove books from shelves
                     for shelf in shelves:
                         shelf.books.remove(*get_books_to_add(data))
                         shelf.save()
-                    return JsonResponse({"message": "Books removed from shelves successfully!"}, status=200)          
+                    return JsonResponse({"message": "Books removed from shelves successfully!", "user": user.serialize()}, status=200)          
             else:
                 return JsonResponse({"error": "Add or remove must be specified."}, status=400)
             

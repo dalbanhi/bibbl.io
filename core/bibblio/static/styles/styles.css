@@ -176,12 +176,13 @@
   animation-name: dissappear;
   animation-duration: 4s;
   animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
 }
 
 @keyframes dissappear {
   0% {
     opacity: 1;
-    height: auto;
+    height: 100px;
     max-height: 100%;
     padding: auto;
     margin: auto;

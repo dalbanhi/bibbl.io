@@ -78,7 +78,7 @@ const AddBook = (props) => {
             }
             else{
                 //if not error, tell app to show message, update state, and close modal
-                // props.update_book_list(data.book);
+                props.update_user(data.user);
                 props.set_success_message(data.message);
                 setState({
                     ...state,
@@ -103,10 +103,12 @@ const AddBook = (props) => {
         });
     }
 
-    const book_field_titles = (field) => {
+    const capitalize_names = (field_name) => {
+        field_name = field_name.replace("book_", "").replace("books_", "").replace("_", " ");
+
         //capitalize each word and replace underscores with spaces
-        field = field.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
-        return field;
+        field_name = field_name.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        return field_name;
     }
 
     const book_read_category_titles = (category) => {
@@ -142,11 +144,11 @@ const AddBook = (props) => {
                                 //render a form group with a label and input
                                 return(
                                     <ReactBootstrap.Form.Group className="mb-3" controlId={`add_book_form.${field}`} key={index}>
-                                        <ReactBootstrap.Form.Label>{book_field_titles(field)}</ReactBootstrap.Form.Label>
+                                        <ReactBootstrap.Form.Label>{capitalize_names(field)}</ReactBootstrap.Form.Label>
                                         <ReactBootstrap.Form.Control
                                             type="text"
                                             name={field}
-                                            placeholder={book_field_titles(field)}
+                                            placeholder={capitalize_names(field)}
                                             defaultValue={state[field]}
                                             onChange={handle_input_change}
                                             autoFocus={index === 0}
@@ -167,7 +169,7 @@ const AddBook = (props) => {
                                             <ReactBootstrap.Form.Check
                                                 key={key}
                                                 inline
-                                                label={book_read_category_titles(key)}
+                                                label={capitalize_names(key)}
                                                 name="book_read_category"
                                                 type="radio"
                                                 id={`inline-radio-1`}

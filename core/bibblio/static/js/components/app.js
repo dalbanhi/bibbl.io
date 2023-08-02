@@ -41,6 +41,14 @@ const App = () => {
         }
     }, []);
 
+    const update_user = (user) => {
+        // update user data
+        setState({
+            ...state,
+            user: user,
+        });
+    }
+
     const handle_login = (login_or_out, user_id) => {
 
         //get user data and update url name for my profile
@@ -73,7 +81,7 @@ const App = () => {
                 menu_urls={state.menu_urls}
                 auth_change={handle_login}
             />
-            <div className="container w-75 wizard-bg-color">
+            <div className="container">
                 {
                     !state.is_authenticated? 
                     <LoggedOutView 
@@ -84,6 +92,7 @@ const App = () => {
                     <LoggedInView 
                         user={state.user}
                         api_urls={state.api_urls}
+                        update_user={update_user}
                     />
                 }
             </div>

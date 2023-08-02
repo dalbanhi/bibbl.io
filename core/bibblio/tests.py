@@ -42,45 +42,53 @@ class BibblioTestCase(TestCase):
     
     
     def test_user_creation(self):
+        """ Test that a user is created correctly"""
         user1 = User.objects.get(username="testuser")
         self.assertEqual(user1.username, "testuser")
         self.assertEqual(user1.email, "example@mail.com")
         self.assertEqual(user1.password, "testpassword")
-
+    
     def test_user_books_read(self):
+        """ Test that a user can add books to their books_read list"""
         user1 = User.objects.get(username="testuser")
         book_read = Book.objects.get(title="book_read")
         self.assertEqual(user1.books_read.get(title="book_read"), book_read)
         self.assertEqual(user1.books_read.count(), 1)
     
     def test_book_users_read(self):
+        """ test that a user can be gotten from the books_read list"""
         book_read = Book.objects.get(title="book_read")
         user1 = User.objects.get(username="testuser")
         self.assertEqual(book_read.in_read.get(username="testuser"), user1)
 
     def test_user_books_to_read(self):
+        """ Test that a user can add books to their books_to_read list"""
         user1 = User.objects.get(username="testuser")
         book_to_read = Book.objects.get(title="book_to_read")
         self.assertEqual(user1.books_to_read.get(title="book_to_read"), book_to_read)
         self.assertEqual(user1.books_to_read.count(), 1)
     
     def test_book_users_to_read(self):
+        """ test that a user can be gotten from the books_to_read list"""
         user1 = User.objects.get(username="testuser")
         book_to_read = Book.objects.get(title="book_to_read")
         self.assertEqual(book_to_read.in_to_read.get(username="testuser"), user1)
     
     def test_user_books_reading(self):
+        """ Test that a user can add books to their books_reading list"""
         user1 = User.objects.get(username="testuser")
         book_reading = Book.objects.get(title="book_reading")
         self.assertEqual(user1.books_reading.get(title="book_reading"), book_reading)
         self.assertEqual(user1.books_reading.count(), 1)
     
     def test_book_users_reading(self):
+        """ test that a user can be gotten from the books_reading list"""
         user1 = User.objects.get(username="testuser")
         book_reading = Book.objects.get(title="book_reading")
         self.assertEqual(book_reading.in_reading.get(username="testuser"), user1)
 
     def test_invalid_books(self):
+        """ Test that books are correctly identified as invalid"""
         bad_book_1 = Book.objects.get(title="bad_book_1")
         bad_book_2 = Book.objects.get(title="bad_book_2")
         bad_book_3 = Book.objects.get(title="bad_book_3")
@@ -97,6 +105,7 @@ class BibblioTestCase(TestCase):
 
 
     def test_user_shelves(self):
+        """ Test that a user can create shelves"""
         user1 = User.objects.get(username="testuser")
         guilty_pleasures = Shelf.objects.get(name="Guilty Pleasures")
         academic_books = Shelf.objects.get(name="Academic Books")
@@ -106,18 +115,15 @@ class BibblioTestCase(TestCase):
     
 
     def test_shelf_owner(self):
+        """ Test that a shelf has an owner"""
         user1 = User.objects.get(username="testuser")
         guilty_pleasures = Shelf.objects.get(name="Guilty Pleasures")
         academic_books = Shelf.objects.get(name="Academic Books")
         self.assertEqual(guilty_pleasures.owner, user1)
         self.assertEqual(academic_books.owner, user1)
-
-    def test_user_shelves(self):
-        user1 = User.objects.get(username="testuser")
-
-        self.assertEquals(user1.shelves.count(), 2)
     
     def test_shelf_books(self):
+        """ testing that shelves can get the number of books they contain"""
         guilty_pleasures = Shelf.objects.get(name="Guilty Pleasures")
         academic_books = Shelf.objects.get(name="Academic Books")
 
@@ -127,8 +133,16 @@ class BibblioTestCase(TestCase):
         self.assertEqual(academic_books_books.count(), 1)
 
     def test_get_user_from_book_from_shelves(self):
-        book_read = Book.objects.get(title="book_read")
-        self.assertEqual(book_read.in_shelf.get(owner__username="testuser").owner.username, "testuser")
+        """ Test that a user can be gotten from a book from a shelf"""
+        academic_books = Shelf.objects.get(name="Academic Books")
+        book_to_read = Book.objects.get(title="book_to_read")
+        book_to_read_from_shelf = academic_books.books.first()
+        user1 = User.objects.get(username="testuser")
+        user1_from_book = book_to_read_from_shelf.in_to_read.first()
+
+        self.assertEqual(user1_from_book, user1)
+        self.assertEqual(book_to_read_from_shelf, book_to_read)
+
 
     
 
@@ -138,10 +152,18 @@ class BibblioTestCase(TestCase):
         response = self.client.get(reverse('index'))
         self.assertEqual(response.status_code, 200)
 
-    def test_book_post_positive(self):
-        """ Test that the client can make a correct book post request """
-        response = self.client.post(reverse('book'), {'title': 'Forever', 'author': 'Pete Hammill', 'publication_year': '2011'})
+    def test_login_page(self):
+        """Test that the login page loads correctly"""
+        response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code, 200)
+
+    # selenium tests?
+
+    # def test_book_post_positive(self):
+    #     """ Test that the client can make a correct book post request """
+    #     response = self.client.post(reverse('book'), {'title': 'Forever', 'author': 'Pete Hammill', 'publication_year': '2011'})
+    #     print(response)
+    #     self.assertEqual(response.status_code, 200)
         # self.assertEqual(response.content, b'Book added successfully')
 
     

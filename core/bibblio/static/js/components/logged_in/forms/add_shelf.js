@@ -82,7 +82,7 @@ const AddShelf = (props) => {
             else{
                 //tell app to show message update state, clear form, close modal
                 props.set_success_message(data.message);
-                //props.update_shelf_list();
+                props.update_user(data.user);
                 setState({
                     ...state,
                     show_modal: false,
@@ -97,12 +97,12 @@ const AddShelf = (props) => {
         })
     }
 
-    const capitalize_name = (name) => {
-        const arr = name.split("_");
-        for (let i = 0; i < arr.length; i++){
-            arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1);
-        }
-        return arr.join(" ");
+    const capitalize_names = (field_name) => {
+        field_name = field_name.replace("book_", "").replace("books_", "").replace("_", " ");
+
+        //capitalize each word and replace underscores with spaces
+        field_name = field_name.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+        return field_name;
     }
 
     if(Object.entries(state.user).length === 0){
@@ -110,7 +110,7 @@ const AddShelf = (props) => {
     }
     return (
         <div>
-            {console.log(state)}
+            {/* {console.log(state)} */}
             <ReactBootstrap.Button
                 variant="outline-primary"
                 onClick={handle_show}
@@ -150,7 +150,7 @@ const AddShelf = (props) => {
                                         <MultiSelect
                                             key={key}
                                             control_id={`user_${key}`}
-                                            label={capitalize_name(key)}
+                                            label={capitalize_names(key)}
                                             name={`${key}`}
                                             value={state[key]}
                                             handle_change={handle_select_change}

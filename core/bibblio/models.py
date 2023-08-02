@@ -94,6 +94,10 @@ class Book(models.Model):
             "main_author": main_author,
             "publication_year": pub_year,
             "cover_image_url": cover_image_url,
+            "in_shelves": [shelf.id for shelf in self.in_shelf.all()],
+            "in_read": [user.id for user in self.in_read.all()],
+            "in_reading": [user.id for user in self.in_reading.all()],
+            "in_to_read": [user.id for user in self.in_to_read.all()],
         }
     
     def __str__(self):
