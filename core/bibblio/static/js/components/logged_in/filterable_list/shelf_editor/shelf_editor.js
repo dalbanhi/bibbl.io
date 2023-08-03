@@ -39,15 +39,14 @@ const ShelfEditor = (props) => {
                 bg="warning"
                 onClick={() => handle_shelf_edit(state.user, props.shelf_name)}
                 value={props.shelf_id}
-                name="Edit Shelf"
+                name="Remove Books from Shelf"
             />
             <ClickableBadge
                 bg="danger"
                 onClick={() => handle_shelf_delete(state.user, props.shelf_name)}
                 value={props.shelf_id}
-                name="Delete Shelf"
+                name="Delete"
             />
-            
         </div>
     )
 }

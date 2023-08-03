@@ -1,5 +1,15 @@
 // ReactBootstrap.Modal ideas from: https://react-bootstrap.netlify.app/docs/components/ReactBootstrap.Modal/
 // React Bootstrap Checkboxhttps://react-bootstrap.netlify.app/docs/forms/checks-radios
+const AddBookButton = (props) => {
+    return(
+        <ReactBootstrap.Button
+                variant="outline-primary"
+        >           
+            <i className="bi bi-book">{` `}</i>
+            Add Book
+        </ReactBootstrap.Button>
+    )
+}
 
 const AddBook = (props) => {
     const [state, setState] = React.useState({
@@ -14,7 +24,6 @@ const AddBook = (props) => {
         book_read_category: 'read',
         shelves: [],
         error:'',
-        fullscreen: true,
     })
 
     React.useEffect(() => {
@@ -27,13 +36,6 @@ const AddBook = (props) => {
         }
     }, [props])
 
-    const handle_show = () => {
-        setState({
-            ...state,
-            show_modal: true,
-        })
-    }
-
     const handle_input_change = (event) => {
         setState({
             ...state,
@@ -41,11 +43,12 @@ const AddBook = (props) => {
         })
     }
 
-    const handle_close = () => {
+    const handle_select_change = (event) => {
+        let selected_items = [].slice.call(event.target.selectedOptions).map(item => item.value);
         setState({
             ...state,
-            show_modal: false,
-        })
+            [event.target.name]: selected_items,
+        });
     }
 
     const handle_submit = (event) => {
@@ -71,6 +74,7 @@ const AddBook = (props) => {
         .then(data => {
 
             if (data.error){
+                console.log(data.error)
                 setState({
                     ...state,
                     error: data.error,
@@ -95,13 +99,7 @@ const AddBook = (props) => {
         })
     }
 
-    const handle_select_change = (event) => {
-        let selected_items = [].slice.call(event.target.selectedOptions).map(item => item.value);
-        setState({
-            ...state,
-            [event.target.name]: selected_items,
-        });
-    }
+    
 
     const capitalize_names = (field_name) => {
         field_name = field_name.replace("book_", "").replace("books_", "").replace("_", " ");
@@ -111,101 +109,45 @@ const AddBook = (props) => {
         return field_name;
     }
 
-    const book_read_category_titles = (category) => {
-        category = category.replace("books_", "").replace("_", " ");
-        //capitalize
-        category = category.charAt(0).toUpperCase() + category.slice(1);
-        return category;
-    }
-
     if(Object.entries(state.user).length === 0){
         return false;
     }
     return (
-        <div>
-            <ReactBootstrap.Button
-                variant="outline-primary"
-                onClick={handle_show}
-            >           
-                <i className="bi bi-book">{` `}</i>
-                Add Book
-            </ReactBootstrap.Button>
-            
-            <ReactBootstrap.Modal fullscreen={state.fullscreen} show={state.show_modal} onHide={handle_close}>
-                <ReactBootstrap.Modal.Header closeButton>
-                    <ReactBootstrap.Modal.Title>Add a Book to Your Library</ReactBootstrap.Modal.Title>
-                </ReactBootstrap.Modal.Header>
-                <ReactBootstrap.Modal.Body>
-                    {state.error && <div className="alert alert-danger" role="alert">{state.error}</div>}
-                    <ReactBootstrap.Form onSubmit={handle_submit}>
-                        {
-                            //for each field (in order, excluding radio button and shelf)
-                            state.form_order.map((field, index) => {
-                                //render a form group with a label and input
-                                return(
-                                    <ReactBootstrap.Form.Group className="mb-3" controlId={`add_book_form.${field}`} key={index}>
-                                        <ReactBootstrap.Form.Label>{capitalize_names(field)}</ReactBootstrap.Form.Label>
-                                        <ReactBootstrap.Form.Control
-                                            type="text"
-                                            name={field}
-                                            placeholder={capitalize_names(field)}
-                                            defaultValue={state[field]}
-                                            onChange={handle_input_change}
-                                            autoFocus={index === 0}
-                                        />
-                                    </ReactBootstrap.Form.Group>
-                                )
-                            })
-                        }
-                        {/* radio buttons for read category */}
-                        <ReactBootstrap.Form.Group className="mb-3" controlId="add_book_form.read_category">
-                            <ReactBootstrap.Form.Label>Category</ReactBootstrap.Form.Label>
-                            <br />
-                            {
-                                Object.keys(state.user).map((key, index) => {
-                                    //for reach key that starts with "books_", create a radio button
-                                    if(key.startsWith("books_")){
-                                        return(
-                                            <ReactBootstrap.Form.Check
-                                                key={key}
-                                                inline
-                                                label={capitalize_names(key)}
-                                                name="book_read_category"
-                                                type="radio"
-                                                id={`inline-radio-1`}
-                                                value={key.replace("books_", "")}
-                                                checked={state.book_read_category === key.replace("books_", "")}
-                                                onChange={handle_input_change}
-                                            />
-                                        )
-                                    }
-                                })
-                            }
-                        </ReactBootstrap.Form.Group>
-                        {/* multi select for Shelf */}
-                        <MultiSelect
-                            control_id="add_book_form.shelf"
-                            label="Add this Book to your Shelves\nIf you don't see any shelves, add some to your library first!\nHold down the ctrl/cmd key to select multiple shelves"
-                            name="shelves"
-                            value={state.shelves}
-                            handle_change={handle_select_change}
-                            items_to_display={state.user.shelves}
-                            item_type="shelf"
-                        />
-                        <ReactBootstrap.Modal.Footer>
-                            <ReactBootstrap.Button variant="secondary" onClick={handle_close}>
-                                Close
-                            </ReactBootstrap.Button>
-                            <ReactBootstrap.Button variant="primary" type="submit">
-                                Add Book!
-                            </ReactBootstrap.Button>
-                        </ReactBootstrap.Modal.Footer>
-                        
-                    </ReactBootstrap.Form>
-                </ReactBootstrap.Modal.Body>
+            <ModalFormWithButton
+                form_button={AddBookButton}
+                title="Add a Book to Your Library"
+                handle_submit={handle_submit}
+                submit_button_text="Add Book!"
+                // show_modal={state.show_modal}
+                error={state.error}
+            >
+                <TextControls 
+                    parent_state={state}
+                    handle_input_change={handle_input_change}
+                    capitalize_names={capitalize_names}
+                    fields={state.form_order}
+                    form_name="add_book_form"
+                />
+                <InlineRadios 
+                    parent_state={state}
+                    handle_input_change={handle_input_change}
+                    capitalize_names={capitalize_names}
+                    fields={Object.keys(state.user).filter(key => key.startsWith("books_"))}
+                    form_name="add_book_form"
+                    title="book_read_category"
+                />
                 
-            </ReactBootstrap.Modal>
-        </div>
+                <MultiSelect
+                    form_name="add_book_form"
+                    label="Shelves"
+                    name="shelves"
+                    value={state.shelves}
+                    handle_change={handle_select_change}
+                    items_to_display={state.user.shelves}
+                    item_type="shelf"
+                    show_instructions={true}
+                />
+            </ModalFormWithButton>
         
     )
 }

@@ -1,3 +1,15 @@
+
+const AddBooksToShelfButton = (props) => {
+    return(
+        <ReactBootstrap.Button
+                variant="outline-primary"
+        >           
+            <i className="bi bi-bookmark">{` `}</i>
+            Add Book(s) to Shelf
+        </ReactBootstrap.Button>
+    )
+}
+
 const AddBookToShelf = (props) => {
 
     const [state, setState] = React.useState({
@@ -33,13 +45,6 @@ const AddBookToShelf = (props) => {
         setState({
             ...state,
             show_modal: true,
-        })
-    }
-
-    const handle_input_change = (event) => {
-        setState({
-            ...state,
-            [event.target.name]: event.currentTarget.value,
         })
     }
 
@@ -112,70 +117,33 @@ const AddBookToShelf = (props) => {
         return false;
     }
     return (
-        <div>
-            {/* {console.log(state)} */}
-            <ReactBootstrap.Button
-                variant="outline-primary"
-                onClick={handle_show}
-            >           
-                <i className="bi bi-bookshelf">{` `}</i>
-                Add Book(s) to Shelf
-            </ReactBootstrap.Button>
-            <ReactBootstrap.Modal fullscreen={state.fullscreen} show={state.show_modal} onHide={handle_close}>
-                <ReactBootstrap.Modal.Header closeButton>
-                    <ReactBootstrap.Modal.Title>Add books(s) to shelf (or shelves)</ReactBootstrap.Modal.Title>
-                </ReactBootstrap.Modal.Header>
-                <ReactBootstrap.Modal.Body>
-                    {   
-                        //show error
-                        state.error && <div className="alert alert-danger" role="alert">{state.error}</div>
-                    }
-                    <ReactBootstrap.Form onSubmit={handle_submit}>
-                        <ReactBootstrap.Form.Label>
-                            <p>If you don't see any books, add some to your library first!</p>
-                            <p><small>To select multiple books, hold the ctrl button (Windows) or the cmd button (macOS).</small></p>
-                        </ReactBootstrap.Form.Label>
-                        {
-                            Object.keys(state.user).map((key, index) => {
-                                //looping through user object, looking for keys that start with "books_"
-                                if(key.startsWith("books_")){
-                                    //a select for each book category
-                                    return(
-                                        <MultiSelect
-                                            key={key}
-                                            control_id={`user_${key}`}
-                                            label={capitalize_names(key)}
-                                            name={`${key}`}
-                                            value={state[key]}
-                                            handle_change={handle_select_change}
-                                            items_to_display={state.user[key]}
-                                            item_type="book"
-                                        />
-                                    )
-                                }
-                            })
-                        }
-                        {/* multi select for Shelf */}
-                        <MultiSelect
-                            control_id="add_book_form.shelf"
-                            label="Shelves to add to: (all books selected will be added to all selected shelves). Repeats are ignored."
-                            name="shelves"
-                            value={state.shelves}
-                            handle_change={handle_select_change}
-                            items_to_display={state.user.shelves}
-                            item_type="shelf"
-                        />
-                        <ReactBootstrap.Modal.Footer>
-                            <ReactBootstrap.Button variant="secondary" onClick={handle_close}>
-                                Close
-                            </ReactBootstrap.Button>
-                            <ReactBootstrap.Button variant="primary" type="submit">
-                                Add Book(s) to Shelf!
-                            </ReactBootstrap.Button>
-                        </ReactBootstrap.Modal.Footer>
-                    </ReactBootstrap.Form>
-                </ReactBootstrap.Modal.Body>
-            </ReactBootstrap.Modal>
-        </div>
+        <ModalFormWithButton
+            form_button={AddBooksToShelfButton}
+            title="Add books(s) to shelf/shelves"
+            handle_submit={handle_submit}
+            submit_button_text="Add to Shelf"
+            // show_modal={state.show_modal}
+            error={state.error}
+        >
+            <MultiSelectInstructions />
+            {/* multi selects for books */}
+            <MultiSelectGroup 
+                    parent_state={state}
+                    handle_select_change={handle_select_change}
+                    capitalize_names={capitalize_names}
+                    fields={Object.keys(state.user).filter(key => key.startsWith("books_"))}
+                />
+            {/* multi select for Shelf */}
+            <MultiSelect
+                control_id="add_book_form.shelf"
+                label="Shelves (all books selected will be added to all selected shelves). Repeats are ignored."
+                name="shelves"
+                value={state.shelves}
+                handle_change={handle_select_change}
+                items_to_display={state.user.shelves}
+                item_type="shelf"
+                show_instructions={false}
+            />
+        </ModalFormWithButton>
     )
 }

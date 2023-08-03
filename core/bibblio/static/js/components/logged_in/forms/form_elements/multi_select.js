@@ -1,12 +1,5 @@
 const MultiSelect = (props) => {
-    //props:
-    // control id
-    // name
-    // label
-    // form control value (array)
-    // handle change (function)
-    // items to display (array of objects)
-    // item type (book or shelf for formatting purposes)
+
 
     const [state, setState] = React.useState({
         control_id: '',
@@ -16,6 +9,7 @@ const MultiSelect = (props) => {
         handle_change: null,
         items_to_display: [],
         item_type: '',
+        show_instructions: false,
     })
 
     React.useEffect(() => {
@@ -32,6 +26,7 @@ const MultiSelect = (props) => {
                 items_to_display: props.items_to_display,
                 handle_change: props.handle_change,
                 item_type: props.item_type,
+                show_instructions: props.show_instructions,
             })
         }
 
@@ -46,8 +41,6 @@ const MultiSelect = (props) => {
             return `${item.name} (${item.book_count} books)`
         }
     }
-
-
     //if props has not loaded yet, return false
     if(Object.entries(state.item_type).length === 0){
         // console.log("props not loaded yet")
@@ -57,8 +50,8 @@ const MultiSelect = (props) => {
         <ReactBootstrap.Form.Group
             className="mb-3" 
             controlId={state.control_id}>
-                {console.log(state)}
                 <ReactBootstrap.Form.Label>{state.label}</ReactBootstrap.Form.Label>
+                {state.show_instructions === true ? <MultiSelectInstructions /> : null}
                 <ReactBootstrap.Form.Control 
                     as="select"
                     multiple
@@ -79,16 +72,7 @@ const MultiSelect = (props) => {
                             )
                         })
                     }
-                    {/* {state.user.shelves.map((shelf) => {
-                                    return (
-                                        <option 
-                                            key={shelf.id}
-                                            value={shelf.id}>{`${shelf.name} (${shelf.book_count} books)`}
-                                        </option>
-                                    )
-                                })} */}
                 </ReactBootstrap.Form.Control>
-        {/* {console.log(state)} */}
         </ReactBootstrap.Form.Group>
     )
 }

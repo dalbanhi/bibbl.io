@@ -1,8 +1,28 @@
 const BookCard = (props) => {
 
+    const category_mappings = {
+        'read': {
+            name: 'Read',
+            bg: 'dark',
+            value: 'books_read',
+        },
+        "reading": {
+            name: 'Reading',
+            bg: 'success',
+            value: 'books_reading',
+        },
+        "to_read": {
+            name: 'To Read',
+            bg: 'info',
+            value: 'books_to_read',
+        },           
+    };
+
     const [state, useState] = React.useState({
         book: {},
         user:{},
+        book_shelves: [],
+        which_category: '',
     })
 
     React.useEffect(() => {
@@ -11,79 +31,14 @@ const BookCard = (props) => {
             ...state,
             book: props.book,
             user: props.user,
+            //filter shelves to only those that the book is in
+            book_shelves: props.user.shelves.filter((shelf) => {
+                return props.book.in_shelves.includes(shelf.id);
+            }),
+            //set which category the book is in
+            which_category: props.book.in_read.includes(props.user.id) ? 'read' : props.book.in_reading.includes(props.user.id) ? 'reading' : 'to_read',
         })
     }, [props])
-
-    const get_shelves = () => {
-        let user_shelves = state.user.shelves;
-        let book_shelves_ids = state.book.in_shelves;
-
-        let book_shelves = user_shelves.filter((shelf) => {
-            return book_shelves_ids.includes(shelf.id);
-        })
-
-        let shelf_badges = book_shelves.map((shelf) => {
-            return(
-                <ClickableBadge
-                    key={shelf.id}
-                    bg="secondary"
-                    name={shelf.name}
-                    onClick={props.on_shelf_change}
-                    value={shelf.id}
-                />
-                // <ReactBootstrap.Badge 
-                //     pill 
-                //     bg="secondary" 
-                //     key={shelf.id}
-                // >
-                //     {shelf.name}
-                // </ReactBootstrap.Badge>
-            )
-        })
-        return shelf_badges;
-    }
-
-    const get_category = () => {
-        return(
-            <ClickableBadge
-                onClick={props.on_category_change}
-                bg= {state.book.in_read.includes(state.user.id) ? "success" : state.book.in_reading.includes(state.user.id) ? "warning" : state.book.in_to_read.includes(state.user.id) ? "info" : "secondary"}
-                name={state.book.in_read.includes(state.user.id) ? "Read" : state.book.in_reading.includes(state.user.id) ? "Reading" : state.book.in_to_read.includes(state.user.id) ? "To Read" : "None"}
-            />
-        )
-        
-
-        // if(book_user_read_ids.includes(state.user.id)){
-        //     return(
-        //         <ReactBootstrap.Badge 
-        //             pill
-        //             bg="success"
-        //         >
-        //             Read
-        //         </ReactBootstrap.Badge>
-        //     )
-        // }
-        // else if(book_user_reading_ids.includes(state.user.id)){
-        //     return(
-        //         <ReactBootstrap.Badge 
-        //             pill 
-        //             bg="warning"
-        //         >
-        //             Reading
-        //         </ReactBootstrap.Badge>
-        //     )
-        // }
-        // else if(book_user_to_read_ids.includes(state.user.id)){
-        //     return(
-        //         <ReactBootstrap.Badge 
-        //             pill 
-        //             bg="info"
-        //         >
-        //             To Read
-        //         </ReactBootstrap.Badge>
-        //     )
-        // }
-    }
 
     const edit_book = () => {
         console.log("edit book");
@@ -109,15 +64,28 @@ const BookCard = (props) => {
                         Publication Year: {state.book.publication_year}
                     </ReactBootstrap.ListGroup.Item>
                     <ReactBootstrap.ListGroup.Item>
-                        Your Shelves: {get_shelves()}
+                        Your Shelves: {
+                            //return a badge per shelf
+                            state.book_shelves.map((shelf) => {
+                                return(
+                                    <ClickableBadge
+                                        key={shelf.id}
+                                        bg="secondary"
+                                        name={shelf.name}
+                                        onClick={props.on_shelf_change}
+                                        value={shelf.id}
+                                    />
+                                )
+                            })
+                        }
                     </ReactBootstrap.ListGroup.Item>
                     <ReactBootstrap.ListGroup.Item>
                         Current Category:
                         <ClickableBadge
                             onClick={props.on_category_change}
-                            bg= {state.book.in_read.includes(state.user.id) ? "success" : state.book.in_reading.includes(state.user.id) ? "warning" : state.book.in_to_read.includes(state.user.id) ? "info" : "secondary"}
-                            name={state.book.in_read.includes(state.user.id) ? "Read" : state.book.in_reading.includes(state.user.id) ? "Reading" : state.book.in_to_read.includes(state.user.id) ? "To Read" : "None"}
-                            value={state.book.in_read.includes(state.user.id) ? "books_read" : state.book.in_reading.includes(state.user.id) ? "books_reading" : state.book.in_to_read.includes(state.user.id) ? "books_to_read" : "none"}
+                            bg= {category_mappings[state.which_category].bg}
+                            name={category_mappings[state.which_category].name}
+                            value={category_mappings[state.which_category].value}
                         />
                     </ReactBootstrap.ListGroup.Item>
                     <ReactBootstrap.ListGroup.Item>
@@ -130,20 +98,7 @@ const BookCard = (props) => {
                             onClick={remove_book_from_library}
                             bg="danger"
                             name="Remove from Library"
-                        />
-                        {/* <ReactBootstrap.Badge
-                            bg="warning"
-                            onClick={edit_book}
-                        >
-                            Edit
-                        </ReactBootstrap.Badge>
-                        <ReactBootstrap.Badge
-                            bg="danger"
-                            onClick={remove_book_from_library}
-                        >
-                            Remove from Library
-                        </ReactBootstrap.Badge> */}
-                        
+                        />                        
                     </ReactBootstrap.ListGroup.Item>
                 </ReactBootstrap.ListGroup>
             </ReactBootstrap.Card.Body>
