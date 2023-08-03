@@ -12,50 +12,34 @@ const ModalFormWithButton = (props) => {
 
     React.useEffect(() => {
         //update state on props load
-        console.log("props changed: ", props)
+        // console.log("props changed: ", props)
 
         setState({
             ...state,
             ShowButton: props.form_button,
             error: props.error,
-            // show_modal: props.show_modal,
+            show_modal: props.show_modal,
         });    
         
     }, [props]);
-    const ShowButton = props.form_button;
 
-    const handle_close = () => {
-        setState({
-            ...state,
-            show_modal: false,
-        })
-    }
-
-    const handle_show = () => {
-        setState({
-            ...state,
-            show_modal: true,
-        })
-    }
     if(state.ShowButton === null){
         return false;
     }
     return (
         <div>
-            <div onClick={handle_show}>
-                <ShowButton/>
-            </div>
-            <ReactBootstrap.Modal show={state.show_modal} onHide={handle_close}>
+            {props.form_button}
+            <ReactBootstrap.Modal show={props.show_modal} onHide={props.handle_close}>
                 <ReactBootstrap.Modal.Header closeButton>
                     <ReactBootstrap.Modal.Title>{props.title}</ReactBootstrap.Modal.Title>
                 </ReactBootstrap.Modal.Header>
                 <ReactBootstrap.Modal.Body>
-                    {state.error && <div className="alert alert-danger" role="alert">{state.error}</div>}
+                    {props.error && <div className="alert alert-danger" role="alert">{props.error}</div>}
                 
                     <ReactBootstrap.Form onSubmit={props.handle_submit}>
                         {props.children}
                         <ReactBootstrap.Modal.Footer>
-                            <ReactBootstrap.Button variant="secondary" onClick={handle_close}>
+                            <ReactBootstrap.Button variant="secondary" onClick={props.handle_close}>
                                 Close
                             </ReactBootstrap.Button>
                             <ReactBootstrap.Button variant="primary" type="submit">

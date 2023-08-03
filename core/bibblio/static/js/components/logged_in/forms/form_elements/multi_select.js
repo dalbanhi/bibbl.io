@@ -1,6 +1,5 @@
 const MultiSelect = (props) => {
 
-
     const [state, setState] = React.useState({
         control_id: '',
         label: '',
@@ -13,10 +12,8 @@ const MultiSelect = (props) => {
     })
 
     React.useEffect(() => {
-        // console.log("component loaded")
         //update state on props load
         if(Object.entries(props).length !== 0){
-            // console.log("props loaded")
             setState({
                 ...state,
                 control_id: props.control_id,
@@ -34,7 +31,6 @@ const MultiSelect = (props) => {
 
     const format_item_string = (item) => {
         if(state.item_type === 'book'){
-            // console.log("here")
             return `${item.title} by ${item.main_author}`
         }
         else if(state.item_type === 'shelf'){
@@ -43,7 +39,6 @@ const MultiSelect = (props) => {
     }
     //if props has not loaded yet, return false
     if(Object.entries(state.item_type).length === 0){
-        // console.log("props not loaded yet")
         return false;
     }
     return (

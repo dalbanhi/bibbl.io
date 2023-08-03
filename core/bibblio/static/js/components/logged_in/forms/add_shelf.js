@@ -5,6 +5,7 @@ const AddShelfButton = (props) => {
     return(
         <ReactBootstrap.Button
                 variant="outline-primary"
+                onClick={props.handle_show}
         >           
             <i className="bi bi-bookshelf">{` `}</i>
             Add Shelf
@@ -12,16 +13,13 @@ const AddShelfButton = (props) => {
     )
 }
 
-
 const AddShelf = (props) => {
     const [state, setState] = React.useState({
         user: {},
-        show_modal: false,
         shelf_name: '',
         books_read: [],
         books_reading: [],
         books_to_read: [],
-        error:'',
     })
 
     React.useEffect(() => {
@@ -33,13 +31,6 @@ const AddShelf = (props) => {
             })
         }
     }, [props])
-
-    const handle_show = () => {
-        setState({
-            ...state,
-            show_modal: true,
-        })
-    }
 
     const handle_input_change = (event) => {
         setState({
@@ -55,13 +46,6 @@ const AddShelf = (props) => {
             ...state,
             [event.target.name]: selected_items,
         });
-    }
-
-    const handle_close = () => {
-        setState({
-            ...state,
-            show_modal: false,
-        })
     }
     const handle_submit = (event) => {
         event.preventDefault();
@@ -85,36 +69,26 @@ const AddShelf = (props) => {
         .then(data => {
             //if there's an error
             if (data.error){
-                setState({
-                    ...state,
-                    error: data.error,
-                })
+                console.log(data.error);
+                props.set_error(data.error);
             }
             //if there's no error
             else{
                 //tell app to show message update state, clear form, close modal
-                props.set_success_message(data.message);
                 props.update_user(data.user);
+                props.set_success_message(data.message);
+                props.set_error('');
+                props.set_show_modal(false);
                 setState({
                     ...state,
-                    show_modal: false,
                     shelf_name: '',
                     books_read: [],
                     books_reading: [],
                     books_to_read: [],
-                    error:'',
                 });
 
             }
         })
-    }
-
-    const capitalize_names = (field_name) => {
-        field_name = field_name.replace("book_", "").replace("books_", "").replace("_", " ");
-
-        //capitalize each word and replace underscores with spaces
-        field_name = field_name.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
-        return field_name;
     }
 
     if(Object.entries(state.user).length === 0){
@@ -122,17 +96,18 @@ const AddShelf = (props) => {
     }
     return (
             <ModalFormWithButton
-                form_button={AddShelfButton}
+                form_button={<AddShelfButton handle_show={() => props.set_show_modal(true)}/>}
                 title="Add a Shelf to Your Library"
                 handle_submit={handle_submit}
+                handle_close={() => props.set_show_modal(false)}
                 submit_button_text="Add Shelf!"
-                // show_modal={state.show_modal}
-                error={state.error}
+                show_modal={props.show_modal}
+                error={props.error}
             >
                 <TextControls 
                     parent_state={state}
                     handle_input_change={handle_input_change}
-                    capitalize_names={capitalize_names}
+                    capitalize_names={props.capitalize_names}
                     fields={["shelf_name"]}
                     form_name="add_shelf_form"
                 />
@@ -141,11 +116,11 @@ const AddShelf = (props) => {
                     Add some books to this shelf (optional)!
                 </ReactBootstrap.Form.Label>
                 <MultiSelectInstructions />
-                {/* multi select for books */}
+                {/* multi selects for books */}
                 <MultiSelectGroup 
                     parent_state={state}
                     handle_select_change={handle_select_change}
-                    capitalize_names={capitalize_names}
+                    capitalize_names={props.capitalize_names}
                     fields={Object.keys(state.user).filter(key => key.startsWith("books_"))}
                 />
             </ModalFormWithButton>

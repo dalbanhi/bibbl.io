@@ -19,8 +19,7 @@ const MultiSelectGroup = (props) => {
         return false;
     }
     return (
-        <div>
-            {console.log(state)}
+        // <div>
             <ReactBootstrap.Form.Group>
             {
                 state.fields.map((key, index) => {
@@ -44,6 +43,6 @@ const MultiSelectGroup = (props) => {
             }
 
             </ReactBootstrap.Form.Group>
-        </div>
+        // </div>
     )
 }

@@ -3,6 +3,7 @@ const AddBooksToShelfButton = (props) => {
     return(
         <ReactBootstrap.Button
                 variant="outline-primary"
+                onClick={props.handle_show}
         >           
             <i className="bi bi-bookmark">{` `}</i>
             Add Book(s) to Shelf
@@ -14,9 +15,9 @@ const AddBookToShelf = (props) => {
 
     const [state, setState] = React.useState({
         user: {},
-        show_modal: false,
-        fullscreen: true,
-        error: '',
+        // show_modal: false,
+        // fullscreen: true,
+        // error: '',
         books_read: [],
         books_reading: [],
         books_to_read: [],
@@ -41,19 +42,19 @@ const AddBookToShelf = (props) => {
         });
     }
 
-    const handle_show = () => {
-        setState({
-            ...state,
-            show_modal: true,
-        })
-    }
+    // const handle_show = () => {
+    //     setState({
+    //         ...state,
+    //         show_modal: true,
+    //     })
+    // }
 
-    const handle_close = () => {
-        setState({
-            ...state,
-            show_modal: false,
-        })
-    }
+    // const handle_close = () => {
+    //     setState({
+    //         ...state,
+    //         show_modal: false,
+    //     })
+    // }
 
     const handle_submit = (event) => {
         console.log("submitting form");
@@ -80,19 +81,17 @@ const AddBookToShelf = (props) => {
             console.log(data);
 
             //if there's an error
-            if(data.error){
-                setState({
-                    ...state,
-                    error: data.error,
-                })
+            if (data.error){
+                props.set_error(data.error);
             }
             else{
                 //if no error, update user, set success message, and close modal
                 props.update_user(data.user);
                 props.set_success_message(data.message);
+                props.set_error('');
+                props.set_show_modal(false);
                 setState({
                     ...state,
-                    // user: data.user,
                     show_modal: false,
                     error: '',
                     books_read: [],
@@ -118,12 +117,13 @@ const AddBookToShelf = (props) => {
     }
     return (
         <ModalFormWithButton
-            form_button={AddBooksToShelfButton}
+            form_button={<AddBooksToShelfButton handle_show={() => props.set_show_modal(true)}/>}
             title="Add books(s) to shelf/shelves"
             handle_submit={handle_submit}
+            handle_close={() => props.set_show_modal(false)}
             submit_button_text="Add to Shelf"
-            // show_modal={state.show_modal}
-            error={state.error}
+            show_modal={props.show_modal}
+            error={props.error}
         >
             <MultiSelectInstructions />
             {/* multi selects for books */}

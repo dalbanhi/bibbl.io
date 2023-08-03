@@ -4,6 +4,7 @@ const AddBookButton = (props) => {
     return(
         <ReactBootstrap.Button
                 variant="outline-primary"
+                onClick={props.handle_show}
         >           
             <i className="bi bi-book">{` `}</i>
             Add Book
@@ -14,7 +15,6 @@ const AddBookButton = (props) => {
 const AddBook = (props) => {
     const [state, setState] = React.useState({
         user: {},
-        show_modal: false,
         //order in which form will be displayed
         form_order: ['book_title', 'book_authors', 'book_publication_year', 'book_cover_image_url'],
         book_title: '',
@@ -23,7 +23,6 @@ const AddBook = (props) => {
         book_cover_image_url: '',
         book_read_category: 'read',
         shelves: [],
-        error:'',
     })
 
     React.useEffect(() => {
@@ -72,18 +71,15 @@ const AddBook = (props) => {
         })
         .then(response => response.json())
         .then(data => {
-
             if (data.error){
-                console.log(data.error)
-                setState({
-                    ...state,
-                    error: data.error,
-                })
+                props.set_error(data.error);
             }
             else{
                 //if not error, tell app to show message, update state, and close modal
                 props.update_user(data.user);
                 props.set_success_message(data.message);
+                props.set_error('');
+                props.set_show_modal(false);
                 setState({
                     ...state,
                     book_title: '',
@@ -91,47 +87,38 @@ const AddBook = (props) => {
                     book_publication_year: '',
                     book_cover_image_url: '',
                     book_read_category: 'read',
-                    error:'',
                     shelves: [],
-                    show_modal: false,
                 })
             }
         })
     }
 
-    
-
-    const capitalize_names = (field_name) => {
-        field_name = field_name.replace("book_", "").replace("books_", "").replace("_", " ");
-
-        //capitalize each word and replace underscores with spaces
-        field_name = field_name.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
-        return field_name;
-    }
 
     if(Object.entries(state.user).length === 0){
         return false;
     }
     return (
             <ModalFormWithButton
-                form_button={AddBookButton}
+                form_button={<AddBookButton handle_show={() => props.set_show_modal(true)}/>}
                 title="Add a Book to Your Library"
                 handle_submit={handle_submit}
+                handle_close={() => props.set_show_modal(false)}
                 submit_button_text="Add Book!"
-                // show_modal={state.show_modal}
-                error={state.error}
+                show_modal={props.show_modal}
+                error={props.error}
             >
+
                 <TextControls 
                     parent_state={state}
                     handle_input_change={handle_input_change}
-                    capitalize_names={capitalize_names}
+                    capitalize_names={props.capitalize_names}
                     fields={state.form_order}
                     form_name="add_book_form"
                 />
                 <InlineRadios 
                     parent_state={state}
                     handle_input_change={handle_input_change}
-                    capitalize_names={capitalize_names}
+                    capitalize_names={props.capitalize_names}
                     fields={Object.keys(state.user).filter(key => key.startsWith("books_"))}
                     form_name="add_book_form"
                     title="book_read_category"
@@ -148,6 +135,5 @@ const AddBook = (props) => {
                     show_instructions={true}
                 />
             </ModalFormWithButton>
-        
     )
 }

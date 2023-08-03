@@ -60,13 +60,64 @@ const LoggedInView = (props) => {
                 <div className="container">
                     <div className="w-100">
                         <div className="btn-group mx-auto" role="group" aria-label="Adding actions">
-                            <AddBook 
+                            <ModalFormBase
                                 user={state.user}
-                                add_book_url={state.api_urls.book}
-                                set_success_message={set_message}
-                                update_user={props.update_user} 
+                                render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
+                                    return(
+                                        <AddBook
+                                            user={state.user}
+                                            update_user={props.update_user}
+                                            set_success_message={set_message}
+                                            add_book_url={state.api_urls.book}
+                                            //render props
+                                            show_modal={show_modal}
+                                            set_show_modal={set_show_modal}
+                                            capitalize_names={capitalize_names}
+                                            error={error}
+                                            set_error={set_error}
+                                        />
+                                    )
+                                }} 
                             />
-                            <AddShelf 
+                            <ModalFormBase
+                                user={state.user}
+                                render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
+                                    return(
+                                        <AddShelf
+                                            user={state.user}
+                                            update_user={props.update_user}
+                                            set_success_message={set_message}
+                                            add_shelf_url={state.api_urls.shelf}
+                                            //render props
+                                            show_modal={show_modal}
+                                            set_show_modal={set_show_modal}
+                                            capitalize_names={capitalize_names}
+                                            error={error}
+                                            set_error={set_error}
+                                        />
+                                    )
+                                }} 
+                            />
+                            <ModalFormBase
+                                user={state.user}
+                                render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
+                                    return(
+                                        <AddBookToShelf
+                                            user={state.user}
+                                            update_user={props.update_user}
+                                            set_success_message={set_message}
+                                            add_book_to_shelf_url={state.api_urls.shelf}
+                                            //render props
+                                            show_modal={show_modal}
+                                            set_show_modal={set_show_modal}
+                                            capitalize_names={capitalize_names}
+                                            error={error}
+                                            set_error={set_error}
+                                        />
+                                    )
+                                }} 
+                            />
+                            {/* <AddShelf 
                                 user={state.user}
                                 add_shelf_url={state.api_urls.shelf}
                                 set_success_message={set_message}
@@ -77,7 +128,7 @@ const LoggedInView = (props) => {
                                 add_book_to_shelf_url={state.api_urls.shelf}
                                 set_success_message={set_message}
                                 update_user={props.update_user}
-                            />
+                            /> */}
                         </div>
                     </div>
                 </div>
