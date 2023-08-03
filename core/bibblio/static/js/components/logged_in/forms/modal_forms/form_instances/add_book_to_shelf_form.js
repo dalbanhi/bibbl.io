@@ -11,13 +11,10 @@ const AddBooksToShelfButton = (props) => {
     )
 }
 
-const AddBookToShelf = (props) => {
+const AddBookToShelfForm = (props) => {
 
     const [state, setState] = React.useState({
         user: {},
-        // show_modal: false,
-        // fullscreen: true,
-        // error: '',
         books_read: [],
         books_reading: [],
         books_to_read: [],
@@ -41,20 +38,6 @@ const AddBookToShelf = (props) => {
             [event.target.name]: selected_items,
         });
     }
-
-    // const handle_show = () => {
-    //     setState({
-    //         ...state,
-    //         show_modal: true,
-    //     })
-    // }
-
-    // const handle_close = () => {
-    //     setState({
-    //         ...state,
-    //         show_modal: false,
-    //     })
-    // }
 
     const handle_submit = (event) => {
         console.log("submitting form");
@@ -103,15 +86,6 @@ const AddBookToShelf = (props) => {
         })
     }
 
-    const capitalize_names = (field_name) => {
-        field_name = field_name.replace("book_", "").replace("books_", "").replace("_", " ");
-
-        //capitalize each word and replace underscores with spaces
-        field_name = field_name.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
-        return field_name;
-    }
-
-
     if(Object.entries(state.user).length === 0){
         return false;
     }
@@ -130,7 +104,7 @@ const AddBookToShelf = (props) => {
             <MultiSelectGroup 
                     parent_state={state}
                     handle_select_change={handle_select_change}
-                    capitalize_names={capitalize_names}
+                    capitalize_names={props.capitalize_names}
                     fields={Object.keys(state.user).filter(key => key.startsWith("books_"))}
                 />
             {/* multi select for Shelf */}

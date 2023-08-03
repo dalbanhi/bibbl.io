@@ -163,6 +163,21 @@ def users(request, user_id):
     else:
         return JsonResponse({"error": "GET, PUT, or DELETE request required."}, status=400)
 
+
+def book_to_shelves(book, shelves_list, should_add):
+    print("shelves_list", shelves_list)
+    for shelf in shelves_list:
+        try:
+            shelf = Shelf.objects.get(id=shelf)
+            if should_add:
+                shelf.books.add(book)
+            else:
+                shelf.books.remove(book)
+        except Shelf.DoesNotExist:
+            return JsonResponse({"error": "Shelf does not exist."}, status=400)
+    return book
+
+
 def relate_book_to_user(data, book, user):
     # if a book is already in any category, don't add it again
     if user.books_read.filter(id=book.id).exists() or user.books_reading.filter(id=book.id).exists() or user.books_to_read.filter(id=book.id).exists():
@@ -180,13 +195,10 @@ def relate_book_to_user(data, book, user):
     
     #add the book to any shelves that were passed in
     if data.get("shelves"):
-        for shelf in data.get("shelves"):
-            try:
-                shelf = Shelf.objects.get(id=shelf)
-                shelf.books.add(book)
-            except Shelf.DoesNotExist:
-                return JsonResponse({"error": "Shelf does not exist."}, status=400)
-
+        book = book_to_shelves(book, data.get("shelves"), should_add=True)
+        if type(book) == JsonResponse:
+            return book
+        
     return JsonResponse({"message": "Book added to your library successfully.", "user": user.serialize()}, status=200)
 
 
@@ -243,11 +255,86 @@ def get_or_create_book(data):
     # if book is valid, return it
     return book
 
+
+def change_read_category(data, book, user):
+    # try to update read category
+    # get current book category
+    current_category = data.get("current_category")
+    print("current_category", current_category)
+    
+    #remove from current category
+    if current_category == "read":
+        user.books_read.remove(book)
+    elif current_category == "reading":
+        user.books_reading.remove(book)
+    elif current_category == "to_read":
+        user.books_to_read.remove(book)
+    else:
+        return JsonResponse({"error": "Current category not valid."}, status=400)
+
+    # add to new category
+    if data.get("read_category") != "":
+        if data.get("read_category") == "read":
+            user.books_read.add(book)
+        elif data.get("read_category") == "reading":
+            user.books_reading.add(book)
+        elif data.get("read_category") == "to_read":
+            user.books_to_read.add(book)
+        else:
+            return JsonResponse({"error": "New category not valid."}, status=400)
+    user.save()
+    return user
+
+def update_book_fields(data, book, user, request):
+    print("book", book)
+    if data.get("title") != '':
+        # try to update title
+        book.title = data.get("title")
+    if data.get("authors") != '':
+        # try to update authors
+        book.authors = data.get("authors")
+    if data.get("publication_year") != '':
+        # try to update publication year
+        book.publication_year = int(data.get("publication_year"))
+    if data.get("cover_image_url") != '':
+        # try to update cover image url
+        book.cover_image_url = data.get("cover_image_url")
+    if data.get("read_category") != '':
+        user = change_read_category(data, book, user)
+        # if the user was not able to be updated, return the error
+        if type(user) == JsonResponse:
+            return user
+    print("book", book)
+    if data.get("shelves_to_remove"):
+        # try to remove book from shelves
+        book = book_to_shelves(book, data.get("shelves_to_remove"), should_add=False)
+    if data.get("shelves_to_add"):
+        # try to add book to shelves
+        book = book_to_shelves(book, data.get("shelves_to_add"), should_add=True)
+    
+    if type(book) == JsonResponse:
+        # there was a problem adding shelves
+        return book
+    
+    # save if valid and return user, return error if not
+    print("book", book)
+    if book.is_valid():
+        book.save()
+        print(book)
+        # get latest user info to send back
+        user = User.objects.get(username=request.user.username)
+        return JsonResponse({"message": "Book updated successfully.", "user": user.serialize()}, status=201)
+    else:
+        print("book", book)
+        return JsonResponse({"error": "Book is not valid. If you have multiple authors, check that your list authors is separated by only a comma. Check that your publication year, if known, is at least 10 and no greater than the current year. "}, status=400)
+
+
+
 @login_required
 def book(request):
     if request.method == "GET":
         # try to get information about a certain book?
-        pass
+        return JsonResponse({"error": "Cannot GET yet."}, status=400)
     elif request.method == "POST":
         data = json.loads(request.body)
         # get the user
@@ -257,15 +344,25 @@ def book(request):
             return JsonResponse({"error": "Title required."}, status=400)
         
         book = get_or_create_book(data)
-        print(book)
-        if type(book) != Book:
+        if type(book) == JsonResponse:
             return book
         # have ensured that a book exists, now relate the book to user. including shelves
-        return relate_book_to_user(data, book, user)
+        return relate_book_to_user(data, book, user, request)
         
     elif request.method == "PUT":
         # try to edit information about a certain book?
         print("PUT")
+        data = json.loads(request.body)
+        # get the user
+        user = User.objects.get(username=request.user.username)
+        # get the book
+        try:
+            book = Book.objects.get(id=data.get("book_id"))
+        except Book.DoesNotExist:
+            return JsonResponse({"error": "Book does not exist."}, status=400)
+        
+        return update_book_fields(data, book, user, request)
+        
     else:
         return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)
     

@@ -12,16 +12,16 @@ const AddBookButton = (props) => {
     )
 }
 
-const AddBook = (props) => {
+const AddBookForm = (props) => {
     const [state, setState] = React.useState({
         user: {},
         //order in which form will be displayed
-        form_order: ['book_title', 'book_authors', 'book_publication_year', 'book_cover_image_url'],
-        book_title: '',
-        book_authors: '',
-        book_publication_year: '',
-        book_cover_image_url: '',
-        book_read_category: 'read',
+        form_order: ['title', 'authors', 'publication_year', 'cover_image_url'],
+        title: '',
+        authors: '',
+        publication_year: '',
+        cover_image_url: '',
+        read_category: 'read',
         shelves: [],
     })
 
@@ -60,11 +60,11 @@ const AddBook = (props) => {
                 'X-CSRFToken': Cookies.get('csrftoken'),
             },
             body: JSON.stringify({
-                title: state.book_title,
-                authors: state.book_authors,
-                publication_year: state.book_publication_year,
-                cover_image_url: state.book_cover_image_url,
-                read_category: state.book_read_category,
+                title: state.title,
+                authors: state.authors,
+                publication_year: state.publication_year,
+                cover_image_url: state.cover_image_url,
+                read_category: state.read_category,
                 shelves: state.shelves,
                 user: state.user.id,
             })
@@ -82,11 +82,11 @@ const AddBook = (props) => {
                 props.set_show_modal(false);
                 setState({
                     ...state,
-                    book_title: '',
-                    book_authors: '',
-                    book_publication_year: '',
-                    book_cover_image_url: '',
-                    book_read_category: 'read',
+                    title: '',
+                    authors: '',
+                    publication_year: '',
+                    cover_image_url: '',
+                    read_category: 'read',
                     shelves: [],
                 })
             }
@@ -114,6 +114,7 @@ const AddBook = (props) => {
                     capitalize_names={props.capitalize_names}
                     fields={state.form_order}
                     form_name="add_book_form"
+                    has_previous_values={false}
                 />
                 <InlineRadios 
                     parent_state={state}
@@ -121,7 +122,8 @@ const AddBook = (props) => {
                     capitalize_names={props.capitalize_names}
                     fields={Object.keys(state.user).filter(key => key.startsWith("books_"))}
                     form_name="add_book_form"
-                    title="book_read_category"
+                    title="read_category"
+                    label={"Choose a " + props.capitalize_names("read_category")}
                 />
                 
                 <MultiSelect

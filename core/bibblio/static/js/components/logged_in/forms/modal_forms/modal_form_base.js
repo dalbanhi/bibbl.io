@@ -18,7 +18,6 @@ const ModalFormBase = (props) => {
       setState({
           ...state,
           user: props.user,
-          // show_modal: props.show_modal,
       })
     }
   }, [props]);
@@ -30,23 +29,7 @@ const ModalFormBase = (props) => {
     })
   }
 
-  const handle_show = () => {
-    console.log("showing here")
-    setState({
-    ...state,
-    show_modal: true,
-    })
-  }
-
-  const handle_close = () => {
-    setState({
-    ...state,
-    show_modal: false,
-    })
-  }
-
   const set_error = (error) => {
-  console.log("SETTING ERRROR HERE");
     setState({
     ...state,
     error: error,

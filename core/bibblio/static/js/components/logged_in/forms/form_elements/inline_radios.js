@@ -24,7 +24,7 @@ const InlineRadios = (props) => {
 
     return (
         <ReactBootstrap.Form.Group className="mb-3" controlId={`${state.form_name}.${state.title}`}>
-            <ReactBootstrap.Form.Label>{props.capitalize_names(state.title)}</ReactBootstrap.Form.Label>
+            <ReactBootstrap.Form.Label>{props.label}</ReactBootstrap.Form.Label>
             <br />
             {
                 state.fields.map((field, index) => {
@@ -43,27 +43,6 @@ const InlineRadios = (props) => {
                     )
                 })
             }
-
-            {/* {
-                Object.keys(state.user).map((key, index) => {
-                    //for reach key that starts with "books_", create a radio button
-                    if(key.startsWith("books_")){
-                        return(
-                            <ReactBootstrap.Form.Check
-                                key={key}
-                                inline
-                                label={capitalize_names(key)}
-                                name="book_read_category"
-                                type="radio"
-                                id={`inline-radio-1`}
-                                value={key.replace("books_", "")}
-                                checked={state.book_read_category === key.replace("books_", "")}
-                                onChange={handle_input_change}
-                            />
-                        )
-                    }
-                })
-            } */}
         </ReactBootstrap.Form.Group>
     )
 }

@@ -5,7 +5,7 @@
 const FilterableList = (props) => {
     const [state, setState] = React.useState({
         user: {},
-        edit_book_url: '',
+        // edit_book_url: '',
         initial_book_list_name: '',
         selected_category: 'all',
         items: [],
@@ -26,7 +26,7 @@ const FilterableList = (props) => {
             setState({
                 ...state,
                 user: props.user,
-                edit_book_url: props.edit_book_url,
+                // edit_book_url: props.edit_book_url,
                 initial_book_list_name: props.initial_book_list_name,
                 read_categories: ["all", ...book_lists],
                 items: all_books,
@@ -36,9 +36,6 @@ const FilterableList = (props) => {
 
 
     const filter_by_selected_shelves = (books, selected_shelves_ids) => {
-        // console.log("filter by selected shelves");
-        // console.log("selected shelves", "books");
-        // console.log(selected_shelves_ids, books);
         //if there are no selected shelves, return all books
         if(selected_shelves_ids.length === 0){
             return books;
@@ -55,7 +52,6 @@ const FilterableList = (props) => {
             }
             return false;
         });  
-        // console.log("filtered books", filtered_books);
         return filtered_books;
     }
 
@@ -149,7 +145,6 @@ const FilterableList = (props) => {
             //remove shelf from selected shelves
             shelves_to_show = shelves_to_show.filter(shelf_id => shelf_id !== selected_shelf_id);
         }
-
         //update shelves with new shelves to show
         update_shelves_to_show(shelves_to_show);
     }
@@ -203,7 +198,7 @@ const FilterableList = (props) => {
                     >
                         {
                             state.read_categories.map((category, index) => {
-                                //for reach key that starts with "books_", create a radio button
+                                //for each cateogry, create a button
                                     return (
                                         <ReactBootstrap.ToggleButton
                                             key={index} 
@@ -253,11 +248,12 @@ const FilterableList = (props) => {
         
         <ItemsList
             user={state.user}
-            edit_book_url={state.edit_book_url}
+            book_url={props.book_url}
             items={state.items}
             item_type={state.item_type}
             on_category_change={on_category_change_click}
             on_shelf_change={on_shelf_select_click}
+            update_user={props.update_user}
         />
     </div>
 

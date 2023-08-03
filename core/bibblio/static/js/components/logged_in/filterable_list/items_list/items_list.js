@@ -30,6 +30,9 @@ const ItemsList = (props) => {
                                 user={state.user}
                                 on_category_change={props.on_category_change}
                                 on_shelf_change={props.on_shelf_change}
+                                set_success_message={props.set_success_message}
+                                book_url={props.book_url}
+                                update_user={props.update_user}
                             />
                         )
                     }

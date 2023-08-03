@@ -13,7 +13,7 @@ const AddShelfButton = (props) => {
     )
 }
 
-const AddShelf = (props) => {
+const AddShelfForm = (props) => {
     const [state, setState] = React.useState({
         user: {},
         shelf_name: '',

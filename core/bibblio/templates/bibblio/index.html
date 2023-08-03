@@ -6,6 +6,22 @@
     {% comment %} comment and script tag tab structure that matches components directory structure {% endcomment %}
     {% comment %} components {% endcomment %}
         {% comment %} logged in components {% endcomment %}
+            {% comment %} forms {% endcomment %}
+                {% comment %} form elements {% endcomment %}
+                <script src="{% static 'js/components/logged_in/forms/form_elements/multi_select_instructions.js' %}" type="text/babel"></script>
+                <script src="{% static 'js/components/logged_in/forms/form_elements/inline_radios.js' %}" type="text/babel"></script>
+                <script src="{% static 'js/components/logged_in/forms/form_elements/multi_select.js' %}" type="text/babel"></script>
+                <script src="{% static 'js/components/logged_in/forms/form_elements/multi_select_group.js' %}" type="text/babel"></script>
+                <script src="{% static 'js/components/logged_in/forms/form_elements/text_controls.js' %}" type="text/babel"></script>
+                <script src="{% static 'js/components/logged_in/forms/form_elements/modal_form_with_button.js' %}" type="text/babel"></script>
+                {% comment %} modal forms {% endcomment %}
+                    {% comment %} form instances {% endcomment %}
+                    <script src="{% static 'js/components/logged_in/forms/modal_forms/form_instances/edit_book_form.js' %}" type="text/babel"></script>
+                    <script src="{% static 'js/components/logged_in/forms/modal_forms/form_instances/add_book_form.js' %}" type="text/babel"></script>
+                    <script src="{% static 'js/components/logged_in/forms/modal_forms/form_instances/add_shelf_form.js' %}" type="text/babel"></script>
+                    <script src="{% static 'js/components/logged_in/forms/modal_forms/form_instances/add_book_to_shelf_form.js' %}" type="text/babel"></script>
+                <script src="{% static 'js/components/logged_in/forms/modal_forms/modal_form_base.js' %}" type="text/babel"></script>
+                
             {% comment %} filterable list {% endcomment %}
                 {% comment %} items_list components {% endcomment %}
                     {% comment %} items components {% endcomment %}
@@ -15,20 +31,8 @@
                 {% comment %} shelf_editor component {% endcomment %}
                 <script src="{% static 'js/components/logged_in/filterable_list/shelf_editor/shelf_editor.js' %}" type="text/babel">></script>
             <script src="{% static 'js/components/logged_in/filterable_list/filterable_list.js' %}" type="text/babel">></script>
-                {% comment %} forms {% endcomment %}
-                    {% comment %} form elements {% endcomment %}
-                    <script src="{% static 'js/components/logged_in/forms/form_elements/multi_select_instructions.js' %}" type="text/babel"></script>
-                    <script src="{% static 'js/components/logged_in/forms/form_elements/inline_radios.js' %}" type="text/babel"></script>
-                    <script src="{% static 'js/components/logged_in/forms/form_elements/multi_select.js' %}" type="text/babel"></script>
-                    <script src="{% static 'js/components/logged_in/forms/form_elements/multi_select_group.js' %}" type="text/babel"></script>
-                    <script src="{% static 'js/components/logged_in/forms/form_elements/text_controls.js' %}" type="text/babel"></script>
-                    <script src="{% static 'js/components/logged_in/forms/form_elements/modal_form_with_button.js' %}" type="text/babel"></script>
-                <script src="{% static 'js/components/logged_in/forms/modal_form_base.js' %}" type="text/babel"></script>
-                <script src="{% static 'js/components/logged_in/forms/add_book.js' %}" type="text/babel"></script>
-                <script src="{% static 'js/components/logged_in/forms/add_shelf.js' %}" type="text/babel"></script>
-                <script src="{% static 'js/components/logged_in/forms/add_book_to_shelf.js' %}" type="text/babel"></script>
-                {% comment %} shelf links {% endcomment %}
-                <script src="{% static 'js/components/logged_in/shelf_links/shelf_links.js' %}" type="text/babel"></script>
+            {% comment %} shelf links {% endcomment %}
+            <script src="{% static 'js/components/logged_in/shelf_links/shelf_links.js' %}" type="text/babel"></script>
         <script src="{% static 'js/components/logged_in/logged_in_view.js' %}" type="text/babel"></script>
 
         {% comment %} logged out components {% endcomment %}

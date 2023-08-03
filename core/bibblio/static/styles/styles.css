@@ -172,6 +172,10 @@
   --bs-form-invalid-border-color: #ea868f;
 }
 
+.break-word {
+  word-wrap: break-word;
+}
+
 .dissappearing-message {
   animation-name: dissappear;
   animation-duration: 4s;

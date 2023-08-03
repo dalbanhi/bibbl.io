@@ -23,6 +23,7 @@ const BookCard = (props) => {
         user:{},
         book_shelves: [],
         which_category: '',
+        message: '',
     })
 
     React.useEffect(() => {
@@ -44,6 +45,17 @@ const BookCard = (props) => {
         console.log("edit book");
     }
 
+    const set_message = (message) => {
+        useState({
+            ...state,
+            message: message,
+        })
+    }
+
+    const clear_message = () => {
+        set_message('');
+    }
+
     const remove_book_from_library = () => {
         console.log("remove book from library");
     }
@@ -52,56 +64,76 @@ const BookCard = (props) => {
         return false;
     }
     return (
-        <ReactBootstrap.Card>
-            <ReactBootstrap.Card.Img variant="top" src={state.book.cover_image_url} />
-                <ReactBootstrap.Card.Title>{state.book.title}</ReactBootstrap.Card.Title>
-            <ReactBootstrap.Card.Body>
-                <ReactBootstrap.Card.Text>
-                    by {state.book.main_author}
-                </ReactBootstrap.Card.Text>
-                <ReactBootstrap.ListGroup className="list-group-flush">
-                    <ReactBootstrap.ListGroup.Item>
-                        Publication Year: {state.book.publication_year}
-                    </ReactBootstrap.ListGroup.Item>
-                    <ReactBootstrap.ListGroup.Item>
-                        Your Shelves: {
-                            //return a badge per shelf
-                            state.book_shelves.map((shelf) => {
-                                return(
-                                    <ClickableBadge
-                                        key={shelf.id}
-                                        bg="secondary"
-                                        name={shelf.name}
-                                        onClick={props.on_shelf_change}
-                                        value={shelf.id}
-                                    />
-                                )
-                            })
-                        }
-                    </ReactBootstrap.ListGroup.Item>
-                    <ReactBootstrap.ListGroup.Item>
-                        Current Category:
-                        <ClickableBadge
-                            onClick={props.on_category_change}
-                            bg= {category_mappings[state.which_category].bg}
-                            name={category_mappings[state.which_category].name}
-                            value={category_mappings[state.which_category].value}
-                        />
-                    </ReactBootstrap.ListGroup.Item>
-                    <ReactBootstrap.ListGroup.Item>
-                        <ClickableBadge
-                            onClick={edit_book}
-                            bg="warning"
-                            name="Edit"
-                        />
-                        <ClickableBadge
-                            onClick={remove_book_from_library}
-                            bg="danger"
-                            name="Remove from Library"
-                        />                        
-                    </ReactBootstrap.ListGroup.Item>
-                </ReactBootstrap.ListGroup>
-            </ReactBootstrap.Card.Body>
-        </ReactBootstrap.Card>
+        <div className="mb-1">
+            <ReactBootstrap.Card>
+                <ReactBootstrap.Card.Img variant="top" src={state.book.cover_image_url} />
+                    <ReactBootstrap.Card.Title>{state.book.title}</ReactBootstrap.Card.Title>
+                <ReactBootstrap.Card.Body>
+                    <ReactBootstrap.Card.Text>
+                        by {state.book.main_author}
+                    </ReactBootstrap.Card.Text>
+                    <ReactBootstrap.ListGroup className="list-group-flush">
+                        <ReactBootstrap.ListGroup.Item>
+                            Publication Year: {state.book.publication_year}
+                        </ReactBootstrap.ListGroup.Item>
+                        <ReactBootstrap.ListGroup.Item>
+                            Your Shelves: {
+                                //return a badge per shelf
+                                state.book_shelves.map((shelf) => {
+                                    return(
+                                        <ClickableBadge
+                                            key={shelf.id}
+                                            bg="secondary"
+                                            name={shelf.name}
+                                            onClick={props.on_shelf_change}
+                                            value={shelf.id}
+                                        />
+                                    )
+                                })
+                            }
+                        </ReactBootstrap.ListGroup.Item>
+                        <ReactBootstrap.ListGroup.Item>
+                            Current Category:
+                            <ClickableBadge
+                                onClick={props.on_category_change}
+                                bg= {category_mappings[state.which_category].bg}
+                                name={category_mappings[state.which_category].name}
+                                value={category_mappings[state.which_category].value}
+                            />
+                        </ReactBootstrap.ListGroup.Item>
+                        <ReactBootstrap.ListGroup.Item>
+                            {state.message && <div className="dissappearing-message alert alert-success" role="alert" onAnimationIteration={clear_message}>{state.message}</div>}
+                            <ModalFormBase
+                                user={state.user}
+                                render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
+                                    return(
+                                        <EditBookForm
+                                            user={state.user}
+                                            book={state.book}
+                                            book_shelves={state.book_shelves}
+                                            which_category={state.which_category}
+                                            update_user={props.update_user}
+                                            set_success_message={set_message}
+                                            book_url={props.book_url}
+                                            //render props
+                                            show_modal={show_modal}
+                                            set_show_modal={set_show_modal}
+                                            capitalize_names={capitalize_names}
+                                            error={error}
+                                            set_error={set_error}
+                                        />
+                                    )
+                                }} 
+                            />
+                            <ClickableBadge
+                                onClick={remove_book_from_library}
+                                bg="danger"
+                                name="Remove from Library"
+                            />                        
+                        </ReactBootstrap.ListGroup.Item>
+                    </ReactBootstrap.ListGroup>
+                </ReactBootstrap.Card.Body>
+            </ReactBootstrap.Card>
+        </div>
     )
 }

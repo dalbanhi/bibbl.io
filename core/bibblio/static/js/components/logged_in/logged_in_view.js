@@ -60,11 +60,12 @@ const LoggedInView = (props) => {
                 <div className="container">
                     <div className="w-100">
                         <div className="btn-group mx-auto" role="group" aria-label="Adding actions">
+                            {/* render props examples here: https://react.dev/reference/react/cloneElement#passing-data-with-a-render-prop */}
                             <ModalFormBase
                                 user={state.user}
                                 render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
                                     return(
-                                        <AddBook
+                                        <AddBookForm
                                             user={state.user}
                                             update_user={props.update_user}
                                             set_success_message={set_message}
@@ -83,7 +84,7 @@ const LoggedInView = (props) => {
                                 user={state.user}
                                 render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
                                     return(
-                                        <AddShelf
+                                        <AddShelfForm
                                             user={state.user}
                                             update_user={props.update_user}
                                             set_success_message={set_message}
@@ -102,7 +103,7 @@ const LoggedInView = (props) => {
                                 user={state.user}
                                 render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
                                     return(
-                                        <AddBookToShelf
+                                        <AddBookToShelfForm
                                             user={state.user}
                                             update_user={props.update_user}
                                             set_success_message={set_message}
@@ -141,8 +142,9 @@ const LoggedInView = (props) => {
                 <p className="m-2">Hint: Select a single shelf to edit the shelf name or remove it from you library. </p>
                 <FilterableList
                     user={state.user}
-                    edit_book_url={state.api_urls.book}
+                    book_url={state.api_urls.book}
                     initial_book_list_name={state.subtitle}
+                    update_user={props.update_user}
                 />
             </div>
     )
