@@ -74,49 +74,9 @@ const RemoveBookForm = (props) => {
               show_modal={props.show_modal}
               error={props.error}
           >
-              {/* <TextControls 
-                  parent_state={state}
-                  handle_input_change={handle_input_change}
-                  capitalize_names={props.capitalize_names}
-                  fields={state.form_order}
-                  form_name="edit_book_form"
-                  current_object={props.book}
-                  has_previous_values={true}
-              />
-              <InlineRadios 
-                  parent_state={state}
-                  handle_input_change={handle_input_change}
-                  capitalize_names={props.capitalize_names}
-                  fields={
-                      Object.keys(state.user).filter(key => {
-                          return key.startsWith("books_") && key.replace("books_", "") !== props.which_category
-                  })}
-                  form_name="edit_book_form"
-                  title="read_category"
-                  label="Switch to Category: "
-              />
-              
-              <MultiSelect
-                  form_name="edit_book_form"
-                  label="Remove from these shelves"
-                  name="shelves_to_remove"
-                  value={state.shelves_to_remove}
-                  handle_change={handle_select_change}
-                  items_to_display={props.book_shelves}
-                  item_type="shelf"
-                  show_instructions={true}
-              />
-
-              <MultiSelect
-                  form_name="edit_book_form"
-                  label="Add to these shelves"
-                  name="shelves_to_add"
-                  value={state.shelves_to_add}
-                  handle_change={handle_select_change}
-                  items_to_display={state.available_shelves}
-                  item_type="shelf"
-                  show_instructions={false}
-              /> */}
+            <ReactBootstrap.Modal.Body>
+                    Warning: This will remove the book from your library and remove it from all of your shelves. This action cannot be undone.
+                </ReactBootstrap.Modal.Body>
           </ModalFormWithButton>
   )
 }

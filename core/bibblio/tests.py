@@ -39,6 +39,16 @@ class BibblioTestCase(TestCase):
 
         academic_books = Shelf.objects.create(owner=user1, name="Academic Books")
         academic_books.books.add(book_to_read)
+
+    def test_shelf_deletion(self):
+        """ Test that a shelf is deleted correctly"""
+        user1 = User.objects.get(username="testuser")
+        book_read = Book.objects.get(title="book_read")
+        guilty_pleasures = Shelf.objects.get(name="Guilty Pleasures")
+        guilty_pleasures.delete()
+        self.assertEqual(book_read.in_shelf.count(), 0)
+        self.assertEqual(user1.shelves.count(), 1)
+
     
     
     def test_user_creation(self):

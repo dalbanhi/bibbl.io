@@ -489,16 +489,36 @@ def handle_shelf_put(request):
             return JsonResponse({"error": "Add or remove must be specified."}, status=400)
 
     
-            
+def handle_shelf_delete(request):
+    data = json.loads(request.body)
+    # get the shelf
+
+    try:
+        shelf = Shelf.objects.get(id=data.get("shelf_id"))
+    except Shelf.DoesNotExist:
+        return JsonResponse({"error": "Shelf does not exist."}, status=400)
+
+    
+    # remove all books from shelf
+    shelf.books.clear()
+    # delete the shelf
+    shelf.delete()
+
+    # get latest user
+    user = User.objects.get(username=request.user.username)
+    return JsonResponse({"message": "Shelf deleted successfully! Will reload the page soon.", "user": user.serialize()}, status=201)         
 
 
 @login_required
 def shelf(request):
     if request.method == "GET":
         pass
+        return JsonResponse({"error": "Cannot GET yet."}, status=400)
     elif request.method == "POST":
        return handle_shelf_post(request)
     elif request.method == "PUT":
         return handle_shelf_put(request)
+    elif request.method == "DELETE":
+        return handle_shelf_delete(request)
     else:
         return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)

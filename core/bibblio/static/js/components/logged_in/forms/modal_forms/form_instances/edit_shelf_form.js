@@ -1,7 +1,7 @@
 // ReactBootstrap.Modal ideas from: https://react-bootstrap.netlify.app/docs/components/ReactBootstrap.Modal/
 // ideas for multi select using react bootstrap: https://stackoverflow.com/questions/54573926/how-to-use-multi-select-dropdown-in-react-bootstrap
 
-const EditShelfButton = (props) => {
+const EditShelfBadge = (props) => {
     return(
         <ClickableBadge
             bg="warning"
@@ -82,46 +82,6 @@ const EditShelfForm = (props) => {
                 })
             }
         })
-
-        //try to add shelf
-        // fetch(props.add_shelf_url, {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'X-CSRFToken': Cookies.get('csrftoken'),
-        //     },
-        //     body: JSON.stringify({
-        //         name: state.shelf_name,
-        //         books_read: state.books_read,
-        //         books_reading: state.books_reading,
-        //         books_to_read: state.books_to_read,
-        //         user: state.user.id,
-        //     })
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     //if there's an error
-        //     if (data.error){
-        //         console.log(data.error);
-        //         props.set_error(data.error);
-        //     }
-        //     //if there's no error
-        //     else{
-        //         //tell app to show message update state, clear form, close modal
-        //         props.update_user(data.user);
-        //         props.set_success_message(data.message);
-        //         props.set_error('');
-        //         props.set_show_modal(false);
-        //         setState({
-        //             ...state,
-        //             shelf_name: '',
-        //             books_read: [],
-        //             books_reading: [],
-        //             books_to_read: [],
-        //         });
-
-        //     }
-        // })
     }
 
     if(Object.entries(state.user).length === 0){
@@ -129,7 +89,7 @@ const EditShelfForm = (props) => {
     }
     return (
             <ModalFormWithButton
-                form_button={<EditShelfButton handle_show={() => props.set_show_modal(true)}/>}
+                form_button={<EditShelfBadge handle_show={() => props.set_show_modal(true)}/>}
                 title="Edit a Shelf in Your Library"
                 handle_submit={handle_submit}
                 handle_close={() => props.set_show_modal(false)}
@@ -161,12 +121,6 @@ const EditShelfForm = (props) => {
                     item_type="book"
                     show_instructions={false}
                 />
-                {/* <MultiSelectGroup 
-                    parent_state={state}
-                    handle_select_change={handle_select_change}
-                    capitalize_names={props.capitalize_names}
-                    fields={Object.keys(state.user).filter(key => key.startsWith("books_"))}
-                /> */}
             </ModalFormWithButton>
     )
 }

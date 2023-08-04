@@ -62,6 +62,26 @@ const ShelfEditor = (props) => {
                     )
                 }} 
             />
+            <ModalFormBase
+                user={state.user}
+                render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
+                    return(
+                        <DeleteShelfForm
+                            user={state.user}
+                            shelf={state.shelf}
+                            update_user={props.update_user}
+                            set_success_message={set_message}
+                            edit_shelf_url={props.shelf_url}
+                            //render props
+                            show_modal={show_modal}
+                            set_show_modal={set_show_modal}
+                            capitalize_names={capitalize_names}
+                            error={error}
+                            set_error={set_error}
+                        />
+                    )
+                }} 
+            />
             <ClickableBadge
                 bg="danger"
                 onClick={() => handle_shelf_delete(state.user, props.shelf_name)}
