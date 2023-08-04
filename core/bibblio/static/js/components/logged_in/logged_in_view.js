@@ -118,18 +118,6 @@ const LoggedInView = (props) => {
                                     )
                                 }} 
                             />
-                            {/* <AddShelf 
-                                user={state.user}
-                                add_shelf_url={state.api_urls.shelf}
-                                set_success_message={set_message}
-                                update_user={props.update_user} 
-                            />
-                            <AddBookToShelf
-                                user={state.user}
-                                add_book_to_shelf_url={state.api_urls.shelf}
-                                set_success_message={set_message}
-                                update_user={props.update_user}
-                            /> */}
                         </div>
                     </div>
                 </div>
@@ -143,6 +131,7 @@ const LoggedInView = (props) => {
                 <FilterableList
                     user={state.user}
                     book_url={state.api_urls.book}
+                    shelf_url={state.api_urls.shelf}
                     initial_book_list_name={state.subtitle}
                     update_user={props.update_user}
                 />

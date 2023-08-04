@@ -17,6 +17,7 @@ const ModalFormBase = (props) => {
   }, [props]);
 
   const set_show_modal = (show_modal) => {
+    console.log("set_show_modal");
     setState({
       ...state,
       show_modal: show_modal,

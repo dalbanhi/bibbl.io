@@ -61,13 +61,10 @@ def obj_of_api_urls():
 # TODO: Add boolean register converter for register = true
 
 def index(request):
-    print("index")
     user = None
     if request.user.is_authenticated:
-        print("here")
         user = User.objects.get(username=request.user.username)
         user= user.serialize()
-        print(user)
     else:
         user = ""
 
@@ -99,7 +96,6 @@ def login_view(request):
         if request.user.is_authenticated:
             user = User.objects.get(username=request.user.username)
             user= user.serialize()
-            print(user)
         else:
             user = ""
         return render(request, "bibblio/index.html", {
@@ -120,7 +116,6 @@ def logout_view(request):
 def register(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        print(data)
         if data.get("username") == '':
             return JsonResponse({"error": "Username required."}, status=400)
         if data.get("email") == '':
@@ -165,7 +160,6 @@ def users(request, user_id):
 
 
 def book_to_shelves(book, shelves_list, should_add):
-    print("shelves_list", shelves_list)
     for shelf in shelves_list:
         try:
             shelf = Shelf.objects.get(id=shelf)
@@ -271,7 +265,6 @@ def change_book_read_category(data, book, user):
     # try to update read category
     # get current book category
     current_category = data.get("current_category")
-    print("current_category", current_category)
 
     #remove from current category
     user = remove_book_from_read_category(book, user, current_category)
@@ -292,7 +285,6 @@ def change_book_read_category(data, book, user):
     return user
 
 def update_book_fields(data, book, user, request):
-    print("book", book)
     if data.get("title") != '':
         # try to update title
         book.title = data.get("title")
@@ -310,7 +302,6 @@ def update_book_fields(data, book, user, request):
         # if the user was not able to be updated, return the error
         if type(user) == JsonResponse:
             return user
-    print("book", book)
     if data.get("shelves_to_remove"):
         # try to remove book from shelves
         book = book_to_shelves(book, data.get("shelves_to_remove"), should_add=False)
@@ -323,15 +314,12 @@ def update_book_fields(data, book, user, request):
         return book
     
     # save if valid and return user, return error if not
-    print("book", book)
     if book.is_valid():
         book.save()
-        print(book)
         # get latest user info to send back
         user = User.objects.get(username=request.user.username)
         return JsonResponse({"message": "Book updated successfully.", "user": user.serialize()}, status=201)
     else:
-        print("book", book)
         return JsonResponse({"error": "Book is not valid. If you have multiple authors, check that your list authors is separated by only a comma. Check that your publication year, if known, is at least 10 and no greater than the current year. "}, status=400)
 
 
@@ -376,7 +364,6 @@ def book(request):
         
     elif request.method == "PUT":
         # try to edit information about a certain book?
-        print("PUT")
         data = json.loads(request.body)
         # get the user
         user = User.objects.get(username=request.user.username)
@@ -395,9 +382,11 @@ def book(request):
         return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)
     
 
-def get_books_from_data(data):
+def get_books_from_data(data, should_add):
     # get and combine books from all categories
-        books_to_add = []
+    books = []
+    if should_add:
+        books_to_add = books
         if data.get("books_read"):
             books_to_add += data.get("books_read")
         if data.get("books_reading"):
@@ -405,10 +394,18 @@ def get_books_from_data(data):
         if data.get("books_to_read"):
             books_to_add += data.get("books_to_read")
         
-         #get books from ids
+        #get books from ids
         books = [Book.objects.get(id=int(book_id)) for book_id in books_to_add]
 
-        return books
+    else:
+        books_to_remove = books
+        if data.get("books_to_remove"):
+            books += data.get("books_to_remove")
+        
+        #get books from ids
+        books = [Book.objects.get(id=int(book_id)) for book_id in books_to_remove]
+
+    return books
 
 
 def handle_shelf_post(request):
@@ -430,48 +427,68 @@ def handle_shelf_post(request):
         owner=user,
     )
     # add books of shelf because cannot forward set MTM field
-    shelf.books.add(*get_books_from_data(data))
+    shelf.books.add(*get_books_from_data(data, should_add=True))
 
     shelf.save()
 
     return JsonResponse({"message": "Shelf created successfully!", "user": user.serialize()}, status=200)
 
 
-def handle_shelf_put(request):
-    #load data from request
-    data = json.loads(request.body)
-    # get the user
-    user = User.objects.get(username=request.user.username)
+def add_books_to_shelves(data, user, request):
+
     # check if at least one book is being added
     if data.get("books_read") == [] and data.get("books_reading") == [] and data.get("books_to_read") == []:
         return JsonResponse({"error": "At least one book must be selected."}, status=400)
     elif data.get("shelves") == []:
         return JsonResponse({"error": "At least one shelf must be selected."}, status=400)
     else:
-        #get if adding or removing books
-        if not data.get("add_or_remove"):
-            return JsonResponse({"error": "Add or remove must be specified."}, status=400)
-        else:
-            if data.get("add_or_remove") == "add" or data.get("add_or_remove") == "remove":
-                # get the shelves
-                shelves = [Shelf.objects.get(id=int(shelf_id)) for shelf_id in data.get("shelves")]
+        # get the shelves
+        shelves = [Shelf.objects.get(id=int(shelf_id)) for shelf_id in data.get("shelves")]
 
-                if data.get("add_or_remove") == "add":
-                # add books to shelves
-                    for shelf in shelves:
-                        print(shelf)
-                        shelf.books.add(*get_books_from_data(data))
-                        shelf.save()
-                    return JsonResponse({"message": "Books added to shelves successfully!", "user": user.serialize()}, status=200)
-                else:
-                    return JsonResponse({"error": "Remove not yet implemented."}, status=400)
-                    # remove books from shelves
-                    for shelf in shelves:
-                        shelf.books.remove(*get_books_to_add(data))
-                        shelf.save()
-                    return JsonResponse({"message": "Books removed from shelves successfully!", "user": user.serialize()}, status=200)          
-            else:
-                return JsonResponse({"error": "Add or remove must be specified."}, status=400)
+        # add books to shelves
+        for shelf in shelves:
+            shelf.books.add(*get_books_from_data(data, should_add=True))
+            shelf.save()
+        return JsonResponse({"message": "Books added to shelves successfully!", "user": user.serialize()}, status=200)
+                
+
+def handle_shelf_put(request):
+    #load data from request
+    data = json.loads(request.body)
+    # get the user
+    user = User.objects.get(username=request.user.username)
+
+
+    # get add_or_remove
+    if not data.get("add_or_remove"):
+        return JsonResponse({"error": "Add or remove must be specified."}, status=400)
+    else:
+        if data.get("add_or_remove") == "add":
+            return add_books_to_shelves(data, user, request)
+        elif data.get("add_or_remove") == "remove":
+
+            # get the shelf
+            try:
+                shelf = Shelf.objects.get(id=data.get("shelf_id"))
+            except Shelf.DoesNotExist:
+                return JsonResponse({"error": "Shelf does not exist."}, status=400)
+            
+
+            if data.get("shelf_name") != "":
+                # change the name of the shelf
+                shelf.name = data.get("shelf_name")
+            
+            # remove books from shelf
+            if data.get("books_to_remove"):
+                shelf.books.remove(*get_books_from_data(data, should_add=False))
+
+            shelf.save()
+            return JsonResponse({"message": "Shelf updated successfully!", "user": user.serialize()}, status=200)
+
+        else:
+            return JsonResponse({"error": "Add or remove must be specified."}, status=400)
+
+    
             
 
 

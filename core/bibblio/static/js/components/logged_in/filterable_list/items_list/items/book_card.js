@@ -18,7 +18,7 @@ const BookCard = (props) => {
         },           
     };
 
-    const [state, useState] = React.useState({
+    const [state, setState] = React.useState({
         book: {},
         user:{},
         book_shelves: [],
@@ -28,7 +28,7 @@ const BookCard = (props) => {
 
     React.useEffect(() => {
         //update state on props change
-        useState({
+        setState({
             ...state,
             book: props.book,
             user: props.user,
@@ -42,7 +42,7 @@ const BookCard = (props) => {
     }, [props]);
 
     const set_message = (message) => {
-        useState({
+        setState({
             ...state,
             message: message,
         })
@@ -50,10 +50,6 @@ const BookCard = (props) => {
 
     const clear_message = () => {
         set_message('');
-    }
-
-    const remove_book_from_library = () => {
-        console.log("remove book from library");
     }
 
     if(Object.keys(state.book).length === 0){
@@ -142,12 +138,7 @@ const BookCard = (props) => {
                                         />
                                     )
                                 }} 
-                            />
-                            <ClickableBadge
-                                onClick={remove_book_from_library}
-                                bg="danger"
-                                name="Remove from Library"
-                            />                        
+                            />                       
                         </ReactBootstrap.ListGroup.Item>
                     </ReactBootstrap.ListGroup>
                 </ReactBootstrap.Card.Body>

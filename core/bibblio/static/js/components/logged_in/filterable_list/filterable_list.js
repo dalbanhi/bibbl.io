@@ -242,7 +242,9 @@ const FilterableList = (props) => {
             state.show_single_shelf && 
             <ShelfEditor
                 user={state.user}
+                update_user={props.update_user}
                 shelf_id={state.selected_shelves_ids[0]}
+                shelf_url={props.shelf_url}
             />
         }
         
