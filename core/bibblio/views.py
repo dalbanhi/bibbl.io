@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+
 # https://stackoverflow.com/questions/11721818/django-get-the-static-files-url-in-view/59355195#59355195
 from django.templatetags.static import static
 
@@ -15,43 +16,32 @@ from .models import User, Book, Shelf
 # saw this as inspiration of how to get django urls to js
 def obj_of_menu_urls():
     menu_urls = {
-        "index": {
-            "url": reverse("index"), 
-            "name": "Home", 
-            "auth": "all"
-        },
-        "logo": {
-            "url": static("assets/books.png"), 
-            "name": "logo", 
-            "auth": "all"
-        },
+        "index": {"url": reverse("index"), "name": "Home", "auth": "all"},
+        "logo": {"url": static("assets/books.png"), "name": "logo", "auth": "all"},
         "login": {
             "url": reverse("login"),
             "name": "Login",
-            "auth": "not_authenticated"
+            "auth": "not_authenticated",
         },
-        "logout": {
-            "url": reverse("logout"),
-            "name": "Logout",
-            "auth": "authenticated"
-        },
+        "logout": {"url": reverse("logout"), "name": "Logout", "auth": "authenticated"},
         "register": {
             "url": reverse("register"),
             "name": "Register",
-            "auth": "not_authenticated"
+            "auth": "not_authenticated",
         },
-        "my_profile":{
+        "my_profile": {
             "url": reverse("my_profile"),
             "name": "My Profile",
-            "auth": "authenticated"
-        }
+            "auth": "authenticated",
+        },
     }
     return menu_urls
 
+
 def obj_of_api_urls():
-    api_urls ={
+    api_urls = {
         "book": reverse("book"),
-        "shelf": reverse("shelf"),   
+        "shelf": reverse("shelf"),
     }
 
     return api_urls
@@ -60,22 +50,28 @@ def obj_of_api_urls():
 # Create your views here.
 # TODO: Add boolean register converter for register = true
 
+
 def index(request):
     user = None
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
-        user= user.serialize()
+        user = user.serialize()
     else:
         user = ""
 
-    return render(request, "bibblio/index.html", {
-        "is_register_view": False,
-        "is_authenticated": request.user.is_authenticated,
-        "user": user,
-        "app_container": "app_container",
-        "menu_urls": obj_of_menu_urls(),
-        "api_urls": obj_of_api_urls(),
-    })
+    return render(
+        request,
+        "bibblio/index.html",
+        {
+            "is_register_view": False,
+            "is_authenticated": request.user.is_authenticated,
+            "user": user,
+            "app_container": "app_container",
+            "menu_urls": obj_of_menu_urls(),
+            "api_urls": obj_of_api_urls(),
+        },
+    )
+
 
 def login_view(request):
     if request.method == "POST":
@@ -88,24 +84,33 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return JsonResponse({"message": "Login successful.", "user_id": user.id}, status=200)
+            return JsonResponse(
+                {"message": "Login successful.", "user_id": user.id}, status=200
+            )
         else:
-            return JsonResponse({"error": "Invalid username and/or password."}, status=400)
+            return JsonResponse(
+                {"error": "Invalid username and/or password."}, status=400
+            )
     else:
         user = None
         if request.user.is_authenticated:
             user = User.objects.get(username=request.user.username)
-            user= user.serialize()
+            user = user.serialize()
         else:
             user = ""
-        return render(request, "bibblio/index.html", {
-        "is_register_view": False,
-        "is_authenticated": request.user.is_authenticated,
-        "user": user,
-        "app_container": "app_container",
-        "menu_urls": obj_of_menu_urls(),
-        "api_urls": obj_of_api_urls(),
-    })
+        return render(
+            request,
+            "bibblio/index.html",
+            {
+                "is_register_view": False,
+                "is_authenticated": request.user.is_authenticated,
+                "user": user,
+                "app_container": "app_container",
+                "menu_urls": obj_of_menu_urls(),
+                "api_urls": obj_of_api_urls(),
+            },
+        )
+
 
 @login_required
 def logout_view(request):
@@ -116,30 +121,38 @@ def logout_view(request):
 def register(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        if data.get("username") == '':
+        if data.get("username") == "":
             return JsonResponse({"error": "Username required."}, status=400)
-        if data.get("email") == '':
+        if data.get("email") == "":
             return JsonResponse({"error": "Email address required."}, status=400)
-        if data.get("password") == '':
+        if data.get("password") == "":
             return JsonResponse({"error": "Password required."}, status=400)
-        if data.get("confirmation") == '':
-            return JsonResponse({"error": "Password confirmation required."}, status=400)
+        if data.get("confirmation") == "":
+            return JsonResponse(
+                {"error": "Password confirmation required."}, status=400
+            )
         password = data.get("password")
         confirmation = data.get("confirmation")
-        if password != confirmation and password != '' and confirmation != "":
+        if password != confirmation and password != "" and confirmation != "":
             return JsonResponse({"error": "Passwords must match."}, status=400)
-        
+
         # try to make a new user
         try:
-            user = User.objects.create_user(data.get("username"), data.get("email"), password)
+            user = User.objects.create_user(
+                data.get("username"), data.get("email"), password
+            )
             user.save()
         except IntegrityError:
             return JsonResponse({"error": "Username already taken."}, status=400)
-        
+
         login(request, user)
-        return JsonResponse({"message": "Registration and Login succesful", "user_id": user.id}, status=200)
-    
+        return JsonResponse(
+            {"message": "Registration and Login succesful", "user_id": user.id},
+            status=200,
+        )
+
     return HttpResponseRedirect(reverse("index"))
+
 
 @login_required
 def my_profile(request):
@@ -156,7 +169,9 @@ def users(request, user_id):
     elif request.method == "DELETE":
         pass
     else:
-        return JsonResponse({"error": "GET, PUT, or DELETE request required."}, status=400)
+        return JsonResponse(
+            {"error": "GET, PUT, or DELETE request required."}, status=400
+        )
 
 
 def book_to_shelves(book, shelves_list, should_add):
@@ -174,8 +189,17 @@ def book_to_shelves(book, shelves_list, should_add):
 
 def relate_book_to_user(data, book, user):
     # if a book is already in any category, don't add it again
-    if user.books_read.filter(id=book.id).exists() or user.books_reading.filter(id=book.id).exists() or user.books_to_read.filter(id=book.id).exists():
-        return JsonResponse({"error": "You already have this book in your Library. If you want to switch it's reading category, view it in your Library and edit it there. "}, status=400)
+    if (
+        user.books_read.filter(id=book.id).exists()
+        or user.books_reading.filter(id=book.id).exists()
+        or user.books_to_read.filter(id=book.id).exists()
+    ):
+        return JsonResponse(
+            {
+                "error": "You already have this book in your Library. If you want to switch it's reading category, view it in your Library and edit it there. "
+            },
+            status=400,
+        )
 
     # add book to users read_category
     if data.get("read_category") == "read":
@@ -186,50 +210,78 @@ def relate_book_to_user(data, book, user):
         user.books_to_read.add(book)
     else:
         return JsonResponse({"error": "Read category required."}, status=400)
-    
-    #add the book to any shelves that were passed in
+
+    # add the book to any shelves that were passed in
     if data.get("shelves"):
         book = book_to_shelves(book, data.get("shelves"), should_add=True)
         if type(book) == JsonResponse:
             return book
-        
-    return JsonResponse({"message": "Book added to your library successfully.", "user": user.serialize()}, status=200)
+
+    return JsonResponse(
+        {
+            "message": "Book added to your library successfully.",
+            "user": user.serialize(),
+        },
+        status=200,
+    )
 
 
 def get_or_create_book(data):
     book = None
     make_new_book = False
-    #check if at least one book by that title already exist in the database
+    # check if at least one book by that title already exist in the database
     if Book.objects.filter(title=data.get("title")).exists():
         # if there is one book by that title, get it
         if Book.objects.filter(title=data.get("title")).count() < 2:
             # is that book already in the db the same one the user is trying to add?
             db_book = Book.objects.get(title=data.get("title"))
-            if data.get("authors") != '':
+            if data.get("authors") != "":
                 if db_book.authors != data.get("authors"):
                     # if not, make a new book
                     make_new_book = True
                 else:
                     book = db_book
-            elif data.get("publication_year") != '':
+            elif data.get("publication_year") != "":
                 if db_book.publication_year != data.get("publication_year"):
                     # if not, make a new book
                     make_new_book = True
                 else:
                     book = db_book
             else:
-                return JsonResponse({"error": "There's a book by that title already in the database, but since no author or publication year was given, it's unclear if you're trying to add a new book of the same title. Please enter an author and/or publication year to further specify a book."}, status=400)
-        
-        # if there are multiple books by that title, get the one that matches the authors or publication year        
+                return JsonResponse(
+                    {
+                        "error": "There's a book by that title already in the database, but since no author or publication year was given, it's unclear if you're trying to add a new book of the same title. Please enter an author and/or publication year to further specify a book."
+                    },
+                    status=400,
+                )
+
+        # if there are multiple books by that title, get the one that matches the authors or publication year
         else:
-            if data.get("authors") != '':
-                if Book.objects.filter(title=data.get("title")).filter(authors=data.get("authors")).exists():
-                    book = Book.objects.get(title=data.get("title")).filter(authors=data.get("authors"))
-            elif data.get("publication_year") != '':
-                if Book.objects.filter(title=data.get("title")).filter(publication_year=data.get("publication_year")).exists():
-                    book = Book.objects.get(title=data.get("title")).filter(publication_year=data.get("publication_year"))
+            if data.get("authors") != "":
+                if (
+                    Book.objects.filter(title=data.get("title"))
+                    .filter(authors=data.get("authors"))
+                    .exists()
+                ):
+                    book = Book.objects.get(title=data.get("title")).filter(
+                        authors=data.get("authors")
+                    )
+            elif data.get("publication_year") != "":
+                if (
+                    Book.objects.filter(title=data.get("title"))
+                    .filter(publication_year=data.get("publication_year"))
+                    .exists()
+                ):
+                    book = Book.objects.get(title=data.get("title")).filter(
+                        publication_year=data.get("publication_year")
+                    )
             else:
-                return JsonResponse({"error": "There are multiple books by that title. Please enter an author and/or publication year to further specify a book."}, status=400)
+                return JsonResponse(
+                    {
+                        "error": "There are multiple books by that title. Please enter an author and/or publication year to further specify a book."
+                    },
+                    status=400,
+                )
     else:
         make_new_book = True
     if make_new_book == True:
@@ -239,13 +291,18 @@ def get_or_create_book(data):
             authors=data.get("authors"),
             publication_year=data.get("publication_year"),
             cover_image_url=data.get("cover_image_url"),
-            )
-        #check if valid before saving
+        )
+        # check if valid before saving
         if book.is_valid():
             book.save()
         else:
-            return JsonResponse({"error": "Book is not valid. If you have multiple authors, check that your list authors is separated by only a comma. Check that your publication year, if known, is at least 10 and no greater than the current year. "}, status=400)
-    
+            return JsonResponse(
+                {
+                    "error": "Book is not valid. If you have multiple authors, check that your list authors is separated by only a comma. Check that your publication year, if known, is at least 10 and no greater than the current year. "
+                },
+                status=400,
+            )
+
     # if book is valid, return it
     return book
 
@@ -261,12 +318,13 @@ def remove_book_from_read_category(book, user, category):
         return JsonResponse({"error": "Current category not valid."}, status=400)
     return user
 
+
 def change_book_read_category(data, book, user):
     # try to update read category
     # get current book category
     current_category = data.get("current_category")
 
-    #remove from current category
+    # remove from current category
     user = remove_book_from_read_category(book, user, current_category)
     if type(user) == JsonResponse:
         return user
@@ -284,20 +342,21 @@ def change_book_read_category(data, book, user):
     user.save()
     return user
 
+
 def update_book_fields(data, book, user, request):
-    if data.get("title") != '':
+    if data.get("title") != "":
         # try to update title
         book.title = data.get("title")
-    if data.get("authors") != '':
+    if data.get("authors") != "":
         # try to update authors
         book.authors = data.get("authors")
-    if data.get("publication_year") != '':
+    if data.get("publication_year") != "":
         # try to update publication year
         book.publication_year = int(data.get("publication_year"))
-    if data.get("cover_image_url") != '':
+    if data.get("cover_image_url") != "":
         # try to update cover image url
         book.cover_image_url = data.get("cover_image_url")
-    if data.get("read_category") != '':
+    if data.get("read_category") != "":
         user = change_book_read_category(data, book, user)
         # if the user was not able to be updated, return the error
         if type(user) == JsonResponse:
@@ -308,29 +367,36 @@ def update_book_fields(data, book, user, request):
     if data.get("shelves_to_add"):
         # try to add book to shelves
         book = book_to_shelves(book, data.get("shelves_to_add"), should_add=True)
-    
+
     if type(book) == JsonResponse:
         # there was a problem adding shelves
         return book
-    
+
     # save if valid and return user, return error if not
     if book.is_valid():
         book.save()
         # get latest user info to send back
         user = User.objects.get(username=request.user.username)
-        return JsonResponse({"message": "Book updated successfully.", "user": user.serialize()}, status=201)
+        return JsonResponse(
+            {"message": "Book updated successfully.", "user": user.serialize()},
+            status=201,
+        )
     else:
-        return JsonResponse({"error": "Book is not valid. If you have multiple authors, check that your list authors is separated by only a comma. Check that your publication year, if known, is at least 10 and no greater than the current year. "}, status=400)
+        return JsonResponse(
+            {
+                "error": "Book is not valid. If you have multiple authors, check that your list authors is separated by only a comma. Check that your publication year, if known, is at least 10 and no greater than the current year. "
+            },
+            status=400,
+        )
 
 
 def remove_book(data, book, user, request):
-
     # remove book from user read_category list
     category = data.get("current_category")
     user = remove_book_from_read_category(book, user, category)
     if type(user) == JsonResponse:
         return user
-    
+
     # remove book from user shelves
     book = book_to_shelves(book, data.get("book_in_shelves_of_user"), should_add=False)
     if type(book) == JsonResponse:
@@ -340,7 +406,13 @@ def remove_book(data, book, user, request):
     user.save()
     # get latest user info to send back
     user = User.objects.get(username=request.user.username)
-    return JsonResponse({"message": "Book removed from your library successfully.", "user": user.serialize()}, status=201)
+    return JsonResponse(
+        {
+            "message": "Book removed from your library successfully.",
+            "user": user.serialize(),
+        },
+        status=201,
+    )
 
 
 @login_required
@@ -353,15 +425,15 @@ def book(request):
         # get the user
         user = User.objects.get(username=request.user.username)
 
-        if data.get("title") == '':
+        if data.get("title") == "":
             return JsonResponse({"error": "Title required."}, status=400)
-        
+
         book = get_or_create_book(data)
         if type(book) == JsonResponse:
             return book
         # have ensured that a book exists, now relate the book to user. including shelves
         return relate_book_to_user(data, book, user)
-        
+
     elif request.method == "PUT":
         # try to edit information about a certain book?
         data = json.loads(request.body)
@@ -372,15 +444,17 @@ def book(request):
             book = Book.objects.get(id=data.get("book_id"))
         except Book.DoesNotExist:
             return JsonResponse({"error": "Book does not exist."}, status=400)
-        
+
         if data.get("removing_book"):
             return remove_book(data, book, user, request)
         else:
             return update_book_fields(data, book, user, request)
-        
+
     else:
-        return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)
-    
+        return JsonResponse(
+            {"error": "GET, POST, or PUT request required."}, status=400
+        )
+
 
 def get_books_from_data(data, should_add):
     # get and combine books from all categories
@@ -393,34 +467,39 @@ def get_books_from_data(data, should_add):
             books_to_add += data.get("books_reading")
         if data.get("books_to_read"):
             books_to_add += data.get("books_to_read")
-        
-        #get books from ids
+
+        # get books from ids
         books = [Book.objects.get(id=int(book_id)) for book_id in books_to_add]
 
     else:
         books_to_remove = books
         if data.get("books_to_remove"):
             books += data.get("books_to_remove")
-        
-        #get books from ids
+
+        # get books from ids
         books = [Book.objects.get(id=int(book_id)) for book_id in books_to_remove]
 
     return books
 
 
 def handle_shelf_post(request):
-     #load data from request
+    # load data from request
     data = json.loads(request.body)
     # get the user
     user = User.objects.get(username=request.user.username)
     # get the name
-    if data.get("name") == '':
+    if data.get("name") == "":
         return JsonResponse({"error": "Name required for shelf."}, status=400)
-    
+
     # if shelf already exists
     if Shelf.objects.filter(name=data.get("name")).exists():
-        return JsonResponse({"error": "You already have a shelf with that name. Please choose another name."}, status=400)
-    
+        return JsonResponse(
+            {
+                "error": "You already have a shelf with that name. Please choose another name."
+            },
+            status=400,
+        )
+
     # create the shelf
     shelf = Shelf.objects.create(
         name=data.get("name"),
@@ -431,33 +510,49 @@ def handle_shelf_post(request):
 
     shelf.save()
 
-    return JsonResponse({"message": "Shelf created successfully!", "user": user.serialize()}, status=200)
+    return JsonResponse(
+        {"message": "Shelf created successfully!", "user": user.serialize()}, status=200
+    )
 
 
 def add_books_to_shelves(data, user, request):
-
     # check if at least one book is being added
-    if data.get("books_read") == [] and data.get("books_reading") == [] and data.get("books_to_read") == []:
-        return JsonResponse({"error": "At least one book must be selected."}, status=400)
+    if (
+        data.get("books_read") == []
+        and data.get("books_reading") == []
+        and data.get("books_to_read") == []
+    ):
+        return JsonResponse(
+            {"error": "At least one book must be selected."}, status=400
+        )
     elif data.get("shelves") == []:
-        return JsonResponse({"error": "At least one shelf must be selected."}, status=400)
+        return JsonResponse(
+            {"error": "At least one shelf must be selected."}, status=400
+        )
     else:
         # get the shelves
-        shelves = [Shelf.objects.get(id=int(shelf_id)) for shelf_id in data.get("shelves")]
+        shelves = [
+            Shelf.objects.get(id=int(shelf_id)) for shelf_id in data.get("shelves")
+        ]
 
         # add books to shelves
         for shelf in shelves:
             shelf.books.add(*get_books_from_data(data, should_add=True))
             shelf.save()
-        return JsonResponse({"message": "Books added to shelves successfully!", "user": user.serialize()}, status=200)
-                
+        return JsonResponse(
+            {
+                "message": "Books added to shelves successfully!",
+                "user": user.serialize(),
+            },
+            status=200,
+        )
+
 
 def handle_shelf_put(request):
-    #load data from request
+    # load data from request
     data = json.loads(request.body)
     # get the user
     user = User.objects.get(username=request.user.username)
-
 
     # get add_or_remove
     if not data.get("add_or_remove"):
@@ -466,29 +561,32 @@ def handle_shelf_put(request):
         if data.get("add_or_remove") == "add":
             return add_books_to_shelves(data, user, request)
         elif data.get("add_or_remove") == "remove":
-
             # get the shelf
             try:
                 shelf = Shelf.objects.get(id=data.get("shelf_id"))
             except Shelf.DoesNotExist:
                 return JsonResponse({"error": "Shelf does not exist."}, status=400)
-            
 
             if data.get("shelf_name") != "":
                 # change the name of the shelf
                 shelf.name = data.get("shelf_name")
-            
+
             # remove books from shelf
             if data.get("books_to_remove"):
                 shelf.books.remove(*get_books_from_data(data, should_add=False))
 
             shelf.save()
-            return JsonResponse({"message": "Shelf updated successfully!", "user": user.serialize()}, status=200)
+            return JsonResponse(
+                {"message": "Shelf updated successfully!", "user": user.serialize()},
+                status=200,
+            )
 
         else:
-            return JsonResponse({"error": "Add or remove must be specified."}, status=400)
+            return JsonResponse(
+                {"error": "Add or remove must be specified."}, status=400
+            )
 
-    
+
 def handle_shelf_delete(request):
     data = json.loads(request.body)
     # get the shelf
@@ -498,7 +596,6 @@ def handle_shelf_delete(request):
     except Shelf.DoesNotExist:
         return JsonResponse({"error": "Shelf does not exist."}, status=400)
 
-    
     # remove all books from shelf
     shelf.books.clear()
     # delete the shelf
@@ -506,7 +603,13 @@ def handle_shelf_delete(request):
 
     # get latest user
     user = User.objects.get(username=request.user.username)
-    return JsonResponse({"message": "Shelf deleted successfully! Will reload the page soon.", "user": user.serialize()}, status=201)         
+    return JsonResponse(
+        {
+            "message": "Shelf deleted successfully! Will reload the page soon.",
+            "user": user.serialize(),
+        },
+        status=201,
+    )
 
 
 @login_required
@@ -515,10 +618,12 @@ def shelf(request):
         pass
         return JsonResponse({"error": "Cannot GET yet."}, status=400)
     elif request.method == "POST":
-       return handle_shelf_post(request)
+        return handle_shelf_post(request)
     elif request.method == "PUT":
         return handle_shelf_put(request)
     elif request.method == "DELETE":
         return handle_shelf_delete(request)
     else:
-        return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)
+        return JsonResponse(
+            {"error": "GET, POST, or PUT request required."}, status=400
+        )

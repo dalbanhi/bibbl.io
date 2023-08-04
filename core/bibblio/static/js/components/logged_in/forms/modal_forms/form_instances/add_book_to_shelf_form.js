@@ -1,4 +1,8 @@
-
+/**
+ * A stylized button to be passed to ModalFormWithButton, specific to adding a book to a shelf
+ * @param {function} props.handle_show - function to show modal 
+ * @returns {object} - ReactBootstrap.Button
+ */
 const AddBooksToShelfButton = (props) => {
     return(
         <ReactBootstrap.Button
@@ -11,6 +15,22 @@ const AddBooksToShelfButton = (props) => {
     )
 }
 
+/**
+ * A form with a stylized button to add books to shelves
+ * It's a child of ModalFormBase and passes specific children to ModalFormWithButton
+ * @param {object} props.user - the user object
+ * @param {object} props.update_user - function to update user data in state
+ * @param {object} props.set_success_message - function to set success to parent 
+ * @param {string} props.add_book_to_shelf_url - url to add books(s) to shelf(s
+ * 
+ * //render props
+ * @param {boolean} props.show_modal - boolean to show modal
+ * @param {function} props.set_show_modal - function to set show_modal
+ * @param {function} props.capitalize_names - function to capitalize names
+ * @param {string} props.error - error message
+ * @param {function} props.set_error - function to set error
+ * @returns 
+ */
 const AddBookToShelfForm = (props) => {
 
     const [state, setState] = React.useState({
@@ -19,6 +39,7 @@ const AddBookToShelfForm = (props) => {
         books_reading: [],
         books_to_read: [],
         shelves: [],
+        add_or_remove: "add",
     })
 
     React.useEffect(() => {
@@ -31,6 +52,7 @@ const AddBookToShelfForm = (props) => {
         }
     }, [props])
 
+      //handle_input_change and handle_select change are repeated across form instances, but I could not get them to work as a single function as part of modal form base, since the state fields would be different for each form instance
     const handle_select_change = (event) => {
         let selected_items = [].slice.call(event.target.selectedOptions).map(item => item.value);
         setState({
@@ -55,7 +77,7 @@ const AddBookToShelfForm = (props) => {
                 books_reading: state.books_reading,
                 books_to_read: state.books_to_read,
                 shelves: state.shelves,
-                add_or_remove: "add",
+                add_or_remove: state.add_or_remove,
             }),
 
         })

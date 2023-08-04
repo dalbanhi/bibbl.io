@@ -1,13 +1,22 @@
 from django.contrib import admin
 from .models import User, Book, Shelf
 
+
 # Register your models here.
 # Register your models here.
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("id", "username", "email", "get_books_read", "get_books_reading", "get_books_to_read")
+    list_display = (
+        "id",
+        "username",
+        "email",
+        "get_books_read",
+        "get_books_reading",
+        "get_books_to_read",
+    )
+
 
 class BookAdmin(admin.ModelAdmin):
-    fields=[
+    fields = [
         "title",
         "authors",
         "publication_year",
@@ -15,13 +24,10 @@ class BookAdmin(admin.ModelAdmin):
     ]
     readonly_fields = ("id",)
 
+
 class ShelfAdmin(admin.ModelAdmin):
-    fieldsets = (
-        (
-            "Basic Information", 
-            {"fields": ("owner", "books")}
-        ),
-    )
+    fieldsets = (("Basic Information", {"fields": ("owner", "books")}),)
+
 
 admin.site.register(Shelf, ShelfAdmin)
 
