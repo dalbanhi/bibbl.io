@@ -49,7 +49,6 @@ const DeleteShelfForm = (props) => {
 
   const handle_submit = (event) => {
     event.preventDefault();
-    console.log("handle submit");
 
     fetch(props.edit_shelf_url, {
       method: "DELETE",
@@ -63,7 +62,6 @@ const DeleteShelfForm = (props) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         //if there's an error
         if (data.error) {
           props.set_error(data.error);

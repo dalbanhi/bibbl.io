@@ -49,7 +49,6 @@ const RemoveBookForm = (props) => {
 
   const handle_submit = (event) => {
     event.preventDefault();
-    console.log("remove book form submitted");
 
     fetch(props.book_url, {
       method: "PUT",
@@ -66,7 +65,6 @@ const RemoveBookForm = (props) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.error) {
           props.set_error(data.error);
         } else {

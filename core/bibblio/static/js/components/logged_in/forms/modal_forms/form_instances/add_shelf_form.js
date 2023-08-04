@@ -62,7 +62,6 @@ const AddShelfForm = (props) => {
   };
 
   const handle_select_change = (event) => {
-    console.log("handle select change");
     let selected_items = [].slice
       .call(event.target.selectedOptions)
       .map((item) => item.value);
@@ -94,7 +93,6 @@ const AddShelfForm = (props) => {
       .then((data) => {
         //if there's an error
         if (data.error) {
-          console.log(data.error);
           props.set_error(data.error);
         }
         //if there's no error

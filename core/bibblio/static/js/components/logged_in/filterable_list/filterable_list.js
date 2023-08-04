@@ -5,17 +5,16 @@
  * A component that displays a list of books or shelves that can be filtered by category and shelves. If only one shelf is selected, displays a shelf editor.
  * @param {object} props - the props passed in from the parent component
  * @param {object} props.user - the user object
+ * @param {function} props.update_user - the function to update the user object in state at the app level
  * @param {string} props.book_url - the url to access the book api
  * @param {string} props.shelf_url - the url to access the shelf api
  * @param {string} props.initial_book_list_name - the name of the book list to show initially
- * @param {function} props.update_user - the function to update the user object in state at the app level
- * @returns 
+ * @returns {React.Component}
  */
 const FilterableList = (props) => {
   const [state, setState] = React.useState({
     user: {},
-    // edit_book_url: '',
-    initial_book_list_name: "",
+    current_book_list_name: "",
     selected_category: "all",
     items: [],
     item_type: "book",
@@ -35,14 +34,28 @@ const FilterableList = (props) => {
         props.user.books_to_read,
       );
 
-      setState({
-        ...state,
-        user: props.user,
-        // edit_book_url: props.edit_book_url,
-        initial_book_list_name: props.initial_book_list_name,
-        read_categories: ["all", ...book_lists],
-        items: all_books,
-      });
+      setState((oldState) => {
+        //need to filter new books in props.user by oldState.selected_category and oldState.selected_shelves_ids
+        let filtered_items;
+        //if there were no books last, return all books
+        if (oldState.user == {}){
+          filtered_items = all_books;
+        }
+        else{
+          //otherwise, there was a previous state, so filter books by the previous state, using the selected category and selected shelves
+          const options = {
+            category_change: false,
+            shelf_change: false,
+          }
+          filtered_items = filter_books(oldState, options);
+        }
+        return {
+          ...state,
+          user: props.user,
+          current_book_list_name: props.initial_book_list_name,
+          read_categories: ["all", ...book_lists],
+          items: filtered_items,
+      }});
     }
   }, [props]);
 
@@ -87,26 +100,38 @@ const FilterableList = (props) => {
       books =
         new_category === "all"
           ? oldState.user.books_read.concat(
-              oldState.user.books_reading,
-              oldState.user.books_to_read,
+            oldState.user.books_reading,
+            oldState.user.books_to_read,
             )
           : oldState.user[new_category];
       //filter by selected shelves of old state
       books = filter_by_selected_shelves(books, oldState.selected_shelves_ids);
-      return books;
+      
     } else if (shelf_change) {
       // use old state to get inital books with old category
       books =
-        oldState.selected_category === "all"
+      oldState.selected_category === "all"
           ? oldState.user.books_read.concat(
-              oldState.user.books_reading,
-              oldState.user.books_to_read,
+            oldState.user.books_reading,
+            oldState.user.books_to_read,
             )
           : oldState.user[oldState.selected_category];
       //filter by new shelves
       books = filter_by_selected_shelves(books, new_shelves);
-      return books;
     }
+    else{
+      //read the old state selected category but use props.user info
+      books =
+        oldState.selected_category === "all"
+        ? props.user.books_read.concat(
+          props.user.books_reading,
+          props.user.books_to_read,
+          )
+        : props.user[oldState.selected_category];
+      //filter by selected shelves of old state
+      books = filter_by_selected_shelves(books, oldState.selected_shelves_ids);
+    }
+    return books;
   };
 
   /**
@@ -223,7 +248,7 @@ const FilterableList = (props) => {
       <ReactBootstrap.Card className="text-center">
         <ReactBootstrap.Card.Header>Filter</ReactBootstrap.Card.Header>
         <ReactBootstrap.Card.Title>
-          {state.initial_book_list_name}
+          {state.current_book_list_name}
           {state.selected_category !== "all" && (
             <span>({capitalize_names(state.selected_category)})</span>
           )}

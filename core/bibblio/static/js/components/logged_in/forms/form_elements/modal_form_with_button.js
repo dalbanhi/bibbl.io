@@ -24,7 +24,7 @@ const ModalFormWithButton = (props) => {
 
   React.useEffect(() => {
     //update state on props load
-    // console.log("props changed: ", props)
+
 
     setState({
       ...state,

@@ -207,11 +207,4 @@ class BibblioTestCase(TestCase):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)
 
-    # selenium tests?
-
-    # def test_book_post_positive(self):
-    #     """ Test that the client can make a correct book post request """
-    #     response = self.client.post(reverse('book'), {'title': 'Forever', 'author': 'Pete Hammill', 'publication_year': '2011'})
-    #     print(response)
-    #     self.assertEqual(response.status_code, 200)
-    # self.assertEqual(response.content, b'Book added successfully')
+    # selenium tests

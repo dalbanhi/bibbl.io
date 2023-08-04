@@ -19,14 +19,16 @@ const ItemsList = (props) => {
 
   React.useEffect(() => {
     //update state on props change
-    setState({
-      ...state,
-      items: props.items,
-      user: props.user,
-    });
+    if (Object.entries(props.user).length !== 0) {
+      setState({
+        ...state,
+        items: props.items,
+        user: props.user,
+      });
+    }
   }, [props]);
 
-  if (Object.keys(state.user).length === 0) {
+  if (!state.items) {
     return false;
   }
   return (

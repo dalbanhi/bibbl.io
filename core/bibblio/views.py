@@ -13,8 +13,11 @@ import json
 from .models import User, Book, Shelf
 
 
-# saw this as inspiration of how to get django urls to js
-def obj_of_menu_urls():
+
+def obj_of_menu_urls() -> dict:
+    """Returns an object of urls for the menu.
+    @return: dict
+    """
     menu_urls = {
         "index": {"url": reverse("index"), "name": "Home", "auth": "all"},
         "logo": {"url": static("assets/books.png"), "name": "logo", "auth": "all"},
@@ -37,8 +40,11 @@ def obj_of_menu_urls():
     }
     return menu_urls
 
-
-def obj_of_api_urls():
+def obj_of_api_urls() -> dict:
+    """Returns an object of urls for the api.
+    @param: None
+    @return: dict
+    """
     api_urls = {
         "book": reverse("book"),
         "shelf": reverse("shelf"),
@@ -47,11 +53,13 @@ def obj_of_api_urls():
     return api_urls
 
 
-# Create your views here.
-# TODO: Add boolean register converter for register = true
+# Views
 
 
 def index(request):
+    """Renders the index page. The only entry point since this is a single page app. All other views are rendered through the index page and are handled by the front end.
+    @param: request
+    """
     user = None
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user.username)
@@ -74,6 +82,10 @@ def index(request):
 
 
 def login_view(request):
+    """Endpoint for logging in. If the request is a POST request, the user is logged in. If the request is a GET request, the user is redirected to the index page, with the view of the login page.
+    
+    @param: request
+    """
     if request.method == "POST":
         data = json.loads(request.body)
 
@@ -91,7 +103,7 @@ def login_view(request):
             return JsonResponse(
                 {"error": "Invalid username and/or password."}, status=400
             )
-    else:
+    elif request.method == "GET":
         user = None
         if request.user.is_authenticated:
             user = User.objects.get(username=request.user.username)
@@ -110,15 +122,19 @@ def login_view(request):
                 "api_urls": obj_of_api_urls(),
             },
         )
+    else:
+        return JsonResponse({"error": "GET or POST request required."}, status=400)
 
 
 @login_required
 def logout_view(request):
+    """ View for logging out. Logs user out and redirects to index page."""
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
 
 def register(request):
+    """View for registering a new user. If the request is a POST request, the user is registered and logged in. Otherwise, the user is redirected to the index page, with the view of the register page."""
     if request.method == "POST":
         data = json.loads(request.body)
         if data.get("username") == "":
@@ -156,77 +172,78 @@ def register(request):
 
 @login_required
 def my_profile(request):
+    """View for the user's profile. Right now, only returns to the index page. Further functionality for the user's profile will be added later."""
     return HttpResponseRedirect(reverse("index"))
 
 
 # backends
 def users(request, user_id):
+    """Backend for users. Handles GET, PUT, and DELETE requests."""
     if request.method == "GET":
         user = User.objects.get(id=user_id)
         return JsonResponse(user.serialize())
     elif request.method == "PUT":
-        pass
+        return JsonResponse({"error": "PUT request not implemented."}, status=400)
     elif request.method == "DELETE":
-        pass
+        return JsonResponse({"error": "DELETE request not implemented."}, status=400)
     else:
         return JsonResponse(
             {"error": "GET, PUT, or DELETE request required."}, status=400
         )
+    
+
+########################### Book Endpoints ###########################
 
 
-def book_to_shelves(book, shelves_list, should_add):
-    for shelf in shelves_list:
-        try:
-            shelf = Shelf.objects.get(id=shelf)
-            if should_add:
-                shelf.books.add(book)
-            else:
-                shelf.books.remove(book)
-        except Shelf.DoesNotExist:
-            return JsonResponse({"error": "Shelf does not exist."}, status=400)
-    return book
+@login_required
+def book(request):
+    """Backend for books. Handles GET, POST, and PUT requests.
+    @param: request
+    """
+    if request.method == "GET":
+        # try to get information about a certain book?
+        return JsonResponse({"error": "Cannot GET yet."}, status=400)
+    elif request.method == "POST":
+        data = json.loads(request.body)
+        # get the user
+        user = User.objects.get(username=request.user.username)
 
+        if data.get("title") == "":
+            return JsonResponse({"error": "Title required."}, status=400)
 
-def relate_book_to_user(data, book, user):
-    # if a book is already in any category, don't add it again
-    if (
-        user.books_read.filter(id=book.id).exists()
-        or user.books_reading.filter(id=book.id).exists()
-        or user.books_to_read.filter(id=book.id).exists()
-    ):
-        return JsonResponse(
-            {
-                "error": "You already have this book in your Library. If you want to switch it's reading category, view it in your Library and edit it there. "
-            },
-            status=400,
-        )
-
-    # add book to users read_category
-    if data.get("read_category") == "read":
-        user.books_read.add(book)
-    elif data.get("read_category") == "reading":
-        user.books_reading.add(book)
-    elif data.get("read_category") == "to_read":
-        user.books_to_read.add(book)
-    else:
-        return JsonResponse({"error": "Read category required."}, status=400)
-
-    # add the book to any shelves that were passed in
-    if data.get("shelves"):
-        book = book_to_shelves(book, data.get("shelves"), should_add=True)
+        book = get_or_create_book(data)
+        # if a JSONResponse object is returned, then there was an error
         if type(book) == JsonResponse:
             return book
+        # have ensured that a book exists, now relate the book to user. including shelves
+        return relate_book_to_user(data, book, user)
 
-    return JsonResponse(
-        {
-            "message": "Book added to your library successfully.",
-            "user": user.serialize(),
-        },
-        status=200,
-    )
+    elif request.method == "PUT":
+        # try to edit information about a certain book?
+        data = json.loads(request.body)
+        # get the user
+        user = User.objects.get(username=request.user.username)
+        # get the book
+        try:
+            book = Book.objects.get(id=data.get("book_id"))
+        except Book.DoesNotExist:
+            return JsonResponse({"error": "Book does not exist."}, status=400)
+
+        if data.get("removing_book"):
+            return remove_book(data, book, user, request)
+        else:
+            return update_book_fields(data, book, user, request)
+
+    else:
+        return JsonResponse(
+            {"error": "GET, POST, or PUT request required."}, status=400
+        )
 
 
 def get_or_create_book(data):
+    """Helper function for a book. Based on data, either gets a book from the database or creates a new one.
+    @param: data
+    """
     book = None
     make_new_book = False
     # check if at least one book by that title already exist in the database
@@ -286,12 +303,22 @@ def get_or_create_book(data):
         make_new_book = True
     if make_new_book == True:
         # try to make a new book
-        book = Book.objects.create(
-            title=data.get("title"),
-            authors=data.get("authors"),
-            publication_year=data.get("publication_year"),
-            cover_image_url=data.get("cover_image_url"),
-        )
+        cover_image_url_given = False if data.get("cover_image_url") == "" else True
+  
+        if cover_image_url_given:
+            book = Book.objects.create(
+                title=data.get("title"),
+                authors=data.get("authors"),
+                publication_year=data.get("publication_year"),
+                cover_image_url= data.get("cover_image_url")
+            )
+        else:
+            # use cover image url default value
+            book = Book.objects.create(
+                title=data.get("title"),
+                authors=data.get("authors"),
+                publication_year=data.get("publication_year"),
+            )
         # check if valid before saving
         if book.is_valid():
             book.save()
@@ -306,8 +333,73 @@ def get_or_create_book(data):
     # if book is valid, return it
     return book
 
+def relate_book_to_user(data, book, user):
+    """Helper function for a book. Once it has been gotten, it relates a book to a user based on the read_category given in data.
+    @params: data - from the request
+    @param: book - the book model object
+    @param: user - the user model object
+    """
+    # if a book is already in any category, don't add it again
+    if (
+        user.books_read.filter(id=book.id).exists()
+        or user.books_reading.filter(id=book.id).exists()
+        or user.books_to_read.filter(id=book.id).exists()
+    ):
+        return JsonResponse(
+            {
+                "error": "You already have this book in your Library. If you want to switch it's reading category, view it in your Library and edit it there. "
+            },
+            status=400,
+        )
+
+    # add book to users read_category
+    if data.get("read_category") == "read":
+        user.books_read.add(book)
+    elif data.get("read_category") == "reading":
+        user.books_reading.add(book)
+    elif data.get("read_category") == "to_read":
+        user.books_to_read.add(book)
+    else:
+        return JsonResponse({"error": "Read category required."}, status=400)
+
+    # add the book to any shelves that were passed in
+    if data.get("shelves"):
+        book = book_to_shelves(book, data.get("shelves"), should_add=True)
+        if type(book) == JsonResponse:
+            return book
+
+    return JsonResponse(
+        {
+            "message": "Book added to your library successfully.",
+            "user": user.serialize(),
+        },
+        status=200,
+    )
+
+
+def book_to_shelves(book, shelves_list, should_add):
+    """Helper function to relate a book to a given list of shelf ids. Can add or remove them.
+    @param: book - the book model object
+    @param: shelves_list - a list of shelf ids
+    @param: should_add - boolean, whether to add or remove the book from the shelves
+    """
+    for shelf in shelves_list:
+        try:
+            shelf = Shelf.objects.get(id=shelf)
+            if should_add:
+                shelf.books.add(book)
+            else:
+                shelf.books.remove(book)
+        except Shelf.DoesNotExist:
+            return JsonResponse({"error": "Shelf does not exist."}, status=400)
+    return book
 
 def remove_book_from_read_category(book, user, category):
+    """Helper function to remove a book from a user's read category.
+    @param: book - the book model object
+    @param: user - the user model object
+    @param: category - the category to remove the book from ("read, "reading", "to_read")
+    """
     if category == "read":
         user.books_read.remove(book)
     elif category == "reading":
@@ -320,6 +412,11 @@ def remove_book_from_read_category(book, user, category):
 
 
 def change_book_read_category(data, book, user):
+    """Helper function to change a book's read category. First removes the current category, then adds a new one
+    @param: data - from the request
+    @param: book - the book model object
+    @param: user - the user model object
+    """
     # try to update read category
     # get current book category
     current_category = data.get("current_category")
@@ -344,6 +441,12 @@ def change_book_read_category(data, book, user):
 
 
 def update_book_fields(data, book, user, request):
+    """Helper function to update a book's fields. Called by the book view (PUT request).
+    @param: data - from the request
+    @param: book - the book model object
+    @param: user - the user model object
+    @param: request - the request object
+    """
     if data.get("title") != "":
         # try to update title
         book.title = data.get("title")
@@ -354,6 +457,7 @@ def update_book_fields(data, book, user, request):
         # try to update publication year
         book.publication_year = int(data.get("publication_year"))
     if data.get("cover_image_url") != "":
+        print("cover image url: ", data.get("cover_image_url"))
         # try to update cover image url
         book.cover_image_url = data.get("cover_image_url")
     if data.get("read_category") != "":
@@ -391,6 +495,12 @@ def update_book_fields(data, book, user, request):
 
 
 def remove_book(data, book, user, request):
+    """Helper function to remove a book from a user's library. Called by the book view (PUT request). Does NOT delete the book from the database, but removes it from association with the user.
+    @param: data - from the request
+    @param: book - the book model object
+    @param: user - the user model object
+    @param: request - the request object
+    """
     # remove book from user read_category list
     category = data.get("current_category")
     user = remove_book_from_read_category(book, user, category)
@@ -415,48 +525,13 @@ def remove_book(data, book, user, request):
     )
 
 
-@login_required
-def book(request):
-    if request.method == "GET":
-        # try to get information about a certain book?
-        return JsonResponse({"error": "Cannot GET yet."}, status=400)
-    elif request.method == "POST":
-        data = json.loads(request.body)
-        # get the user
-        user = User.objects.get(username=request.user.username)
-
-        if data.get("title") == "":
-            return JsonResponse({"error": "Title required."}, status=400)
-
-        book = get_or_create_book(data)
-        if type(book) == JsonResponse:
-            return book
-        # have ensured that a book exists, now relate the book to user. including shelves
-        return relate_book_to_user(data, book, user)
-
-    elif request.method == "PUT":
-        # try to edit information about a certain book?
-        data = json.loads(request.body)
-        # get the user
-        user = User.objects.get(username=request.user.username)
-        # get the book
-        try:
-            book = Book.objects.get(id=data.get("book_id"))
-        except Book.DoesNotExist:
-            return JsonResponse({"error": "Book does not exist."}, status=400)
-
-        if data.get("removing_book"):
-            return remove_book(data, book, user, request)
-        else:
-            return update_book_fields(data, book, user, request)
-
-    else:
-        return JsonResponse(
-            {"error": "GET, POST, or PUT request required."}, status=400
-        )
-
+#################### Shelf Endpoints ####################
 
 def get_books_from_data(data, should_add):
+    """Helper function to get books from data. Called by the shelf form endpoints(PUT request). Data is different if books should be added or not
+    @param: data - from the request
+    @param: should_add - boolean indicating whether books should be added or removed
+    """
     # get and combine books from all categories
     books = []
     if should_add:
@@ -483,6 +558,9 @@ def get_books_from_data(data, should_add):
 
 
 def handle_shelf_post(request):
+    """Helper function to handle the POST request for the shelf form. Called by the shelf view (POST request).
+    @param: request - the request object
+    """
     # load data from request
     data = json.loads(request.body)
     # get the user
@@ -516,6 +594,11 @@ def handle_shelf_post(request):
 
 
 def add_books_to_shelves(data, user, request):
+    """Helper function to add books to shelves. Called by the shelf view (PUT request) if trying to add books to a shelf.
+    @param: data - from the request
+    @param: user - the user model object
+    @param: request - the request object
+    """
     # check if at least one book is being added
     if (
         data.get("books_read") == []
@@ -549,6 +632,7 @@ def add_books_to_shelves(data, user, request):
 
 
 def handle_shelf_put(request):
+    """Helper function to handle PUT request to shelf view. Called by the shelf view (PUT request)."""
     # load data from request
     data = json.loads(request.body)
     # get the user
@@ -588,6 +672,7 @@ def handle_shelf_put(request):
 
 
 def handle_shelf_delete(request):
+    """Helper function to handle DELETE request to shelf view. Called by the shelf view (DELETE request)."""
     data = json.loads(request.body)
     # get the shelf
 
@@ -614,8 +699,8 @@ def handle_shelf_delete(request):
 
 @login_required
 def shelf(request):
+    """View for the shelf page. Handles GET, POST, PUT, and DELETE requests."""
     if request.method == "GET":
-        pass
         return JsonResponse({"error": "Cannot GET yet."}, status=400)
     elif request.method == "POST":
         return handle_shelf_post(request)

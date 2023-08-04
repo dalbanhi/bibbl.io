@@ -41,6 +41,8 @@ class User(AbstractUser):
         return f"{self.username}"
 
 
+
+
 class Book(models.Model):
     # data
 
@@ -50,7 +52,15 @@ class Book(models.Model):
 
     publication_year = models.IntegerField(blank=True)
 
-    cover_image_url = models.URLField(blank=True)
+    # credit for cover to MiniMouse user on MobileRead forums:
+    # https://www.mobileread.com/forums/showpost.php?p=2627355&postcount=3
+    
+
+    def get_default_cover_image_url():
+        return "https://www.mobileread.com/forums/attachment.php?attachmentid=111282&d=1378756884"
+    
+    # setting a default value in a django field: https://stackoverflow.com/questions/755857/how-can-i-set-a-default-value-for-a-field-in-a-django-model
+    cover_image_url = models.URLField(default=get_default_cover_image_url)
 
     def is_valid(self):
         # tested regexes here: https://regex101.com/

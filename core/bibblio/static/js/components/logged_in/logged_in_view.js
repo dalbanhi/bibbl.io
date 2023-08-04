@@ -30,20 +30,6 @@ const LoggedInView = (props) => {
     }
   }, [props]);
 
-  const set_message = (message) => {
-    setState({
-      ...state,
-      message: message,
-    });
-  };
-
-  const clear_message = () => {
-    setState({
-      ...state,
-      message: "",
-    });
-  };
-
   const handle_book_list_name_change = (new_book_list) => {
     const found_shelf = state.user.shelves.find(
       (shelf) => shelf.name === new_book_list,
@@ -66,11 +52,6 @@ const LoggedInView = (props) => {
         update_user={props.update_user}
         api_urls={state.api_urls}
       />
-      {/* <ShelfLinks
-                    user={state.user}
-                    handle_book_list_change={handle_book_list_name_change}
-                    title={state.subtitle}
-                /> */}
       <p className="m-2">
         Hint: Select a single shelf to edit the shelf name or remove it from you
         library.{" "}

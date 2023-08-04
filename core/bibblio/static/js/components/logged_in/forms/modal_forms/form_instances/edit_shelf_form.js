@@ -12,7 +12,7 @@ const EditShelfBadge = (props) => {
     <ClickableBadge
       bg="warning"
       on_click={props.handle_show}
-      name="Remove Books from Shelf"
+      name="Edit Shelf"
     />
   );
 };
@@ -86,7 +86,6 @@ const EditShelfForm = (props) => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         //if there's an error
         if (data.error) {
           props.set_error(data.error);
