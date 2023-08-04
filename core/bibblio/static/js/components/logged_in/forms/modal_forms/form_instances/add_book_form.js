@@ -104,6 +104,7 @@ const AddBookForm = (props) => {
                 handle_submit={handle_submit}
                 handle_close={() => props.set_show_modal(false)}
                 submit_button_text="Add Book!"
+                submit_button_color="primary"
                 show_modal={props.show_modal}
                 error={props.error}
             >

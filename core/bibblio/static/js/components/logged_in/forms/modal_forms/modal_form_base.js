@@ -1,11 +1,5 @@
 const ModalFormBase = (props) => {
 
-//props
-// action url
-// set successs message function
-//update user function
-// user
-
   const [state, setState] = React.useState({
     show_modal: false,
     error: '',

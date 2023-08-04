@@ -39,11 +39,7 @@ const BookCard = (props) => {
             //set which category the book is in
             which_category: props.book.in_read.includes(props.user.id) ? 'read' : props.book.in_reading.includes(props.user.id) ? 'reading' : 'to_read',
         })
-    }, [props])
-
-    const edit_book = () => {
-        console.log("edit book");
-    }
+    }, [props]);
 
     const set_message = (message) => {
         useState({
@@ -102,12 +98,34 @@ const BookCard = (props) => {
                             />
                         </ReactBootstrap.ListGroup.Item>
                         <ReactBootstrap.ListGroup.Item>
-                            {state.message && <div className="dissappearing-message alert alert-success" role="alert" onAnimationIteration={clear_message}>{state.message}</div>}
+                            
                             <ModalFormBase
                                 user={state.user}
                                 render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
                                     return(
                                         <EditBookForm
+                                            user={state.user}
+                                            book={state.book}
+                                            book_shelves={state.book_shelves}
+                                            which_category={state.which_category}
+                                            update_user={props.update_user}
+                                            set_success_message={set_message}
+                                            book_url={props.book_url}
+                                            //render props
+                                            show_modal={show_modal}
+                                            set_show_modal={set_show_modal}
+                                            capitalize_names={capitalize_names}
+                                            error={error}
+                                            set_error={set_error}
+                                        />
+                                    )
+                                }} 
+                            />
+                            <ModalFormBase
+                                user={state.user}
+                                render={(show_modal, set_show_modal, error, set_error, capitalize_names) => {
+                                    return(
+                                        <RemoveBookForm
                                             user={state.user}
                                             book={state.book}
                                             book_shelves={state.book_shelves}
@@ -134,6 +152,9 @@ const BookCard = (props) => {
                     </ReactBootstrap.ListGroup>
                 </ReactBootstrap.Card.Body>
             </ReactBootstrap.Card>
+
+            {/* adding an alert message on form submissions */}
+            {state.message && <div className="dissappearing-message alert alert-success" role="alert" onAnimationIteration={clear_message}>{state.message}</div>}
         </div>
     )
 }

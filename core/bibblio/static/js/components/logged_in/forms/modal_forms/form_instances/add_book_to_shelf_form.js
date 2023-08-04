@@ -97,6 +97,7 @@ const AddBookToShelfForm = (props) => {
             handle_close={() => props.set_show_modal(false)}
             submit_button_text="Add to Shelf"
             show_modal={props.show_modal}
+            submit_button_color="primary"
             error={props.error}
         >
             <MultiSelectInstructions />

@@ -256,21 +256,27 @@ def get_or_create_book(data):
     return book
 
 
-def change_read_category(data, book, user):
+def remove_book_from_read_category(book, user, category):
+    if category == "read":
+        user.books_read.remove(book)
+    elif category == "reading":
+        user.books_reading.remove(book)
+    elif category == "to_read":
+        user.books_to_read.remove(book)
+    else:
+        return JsonResponse({"error": "Current category not valid."}, status=400)
+    return user
+
+def change_book_read_category(data, book, user):
     # try to update read category
     # get current book category
     current_category = data.get("current_category")
     print("current_category", current_category)
-    
+
     #remove from current category
-    if current_category == "read":
-        user.books_read.remove(book)
-    elif current_category == "reading":
-        user.books_reading.remove(book)
-    elif current_category == "to_read":
-        user.books_to_read.remove(book)
-    else:
-        return JsonResponse({"error": "Current category not valid."}, status=400)
+    user = remove_book_from_read_category(book, user, current_category)
+    if type(user) == JsonResponse:
+        return user
 
     # add to new category
     if data.get("read_category") != "":
@@ -300,7 +306,7 @@ def update_book_fields(data, book, user, request):
         # try to update cover image url
         book.cover_image_url = data.get("cover_image_url")
     if data.get("read_category") != '':
-        user = change_read_category(data, book, user)
+        user = change_book_read_category(data, book, user)
         # if the user was not able to be updated, return the error
         if type(user) == JsonResponse:
             return user
@@ -329,6 +335,25 @@ def update_book_fields(data, book, user, request):
         return JsonResponse({"error": "Book is not valid. If you have multiple authors, check that your list authors is separated by only a comma. Check that your publication year, if known, is at least 10 and no greater than the current year. "}, status=400)
 
 
+def remove_book(data, book, user, request):
+
+    # remove book from user read_category list
+    category = data.get("current_category")
+    user = remove_book_from_read_category(book, user, category)
+    if type(user) == JsonResponse:
+        return user
+    
+    # remove book from user shelves
+    book = book_to_shelves(book, data.get("book_in_shelves_of_user"), should_add=False)
+    if type(book) == JsonResponse:
+        return book
+
+    # save user
+    user.save()
+    # get latest user info to send back
+    user = User.objects.get(username=request.user.username)
+    return JsonResponse({"message": "Book removed from your library successfully.", "user": user.serialize()}, status=201)
+
 
 @login_required
 def book(request):
@@ -347,7 +372,7 @@ def book(request):
         if type(book) == JsonResponse:
             return book
         # have ensured that a book exists, now relate the book to user. including shelves
-        return relate_book_to_user(data, book, user, request)
+        return relate_book_to_user(data, book, user)
         
     elif request.method == "PUT":
         # try to edit information about a certain book?
@@ -361,7 +386,10 @@ def book(request):
         except Book.DoesNotExist:
             return JsonResponse({"error": "Book does not exist."}, status=400)
         
-        return update_book_fields(data, book, user, request)
+        if data.get("removing_book"):
+            return remove_book(data, book, user, request)
+        else:
+            return update_book_fields(data, book, user, request)
         
     else:
         return JsonResponse({"error": "GET, POST, or PUT request required."}, status=400)

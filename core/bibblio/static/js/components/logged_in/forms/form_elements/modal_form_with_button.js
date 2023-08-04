@@ -42,7 +42,7 @@ const ModalFormWithButton = (props) => {
                             <ReactBootstrap.Button variant="secondary" onClick={props.handle_close}>
                                 Close
                             </ReactBootstrap.Button>
-                            <ReactBootstrap.Button variant="primary" type="submit">
+                            <ReactBootstrap.Button variant={props.submit_button_color} type="submit">
                                 {props.submit_button_text}
                             </ReactBootstrap.Button>
                         </ReactBootstrap.Modal.Footer>
