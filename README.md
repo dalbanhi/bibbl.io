@@ -99,6 +99,9 @@ Make sure npm is installed
    npm install
    ```
 3. Install requirements.txt
+   ```sh
+   pip install -r requirements.txt
+   ```
 4. Run 
    ```sh 
     python manage.py makemigrations
