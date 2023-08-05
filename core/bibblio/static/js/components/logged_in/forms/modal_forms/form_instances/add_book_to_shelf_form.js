@@ -62,7 +62,6 @@ const AddBookToShelfForm = (props) => {
     }
 
     const handle_submit = (event) => {
-        console.log("submitting form");
         event.preventDefault();
 
         //try to add book(s) to shelf(s)
@@ -83,7 +82,6 @@ const AddBookToShelfForm = (props) => {
         })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
 
             //if there's an error
             if (data.error){

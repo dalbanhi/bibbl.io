@@ -40,6 +40,8 @@ const LoggedOutView = (props) => {
         action_urls={state.no_user_urls}
         auth_change={state.auth_change}
       />
+      <h2 className="m-2">Demo</h2>
+      <div className="loom-video m-2"><iframe src="https://www.loom.com/embed/34f2430708e2486ba75cbe5630406845?sid=8f06ddf7-4deb-455a-a7e1-1de7b7189e3f" frameBorder="0"  allowFullScreen className="loom-video-iframe"></iframe></div>
     </div>
   );
 };

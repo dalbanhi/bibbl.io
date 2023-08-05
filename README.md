@@ -76,7 +76,7 @@ Bibbl.io is a book/reading organizer. The goal is to help students, academics, a
 <!-- GETTING STARTED -->
 ## Setting up and Running the Project
 
-To run the project, you can download from here [Google Drive link](http://www.google.com) or from Github. Then, follow the instructions below:
+To run the project, follow the instructions below:
 
 ### Prerequisites
 
@@ -88,7 +88,7 @@ Make sure npm is installed
 
 ### Installation
 
-1. Clone the repo (or download zip file from here: [Google Drive link](http://www.google.com).
+1. Clone the repo.
 
    ```sh
    git clone https://github.com/dalbanhi/bibbl.io.git
@@ -120,7 +120,7 @@ Make sure npm is installed
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Live Demo Video link: [Bibbl.io Demo](https://www.google.com)
+Live Demo Video link: [Bibbl.io Demo](https://www.loom.com/share/34f2430708e2486ba75cbe5630406845?sid=a76dc5dd-321c-4f64-bd6e-7e6f4ee9ef44)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
