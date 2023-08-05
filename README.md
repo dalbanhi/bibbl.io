@@ -125,6 +125,8 @@ Make sure npm is installed
 
 Live Demo Video link: [Bibbl.io Demo](https://www.loom.com/share/34f2430708e2486ba75cbe5630406845?sid=a76dc5dd-321c-4f64-bd6e-7e6f4ee9ef44)
 
+[YouTube link](https://youtu.be/WxLeg6Ww1y0)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
