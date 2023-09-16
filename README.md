@@ -21,7 +21,7 @@
     <a href="https://github.com/dalbanhi/bibbl.io"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/dalbanhi/bibbl.io">View Demo</a>
+    <a href="https://www.loom.com/share/34f2430708e2486ba75cbe5630406845?sid=a76dc5dd-321c-4f64-bd6e-7e6f4ee9ef44">View Demo</a>
     ·
   </p>
 </div>
