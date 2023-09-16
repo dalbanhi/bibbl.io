@@ -1,8 +1,6 @@
 from django.contrib import admin
 from .models import User, Book, Shelf
 
-
-# Register your models here.
 # Register your models here.
 class UserAdmin(admin.ModelAdmin):
     list_display = (
@@ -30,6 +28,5 @@ class ShelfAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Shelf, ShelfAdmin)
-
 admin.site.register(User, UserAdmin)
 admin.site.register(Book, BookAdmin)

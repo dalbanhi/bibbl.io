@@ -1,8 +1,11 @@
+from typing import Any, Dict
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+
+from django.views.generic.base import TemplateView
 
 # https://stackoverflow.com/questions/11721818/django-get-the-static-files-url-in-view/59355195#59355195
 from django.templatetags.static import static
@@ -20,7 +23,7 @@ def obj_of_menu_urls() -> dict:
     """
     menu_urls = {
         "index": {"url": reverse("index"), "name": "Home", "auth": "all"},
-        "logo": {"url": static("assets/books.png"), "name": "logo", "auth": "all"},
+        "logo": {"url": static("images/books.png"), "name": "logo", "auth": "all"},
         "login": {
             "url": reverse("login"),
             "name": "Login",
@@ -54,6 +57,25 @@ def obj_of_api_urls() -> dict:
 
 
 # Views
+class IndexView(TemplateView):
+    template_name ="bibblio/hello_webpack.html"
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        user = None
+        if self.request.user.is_authenticated:
+            user = User.objects.get(username=self.request.user.username)
+            user = user.serialize()
+        else:
+            user = ""
+
+        return {
+            "is_register_view": False,
+            "is_authenticated": self.request.user.is_authenticated,
+            "user": user,
+            "app_container": "app_container",
+            "menu_urls": obj_of_menu_urls(),
+            "api_urls": obj_of_api_urls(),
+        }
 
 
 def index(request):
