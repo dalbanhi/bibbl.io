@@ -1,4 +1,5 @@
-import React from 'react'
+import * as React from 'react'
+
 import MyNavBar from './components/navigation/MyNavBar';
 
 const TestApp = () => {

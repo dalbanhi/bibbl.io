@@ -1,14 +1,26 @@
-import React from 'react';
-import ReactDOM from "react-dom";
-import {createRoot} from 'react-dom/client'
-
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+// importing styles
 import 'bootstrap/dist/css/bootstrap.css'
 import './styles/styles.css'
+
 import TestApp from './js/TestApp';
+import ErrorPage from "./js/components/error/ErrorPage";
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <TestApp/>,
+    errorElement: <ErrorPage />
+  },
+]);
 
-const root = document.querySelector("#root")
-const app_root = createRoot(root);
-  if (app_root) {
-    app_root.render(<TestApp />);
-  }
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
