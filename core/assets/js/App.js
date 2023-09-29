@@ -1,8 +1,16 @@
-import * as React from 'react'
+import React from 'react';
 
 import MyNavBar from './components/navigation/MyNavBar';
+import LoggedOutView from './components/loggedOut/LoggedOutView';
+import LoggedInView from './components/loggedIn/LoggedInView';
 
-const TestApp = () => {
+import Cookies from 'js-cookie';
+
+import { Navigate, Outlet } from 'react-router-dom';
+
+
+
+const App = () => {
 
   const [state, setState] = React.useState({
     is_authenticated: null,
@@ -93,6 +101,9 @@ const TestApp = () => {
             is_authenticated: login_or_out === "login" ? true : false,
             user: user,
           });
+
+          // update the url to be my_profile
+
         });
     }
   };
@@ -105,23 +116,31 @@ const TestApp = () => {
         menu_urls={state.menu_urls}
         auth_change={handle_login}
       />
-      {/* <div className="container">
-        {!state.is_authenticated ? (
+      <div className="container">
+        {console.log(state.is_authenticated)}
+        {! state.is_authenticated ? (
+          <Navigate to="/my_app/login" replace={true} />
+        ):(
+          <Navigate to="/my_app/my_profile" replace={true} />
+        )}
+        <Outlet />
+        {/* {!state.is_authenticated ? (
           <LoggedOutView
             is_register_view={state.is_register_view}
             menu_urls={state.menu_urls}
             auth_change={handle_login}
           />
         ) : (
+          // <Navigate to="/my_profile" replace={true} />
           <LoggedInView
             user={state.user}
             api_urls={state.api_urls}
             update_user={update_user}
           />
-        )}
-      </div> */}
+        )} */}
+      </div>
     </div>
   )
 }
 
-export default TestApp;
+export default App;
