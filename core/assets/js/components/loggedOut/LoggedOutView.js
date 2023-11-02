@@ -18,7 +18,9 @@ const LoggedOutView = (props) => {
   
     React.useEffect(() => {
       //update state on props load
+      console.log(props)
       if (Object.entries(props.menu_urls).length !== 0) {
+        console.log("yay")
         //get only the menu items that are not for all users
         const no_user_urls = Object.keys(props.menu_urls).reduce((acc, key) => {
           if (props.menu_urls[key].auth === "not_authenticated") {
@@ -34,18 +36,19 @@ const LoggedOutView = (props) => {
           auth_change: props.auth_change,
         });
       }
+        
     }, [props]);
   
     return (
       <div>
         <h1>Welcome</h1>
-        {/* <LogInForm
+        <LogInForm
           is_register_view={state.is_register_view}
           action_urls={state.no_user_urls}
           auth_change={state.auth_change}
-        /> */}
-        {/* <h2 className="m-2">Demo</h2>
-        <div className="loom-video m-2"><iframe src="https://www.loom.com/embed/34f2430708e2486ba75cbe5630406845?sid=8f06ddf7-4deb-455a-a7e1-1de7b7189e3f" frameBorder="0"  allowFullScreen className="loom-video-iframe"></iframe></div> */}
+        />
+        <h2 className="m-2">Demo</h2>
+        <div className="loom-video m-2"><iframe src="https://www.loom.com/embed/34f2430708e2486ba75cbe5630406845?sid=8f06ddf7-4deb-455a-a7e1-1de7b7189e3f" frameBorder="0"  allowFullScreen className="loom-video-iframe"></iframe></div>
       </div>
     );
   };

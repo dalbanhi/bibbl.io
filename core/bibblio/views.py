@@ -98,19 +98,22 @@ class IndexView(TemplateView):
 class LoginView(View):
 
     def post(self, request, *args, **kwargs):
+        print("request.body", request.body)
         data = json.loads(request.body)
 
         # try to sign user in
         username = data.get("username")
         password = data.get("password")
         user = authenticate(request, username=username, password=password)
-
+        print("user", user)
         if user is not None:
             login(request, user)
+            print("here")
             return JsonResponse(
                 {"message": "Login successful.", "user_id": user.id}, status=200
             )
         else:
+            print("here2")
             return JsonResponse(
                 {"error": "Invalid username and/or password."}, status=400
             )

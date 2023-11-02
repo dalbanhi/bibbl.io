@@ -6,11 +6,14 @@ import LoggedInView from './components/loggedIn/LoggedInView';
 
 import Cookies from 'js-cookie';
 
-import { Navigate, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet, Routes, Route } from 'react-router-dom';
+import { Nav } from 'react-bootstrap';
 
 
 
 const App = () => {
+
+  const navigate = useNavigate();
 
   const [state, setState] = React.useState({
     is_authenticated: null,
@@ -103,13 +106,15 @@ const App = () => {
           });
 
           // update the url to be my_profile
+          console.log("login");
+          navigate("my_profile", { replace: true });
 
         });
     }
   };
 
   return (
-    <div>
+    <main>
       <MyNavBar
         is_authenticated={state.is_authenticated}
         user={state.user}
@@ -117,13 +122,34 @@ const App = () => {
         auth_change={handle_login}
       />
       <div className="container">
-        {console.log(state.is_authenticated)}
+        <Routes>
+          <Route 
+            path="login" 
+            element={
+            <LoggedOutView
+              is_register_view={state.is_register_view}
+              menu_urls={state.menu_urls}
+              auth_change={handle_login}
+              />} 
+          />
+          <Route
+            path="my_profile"
+            element={
+              <LoggedInView
+                user={state.user}
+                api_urls={state.api_urls}
+                update_user={update_user}
+              />
+            }
+          />
+        </Routes>
+        {/* {console.log(state.is_authenticated)}
         {! state.is_authenticated ? (
           <Navigate to="/my_app/login" replace={true} />
         ):(
           <Navigate to="/my_app/my_profile" replace={true} />
         )}
-        <Outlet />
+        <Outlet /> */}
         {/* {!state.is_authenticated ? (
           <LoggedOutView
             is_register_view={state.is_register_view}
@@ -139,7 +165,7 @@ const App = () => {
           />
         )} */}
       </div>
-    </div>
+    </main>
   )
 }
 
