@@ -55,6 +55,7 @@ const App = () => {
         is_register_view: is_register_view,
         api_urls: api_urls,
       });
+      navigate("my_profile", { replace: true });
     } else {
       setState({
         ...state,
@@ -63,6 +64,11 @@ const App = () => {
         is_register_view: is_register_view,
         api_urls: api_urls,
       });
+      if (is_register_view) {
+        navigate("login?register=true", { replace: true });
+      } else {
+        navigate("login", { replace: true });
+      }
     }
   }, []);
 
@@ -106,7 +112,7 @@ const App = () => {
           });
 
           // update the url to be my_profile
-          console.log("login");
+          console.log("logged in");
           navigate("my_profile", { replace: true });
 
         });
@@ -125,6 +131,15 @@ const App = () => {
         <Routes>
           <Route 
             path="login" 
+            element={
+            <LoggedOutView
+              is_register_view={state.is_register_view}
+              menu_urls={state.menu_urls}
+              auth_change={handle_login}
+              />} 
+          />
+          <Route 
+            path="login?register=true" 
             element={
             <LoggedOutView
               is_register_view={state.is_register_view}

@@ -12,12 +12,6 @@ import './styles/styles.css'
 
 import App from './js/App';
 import ErrorPage from "./js/components/error/ErrorPage";
-// // import LoggedInView from "./js/components/loggedIn/LoggedInView";
-// import LoggedOutView from "./js/components/loggedOut/LoggedOutView";
-
-import TestLoggedIn from "./js/components/loggedIn/TestLoggedIn";
-import TestLoggedOut from "./js/components/loggedOut/TestLoggedOut";
-
 
 
 const router = createBrowserRouter([

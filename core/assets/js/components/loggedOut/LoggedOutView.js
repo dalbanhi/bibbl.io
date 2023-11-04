@@ -18,9 +18,7 @@ const LoggedOutView = (props) => {
   
     React.useEffect(() => {
       //update state on props load
-      console.log(props)
       if (Object.entries(props.menu_urls).length !== 0) {
-        console.log("yay")
         //get only the menu items that are not for all users
         const no_user_urls = Object.keys(props.menu_urls).reduce((acc, key) => {
           if (props.menu_urls[key].auth === "not_authenticated") {

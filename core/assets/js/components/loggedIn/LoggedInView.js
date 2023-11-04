@@ -1,5 +1,6 @@
 import React from "react";
 
+import QuickActions from "./QuickActions/QuickActions";
 // bootstrap icons:
 // book: https://icons.getbootstrap.com/icons/book/
 // bookshelf: https://icons.getbootstrap.com/icons/bookshelf/
@@ -23,6 +24,7 @@ const LoggedInView = (props) => {
     React.useEffect(() => {
       //update state on props load
       if (Object.entries(props.user).length !== 0) {
+        console.log("in here", props.user)
         setState({
           ...state,
           user: props.user,
@@ -48,12 +50,14 @@ const LoggedInView = (props) => {
     }
     return (
       <div className="text-center">
+        
         <h1>{`${props.user.username}'s Library`}</h1>
-        {/* <QuickActions 
+        {/* {console.log(state.user)} */}
+        <QuickActions 
           user={state.user}
           update_user={props.update_user}
           api_urls={state.api_urls}
-        /> */}
+        />
         <p className="m-2">
           Hint: Select a single shelf to edit the shelf name or remove it from you
           library.{" "}

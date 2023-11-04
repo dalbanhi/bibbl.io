@@ -133,7 +133,6 @@ const ModeSwitch = (props) => {
             });
           } else {
             //if no error, tell app to change state to logged in
-            console.log("helloooda");
             props.auth_change("login", data.user_id);
           }
         })

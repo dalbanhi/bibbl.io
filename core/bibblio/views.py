@@ -32,7 +32,7 @@ def obj_of_menu_urls() -> dict:
         },
         "logout": {"url": reverse("logout"), "name": "Logout", "auth": "authenticated"},
         "register": {
-            "url": reverse("index") + "?register=true",
+            "url": reverse("index") + "/login?register=true",
             "name": "Register",
             "auth": "not_authenticated",
         },
@@ -65,7 +65,7 @@ class IndexView(TemplateView):
     """Renders the index page. All other views are rendered through the index page and are handled by the front end.
     Inherits from TemplateView
     """
-    register_view_full_path = "/?register=true"
+    register_view_full_path = "/my_app/login?register=true"
     template_name ="bibblio/hello_webpack.html"
 
     def check_full_path(self) -> bool:
@@ -73,6 +73,9 @@ class IndexView(TemplateView):
         @return: bool
         """
         full_path = self.request.get_full_path_info()
+        print("full_path", full_path)
+        print("self.register_view_full_path", self.register_view_full_path)
+        print("full_path == self.register_view_full_path", full_path == self.register_view_full_path)
         return True if full_path == self.register_view_full_path else False
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
@@ -108,12 +111,10 @@ class LoginView(View):
         print("user", user)
         if user is not None:
             login(request, user)
-            print("here")
             return JsonResponse(
                 {"message": "Login successful.", "user_id": user.id}, status=200
             )
         else:
-            print("here2")
             return JsonResponse(
                 {"error": "Invalid username and/or password."}, status=400
             )
