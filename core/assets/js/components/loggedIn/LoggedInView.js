@@ -1,6 +1,6 @@
 import React from "react";
 
-import QuickActions from "./QuickActions/QuickActions";
+import QuickActions from "./quickActions/QuickActions";
 // bootstrap icons:
 // book: https://icons.getbootstrap.com/icons/book/
 // bookshelf: https://icons.getbootstrap.com/icons/bookshelf/
@@ -23,8 +23,8 @@ const LoggedInView = (props) => {
   
     React.useEffect(() => {
       //update state on props load
-      if (Object.entries(props.user).length !== 0) {
-        console.log("in here", props.user)
+      if (props.user && Object.entries(props.user).length !== 0) {
+
         setState({
           ...state,
           user: props.user,
@@ -50,9 +50,8 @@ const LoggedInView = (props) => {
     }
     return (
       <div className="text-center">
-        
+        {console.log(state.user)}
         <h1>{`${props.user.username}'s Library`}</h1>
-        {/* {console.log(state.user)} */}
         <QuickActions 
           user={state.user}
           update_user={props.update_user}

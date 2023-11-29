@@ -1,4 +1,8 @@
 import React from 'react';
+
+import ModalFormBase from '../forms/modalForms/ModalFormBase';
+import AddBookForm from '../forms/modalForms/formInstances/addBookForm';
+
 /**
  * 
  * @returns {object} - React component
@@ -14,7 +18,7 @@ const QuickActions = (props) => {
 
     React.useEffect(() => {
         //update state on props load
-        if (Object.entries(props.user).length !== 0) {
+        if (props.user && Object.entries(props.user).length !== 0) {
             setState({
                 ...state,
                 user: props.user,
@@ -41,24 +45,24 @@ const QuickActions = (props) => {
     return (
     <div>
         <h4>Quick Actions</h4>
-        {/* <div className="container">
-            <div className="w-100">
-                {state.message && (
-                    <div
-                        className="dissappearing-message alert alert-success"
-                        role="alert"
-                        onAnimationIteration={clear_message}
-                    >
-                    {state.message}
-                    </div>
-                )}
+        <div className="container">
+        <div className="w-100">
+            {state.message && (
                 <div
-                    className="btn-group mx-auto"
-                    role="group"
-                    aria-label="Adding actions"
-                > */}
+                    className="dissappearing-message alert alert-success"
+                    role="alert"
+                    onAnimationIteration={clear_message}
+                >
+                {state.message}
+                </div>
+            )}
+            <div
+                className="btn-group mx-auto"
+                role="group"
+                aria-label="Adding actions"
+            >
                 {/* //render props examples here: https://react.dev/reference/react/cloneElement#passing-data-with-a-render-prop */}
-                {/* <ModalFormBase
+            <ModalFormBase
                 user={state.user}
                 render={(
                     show_modal,
@@ -83,7 +87,7 @@ const QuickActions = (props) => {
                     );
                 }}
                 />
-                <ModalFormBase
+                {/* <ModalFormBase
                 user={state.user}
                 render={(
                     show_modal,
@@ -107,8 +111,8 @@ const QuickActions = (props) => {
                     />
                     );
                 }}
-                />
-                <ModalFormBase
+                /> */}
+                {/* <ModalFormBase
                 user={state.user}
                 render={(
                     show_modal,
@@ -132,10 +136,10 @@ const QuickActions = (props) => {
                     />
                     );
                 }}
-                />
-            </div> */}
-        {/* </div> */}
-      {/* </div> */}
+                /> */}
+            </div>
+         </div>
+       </div>
     </div>
     )
 }
