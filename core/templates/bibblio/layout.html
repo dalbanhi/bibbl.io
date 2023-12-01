@@ -1,0 +1,48 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+        {% comment %} getting react viewport to work {% endcomment %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>{% block title %}Bibbl.io{% endblock %}</title>
+        {% comment %} including bootstrap 5 {% endcomment %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <link href="{% static 'styles/styles.css' %}" rel="stylesheet">
+        {% comment %} adding bootstrap icons for button icons{% endcomment %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        {% comment %} importing latest react, react-dom, react-router-dom and babel from unpkg following lecture example {% endcomment %}
+        <script src="https://unpkg.com/react@18.2.0/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-router-dom@4.2.2/umd/react-router-dom.min.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+
+        {% comment %} importing react bootstrap for modals and such, from: https://react-bootstrap.netlify.app/docs/getting-started/introduction {% endcomment %}
+        <script src="https://cdn.jsdelivr.net/npm/react-bootstrap@next/dist/react-bootstrap.min.js"
+            crossorigin></script>
+
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="/favicon.ico" type="image/x-icon">
+        {% block react_components %}
+        {% endblock %}
+        
+        {% comment %} js-cookie for csrf token in JS, following this example:
+        https://docs.djangoproject.com/en/4.0/ref/csrf/ from
+        https://stackoverflow.com/questions/50732815/how-to-use-csrf-token-in-django-restful-api-and-react {% endcomment %}
+        <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+
+        
+
+    </head>
+    <body>
+        {% comment %} Book by Erfan Rolis from <a href="https://thenounproject.com/browse/icons/term/book/" target="_blank" title="Book Icons">Noun Project</a> (CC BY 3.0) {% endcomment %}
+            {% block body %}
+            {% endblock %}
+            {% block json_data %}
+            {% endblock %}
+    </body>
+</html>

@@ -1,8 +1,12 @@
+from typing import Any, Dict
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, path
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+
+
+from django.views.generic.base import TemplateView, View
 
 # https://stackoverflow.com/questions/11721818/django-get-the-static-files-url-in-view/59355195#59355195
 from django.templatetags.static import static
@@ -20,7 +24,7 @@ def obj_of_menu_urls() -> dict:
     """
     menu_urls = {
         "index": {"url": reverse("index"), "name": "Home", "auth": "all"},
-        "logo": {"url": static("assets/books.png"), "name": "logo", "auth": "all"},
+        "logo": {"url": static("images/books.png"), "name": "logo", "auth": "all"},
         "login": {
             "url": reverse("login"),
             "name": "Login",
@@ -28,7 +32,7 @@ def obj_of_menu_urls() -> dict:
         },
         "logout": {"url": reverse("logout"), "name": "Logout", "auth": "authenticated"},
         "register": {
-            "url": reverse("register"),
+            "url": reverse("index") + "/login?register=true",
             "name": "Register",
             "auth": "not_authenticated",
         },
@@ -54,46 +58,57 @@ def obj_of_api_urls() -> dict:
 
 
 # Views
+def welcome_view(request):
+    return HttpResponseRedirect(reverse("index"))
 
-
-def index(request):
-    """Renders the index page. The only entry point since this is a single page app. All other views are rendered through the index page and are handled by the front end.
-    @param: request
+class IndexView(TemplateView):
+    """Renders the index page. All other views are rendered through the index page and are handled by the front end.
+    Inherits from TemplateView
     """
-    user = None
-    if request.user.is_authenticated:
-        user = User.objects.get(username=request.user.username)
-        user = user.serialize()
-    else:
-        user = ""
+    register_view_full_path = "/my_app/login?register=true"
+    template_name ="bibblio/hello_webpack.html"
 
-    return render(
-        request,
-        "bibblio/index.html",
-        {
-            "is_register_view": False,
-            "is_authenticated": request.user.is_authenticated,
+    def check_full_path(self) -> bool:
+        """Checks if the full path is the register view.
+        @return: bool
+        """
+        full_path = self.request.get_full_path_info()
+        print("full_path", full_path)
+        print("self.register_view_full_path", self.register_view_full_path)
+        print("full_path == self.register_view_full_path", full_path == self.register_view_full_path)
+        return True if full_path == self.register_view_full_path else False
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        """Returns the context data for the index page."""
+
+        user = None
+        if self.request.user.is_authenticated:
+            user = User.objects.get(username=self.request.user.username)
+            user = user.serialize()
+        else:
+            user = ""
+
+        return {
+            "is_register_view": self.check_full_path(),
+            "is_authenticated": self.request.user.is_authenticated,
             "user": user,
             "app_container": "app_container",
             "menu_urls": obj_of_menu_urls(),
             "api_urls": obj_of_api_urls(),
-        },
-    )
+        }
 
 
-def login_view(request):
-    """Endpoint for logging in. If the request is a POST request, the user is logged in. If the request is a GET request, the user is redirected to the index page, with the view of the login page.
-    
-    @param: request
-    """
-    if request.method == "POST":
+class LoginView(View):
+
+    def post(self, request, *args, **kwargs):
+        print("request.body", request.body)
         data = json.loads(request.body)
 
         # try to sign user in
         username = data.get("username")
         password = data.get("password")
         user = authenticate(request, username=username, password=password)
-
+        print("user", user)
         if user is not None:
             login(request, user)
             return JsonResponse(
@@ -103,28 +118,9 @@ def login_view(request):
             return JsonResponse(
                 {"error": "Invalid username and/or password."}, status=400
             )
-    elif request.method == "GET":
-        user = None
-        if request.user.is_authenticated:
-            user = User.objects.get(username=request.user.username)
-            user = user.serialize()
-        else:
-            user = ""
-        return render(
-            request,
-            "bibblio/index.html",
-            {
-                "is_register_view": False,
-                "is_authenticated": request.user.is_authenticated,
-                "user": user,
-                "app_container": "app_container",
-                "menu_urls": obj_of_menu_urls(),
-                "api_urls": obj_of_api_urls(),
-            },
-        )
-    else:
-        return JsonResponse({"error": "GET or POST request required."}, status=400)
 
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(reverse("index"))
 
 @login_required
 def logout_view(request):
@@ -133,9 +129,9 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
-def register(request):
+class RegisterView(View):
     """View for registering a new user. If the request is a POST request, the user is registered and logged in. Otherwise, the user is redirected to the index page, with the view of the register page."""
-    if request.method == "POST":
+    def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         if data.get("username") == "":
             return JsonResponse({"error": "Username required."}, status=400)
@@ -167,7 +163,9 @@ def register(request):
             status=200,
         )
 
-    return HttpResponseRedirect(reverse("index"))
+    def get(self, request, *args, **kwargs):
+        url = reverse("index") + "?register=true"
+        return HttpResponseRedirect(url)
 
 
 @login_required
