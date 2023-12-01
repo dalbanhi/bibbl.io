@@ -1,19 +1,11 @@
-/**
- * A stylized button to be passed to ModalFormWithButton, specific to adding a book to a shelf
- * @param {function} props.handle_show - function to show modal 
- * @returns {object} - ReactBootstrap.Button
- */
-const AddBooksToShelfButton = (props) => {
-    return(
-        <ReactBootstrap.Button
-                variant="outline-primary"
-                onClick={props.handle_show}
-        >           
-            <i className="bi bi-bookmark">{` `}</i>
-            Add Book(s) to Shelf
-        </ReactBootstrap.Button>
-    )
-}
+import React from 'react';
+import OpenFormButton from '../../formElements/openFormButton';
+import ModalFormWithButton from "../../formElements/modalFormWithButton";
+import MultiSelect from '../../formElements/multiSelect';
+import MultiSelectInstructions from '../../formElements/multiSelectInstructions';
+import MultiSelectGroup from '../../formElements/multiSelectGroup';
+import Cookies from "js-cookie";
+
 
 /**
  * A form with a stylized button to add books to shelves
@@ -111,7 +103,12 @@ const AddBookToShelfForm = (props) => {
     }
     return (
         <ModalFormWithButton
-            form_button={<AddBooksToShelfButton handle_show={() => props.set_show_modal(true)}/>}
+            form_button={
+                <OpenFormButton 
+                    handle_show={() => props.set_show_modal(true)}
+                    button_text = "Add Book(s) to Shelf"
+                    icon = "bi bi-bookmark"
+                />}
             title="Add books(s) to shelf/shelves"
             handle_submit={handle_submit}
             handle_close={() => props.set_show_modal(false)}
@@ -142,3 +139,5 @@ const AddBookToShelfForm = (props) => {
         </ModalFormWithButton>
     )
 }
+
+export default AddBookToShelfForm;

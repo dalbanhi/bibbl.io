@@ -56,7 +56,6 @@ const ModalFormBase = (props) => {
     }
     return (
       <div>
-        {console.log("modal form base")}
         {props.render(
           state.show_modal,
           set_show_modal,

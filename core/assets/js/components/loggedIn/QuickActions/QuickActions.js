@@ -2,6 +2,8 @@ import React from 'react';
 
 import ModalFormBase from '../forms/modalForms/ModalFormBase';
 import AddBookForm from '../forms/modalForms/formInstances/addBookForm';
+import AddShelfForm from '../forms/modalForms/formInstances/addShelfForm';
+import AddBookToShelfForm from '../forms/modalForms/formInstances/addBookToShelfForm';
 
 /**
  * 
@@ -87,7 +89,7 @@ const QuickActions = (props) => {
                     );
                 }}
                 />
-                {/* <ModalFormBase
+                <ModalFormBase
                 user={state.user}
                 render={(
                     show_modal,
@@ -111,8 +113,8 @@ const QuickActions = (props) => {
                     />
                     );
                 }}
-                /> */}
-                {/* <ModalFormBase
+                />
+                <ModalFormBase
                 user={state.user}
                 render={(
                     show_modal,
@@ -136,7 +138,7 @@ const QuickActions = (props) => {
                     />
                     );
                 }}
-                /> */}
+                />
             </div>
          </div>
        </div>

@@ -1,6 +1,7 @@
 import React from "react";
 
 import QuickActions from "./quickActions/QuickActions";
+import FilterableList from "./filterableList/FilterableList";
 // bootstrap icons:
 // book: https://icons.getbootstrap.com/icons/book/
 // bookshelf: https://icons.getbootstrap.com/icons/bookshelf/
@@ -50,7 +51,6 @@ const LoggedInView = (props) => {
     }
     return (
       <div className="text-center">
-        {console.log(state.user)}
         <h1>{`${props.user.username}'s Library`}</h1>
         <QuickActions 
           user={state.user}
@@ -61,13 +61,13 @@ const LoggedInView = (props) => {
           Hint: Select a single shelf to edit the shelf name or remove it from you
           library.{" "}
         </p>
-        {/* <FilterableList
+        <FilterableList
           user={state.user}
           book_url={state.api_urls.book}
           shelf_url={state.api_urls.shelf}
           initial_book_list_name={state.subtitle}
           update_user={props.update_user}
-        /> */}
+        />
       </div>
     );
   };

@@ -1,5 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 import {
   createBrowserRouter,
   createRoutesFromElements,

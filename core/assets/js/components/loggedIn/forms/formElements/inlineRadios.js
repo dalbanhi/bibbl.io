@@ -1,3 +1,6 @@
+import React from "react";
+import Form from "react-bootstrap/Form";
+
 /**
  * A component to display a set of inline radios, used as part of a form instance
  * @param {object} props - passed in from parent component
@@ -32,15 +35,15 @@ const InlineRadios = (props) => {
     }, [props]);
   
     return (
-      <ReactBootstrap.Form.Group
+      <Form.Group
         className="mb-3"
         controlId={`${state.form_name}.${state.title}`}
       >
-        <ReactBootstrap.Form.Label>{props.label}</ReactBootstrap.Form.Label>
+        <Form.Label>{props.label}</Form.Label>
         <br />
         {state.fields.map((field, index) => {
           return (
-            <ReactBootstrap.Form.Check
+            <Form.Check
               key={index}
               inline
               label={props.capitalize_names(field)}
@@ -55,7 +58,8 @@ const InlineRadios = (props) => {
             />
           );
         })}
-      </ReactBootstrap.Form.Group>
+      </Form.Group>
     );
   };
-  
+
+export default InlineRadios;

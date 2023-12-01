@@ -1,3 +1,8 @@
+import React from "react";
+import Form from "react-bootstrap/Form";
+
+import MultiSelectInstructions from "./multiSelectInstructions";
+
 /**
  * A part of a form, a multi-select element that updates the parent state. Used by form instances. 
  * @param {object} props - props passed from parent component
@@ -52,10 +57,10 @@ const MultiSelect = (props) => {
       return false;
     }
     return (
-      <ReactBootstrap.Form.Group className="mb-3" controlId={state.control_id}>
-        <ReactBootstrap.Form.Label>{state.label}</ReactBootstrap.Form.Label>
+      <Form.Group className="mb-3" controlId={state.control_id}>
+        <Form.Label>{state.label}</Form.Label>
         {state.show_instructions === true ? <MultiSelectInstructions /> : null}
-        <ReactBootstrap.Form.Control
+        <Form.Control
           as="select"
           multiple
           name={state.name}
@@ -70,8 +75,10 @@ const MultiSelect = (props) => {
               </option>
             );
           })}
-        </ReactBootstrap.Form.Control>
-      </ReactBootstrap.Form.Group>
+        </Form.Control>
+      </Form.Group>
     );
   };
+
+  export default MultiSelect;
   

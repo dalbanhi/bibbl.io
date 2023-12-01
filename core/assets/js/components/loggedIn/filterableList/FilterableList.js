@@ -1,3 +1,10 @@
+import React from "react";
+import Card from "react-bootstrap/Card";
+import Form from "react-bootstrap/Form";
+import { ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import ItemsList from "./itemsList/itemsList";
+import ShelfEditor from "./shelfEditor/shelfEditor";
+
 //toggle button group from react bootstrap:
 // https://react-bootstrap.netlify.app/docs/components/buttons/#togglebuttongroup
 
@@ -245,16 +252,16 @@ const FilterableList = (props) => {
     }
     return (
       <div className="m-2">
-        <ReactBootstrap.Card className="text-center">
-          <ReactBootstrap.Card.Header>Filter</ReactBootstrap.Card.Header>
-          <ReactBootstrap.Card.Title>
+        <Card className="text-center">
+          <Card.Header>Filter</Card.Header>
+          <Card.Title>
             {state.current_book_list_name}
             {state.selected_category !== "all" && (
               <span>({capitalize_names(state.selected_category)})</span>
             )}
-          </ReactBootstrap.Card.Title>
-          <ReactBootstrap.Card.Body>
-            <ReactBootstrap.ToggleButtonGroup
+          </Card.Title>
+          <Card.Body>
+            <ToggleButtonGroup
               type="radio"
               name="read_category"
               value={state.selected_category}
@@ -263,28 +270,28 @@ const FilterableList = (props) => {
               {state.read_categories.map((category, index) => {
                 //for each cateogry, create a button
                 return (
-                  <ReactBootstrap.ToggleButton
+                  <ToggleButton
                     key={index}
                     id={"category_button_" + category}
                     value={category}
                   >
                     {capitalize_names(category)}
-                  </ReactBootstrap.ToggleButton>
+                  </ToggleButton>
                 );
               })}
-            </ReactBootstrap.ToggleButtonGroup>
-          </ReactBootstrap.Card.Body>
-          <ReactBootstrap.Card.Footer>
-            <ReactBootstrap.Card.Title>Your Shelves</ReactBootstrap.Card.Title>
-            <ReactBootstrap.Card.Body>
-              <ReactBootstrap.Form>
-                <ReactBootstrap.Form.Group
+            </ToggleButtonGroup>
+          </Card.Body>
+          <Card.Footer>
+            <Card.Title>Your Shelves</Card.Title>
+            <Card.Body>
+              <Form>
+                <Form.Group
                   className="mb-3"
                   controlId="shelves_filter"
                 >
                   {state.user.shelves.map((shelf, index) => {
                     return (
-                      <ReactBootstrap.Form.Check
+                      <Form.Check
                         inline
                         type="checkbox"
                         label={shelf.name}
@@ -296,11 +303,11 @@ const FilterableList = (props) => {
                       />
                     );
                   })}
-                </ReactBootstrap.Form.Group>
-              </ReactBootstrap.Form>
-            </ReactBootstrap.Card.Body>
-          </ReactBootstrap.Card.Footer>
-        </ReactBootstrap.Card>
+                </Form.Group>
+              </Form>
+            </Card.Body>
+          </Card.Footer>
+        </Card>
         {state.show_single_shelf && (
           <ShelfEditor
             user={state.user}
@@ -322,4 +329,5 @@ const FilterableList = (props) => {
       </div>
     );
   };
-  
+
+  export default FilterableList;

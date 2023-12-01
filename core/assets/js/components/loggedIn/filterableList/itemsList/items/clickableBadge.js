@@ -1,3 +1,6 @@
+import React from "react";
+import { Badge } from "react-bootstrap";
+
 // bg="warning"
 // onClick={props.handle_show}
 // name="Remove Books from Shelf"
@@ -14,17 +17,18 @@
  * @returns 
  */
 const ClickableBadge = (props) => {
-  return (
-    <ReactBootstrap.Badge
-      pill
-      className="mx-1"
-      as="button"
-      bg={props.bg}
-      onClick={props.on_click}
-      value={props.value}
-      text={props.bg === "light" ? "dark" : "light"}
-    >
-      {props.name}
-    </ReactBootstrap.Badge>
-  );
-};
+    return (
+      <Badge
+        pill
+        className="mx-1"
+        as="button"
+        bg={props.bg}
+        onClick={props.on_click}
+        value={props.value}
+        text={props.bg === "light" ? "dark" : "light"}
+      >
+        {props.name}
+      </Badge>
+    );
+  };
+export default ClickableBadge;
