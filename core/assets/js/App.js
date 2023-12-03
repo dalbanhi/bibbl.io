@@ -1,13 +1,15 @@
 import React from 'react';
 
 import MyNavBar from './components/navigation/MyNavBar';
+import NavBar from './components/navigation/NavBar';
 import LoggedOutView from './components/loggedOut/LoggedOutView';
 import LoggedInView from './components/loggedIn/LoggedInView';
+import ErrorPage from './components/error/ErrorPage';
+import SignInView from './components/loggedOut/SignInView';
 
 import Cookies from 'js-cookie';
 
 import { useNavigate, Outlet, Routes, Route } from 'react-router-dom';
-import { Nav } from 'react-bootstrap';
 
 
 
@@ -19,7 +21,7 @@ const App = () => {
     is_authenticated: null,
     user: null,
     menu_urls: {},
-    is_register_view: null,
+    is_register_view: false,
     api_urls: {},
   });
 
@@ -61,16 +63,30 @@ const App = () => {
         ...state,
         is_authenticated: is_authenticated,
         menu_urls: menu_urls,
-        is_register_view: is_register_view,
+        is_register_view: false,
         api_urls: api_urls,
       });
-      if (is_register_view) {
-        navigate("login?register=true", { replace: true });
-      } else {
-        navigate("login", { replace: true });
-      }
+      // if (is_register_view) {
+      //   navigate("login?register=true", { replace: true });
+      // } else {
+      //   navigate("login", { replace: true });
+      // }
+      navigate("signIn", { replace: true });
     }
   }, []);
+
+
+  /**
+   * Function to update the register view state
+   * @param {boolean} is_register_view - whether the register view is active
+   */
+  const update_register_view = (is_register_view) => {
+    setState({
+      ...state,
+      is_register_view: is_register_view,
+    });
+  };
+
 
   /** 
    * Function to update user data in state.
@@ -112,7 +128,6 @@ const App = () => {
           });
 
           // update the url to be my_profile
-          console.log("logged in");
           navigate("my_profile", { replace: true });
 
         });
@@ -121,11 +136,12 @@ const App = () => {
 
   return (
     <main>
-      <MyNavBar
+      <NavBar
         is_authenticated={state.is_authenticated}
         user={state.user}
         menu_urls={state.menu_urls}
         auth_change={handle_login}
+        update_register_view={update_register_view}
       />
       <div className="container">
         <Routes>
@@ -143,6 +159,16 @@ const App = () => {
             element={
             <LoggedOutView
               is_register_view={state.is_register_view}
+              menu_urls={state.menu_urls}
+              auth_change={handle_login}
+              />} 
+          />
+          <Route 
+            path="signIn" 
+            element={
+            <SignInView
+              is_register_view={state.is_register_view}
+              update_register_view={update_register_view}
               menu_urls={state.menu_urls}
               auth_change={handle_login}
               />} 

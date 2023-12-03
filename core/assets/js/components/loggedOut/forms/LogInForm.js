@@ -110,7 +110,7 @@ const ModeSwitch = (props) => {
   
     const handle_submit = (event) => {
       event.preventDefault();
-      // console.log(state);
+      console.log(state);
       fetch(state.url_to_follow, {
         method: "POST",
         headers: {
