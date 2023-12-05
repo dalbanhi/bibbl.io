@@ -1,4 +1,6 @@
 import React from 'react';
+import { propTypes } from 'react-bootstrap/esm/Image';
+import { Link, useLocation } from 'react-router-dom';
 
 
 /**
@@ -12,6 +14,9 @@ import React from 'react';
  * @returns {object} - React component
  */
 const NavBar = (props) => {
+  
+  const loc = useLocation();
+
   const [state, setState] = React.useState({
     is_authenticated: null,
     variable_urls: null,
@@ -19,11 +24,14 @@ const NavBar = (props) => {
 
   React.useEffect(() => {
     //update state on props load
+    
     if (Object.entries(props.menu_urls).length !== 0) {
+      
       setState({
         ...state,
         is_authenticated: props.is_authenticated,
         variable_urls: variable_menu(),
+        path_relative: props.is_authenticated ? "route" : "path",
       });
     }
   }, [props]);
@@ -37,7 +45,7 @@ const NavBar = (props) => {
       return acc;
     }, {});
 
-    if (props.is_authenticated === true) {
+    if (props.is_authenticated) {
       //further reduce the menu items to only those for authenticated users
       const user_urls = Object.keys(varying_urls).reduce((acc, key) => {
         if (props.menu_urls[key].auth === "authenticated") {
@@ -45,15 +53,13 @@ const NavBar = (props) => {
         }
         return acc;
       }, {});
+      console.log("user urls, ", user_urls);
       return user_urls;
-    } else if (props.is_authenticated === false) {
+    } else if (!props.is_authenticated) {
       //further reduce the menu items to only those for unauthenticated users
-      const no_user_urls = Object.keys(varying_urls).reduce((acc, key) => {
-        if (props.menu_urls[key].auth === "not_authenticated") {
-          acc[key] = props.menu_urls[key];
-        }
-        return acc;
-      }, {});
+      let no_user_urls = {};
+      no_user_urls["LoginRegister"] = loc.pathname.includes("login") ? 
+       {path: "../register", name: "Register"} : {path: "../login", name: "Login"} ;
 
       return no_user_urls;
     }
@@ -77,13 +83,16 @@ const NavBar = (props) => {
           </a>
           <div>
             <ul className="navbar-nav mr-auto">
+            
               {state.variable_urls &&
                 Object.entries(state.variable_urls).map(([key, value]) => {
+                  {console.log("is auth, ", state.is_authenticated)}
                   return (
                     <li className="nav-item" key={key}>
-                      <a className="nav-link" href={value.url}>
+                    
+                      <Link className="nav-link" relative="path" to={value.path} reloadDocument={state.is_authenticated}>
                         {value.name}
-                      </a>
+                      </Link>
                     </li>
                   );
                 })}

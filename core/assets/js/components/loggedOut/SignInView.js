@@ -8,6 +8,7 @@ import { useHistory, useNavigate } from 'react-router-dom';
  * @param {object} props - passed in by parent component
  * @param {boolean} props.is_register_view - whether the user is viewing the register or login page
  * @param {function} props.auth_change - the function to change the login/out state
+ * @param {function} props.update_register_view - the function to change the register view state
  * @returns {object} - React component
  */
 const SignInView = (props) => {

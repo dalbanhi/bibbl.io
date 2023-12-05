@@ -25,28 +25,18 @@ def obj_of_menu_urls() -> dict:
     menu_urls = {
         "index": {"url": reverse("index"), "name": "Home", "auth": "all"},
         "logo": {"url": static("images/books.png"), "name": "logo", "auth": "all"},
-        # "login": {
-        #     "url": reverse("login"),
-        #     "name": "Login",
-        #     "auth": "not_authenticated",
-        # },
         "logout": {
-            "url": reverse("logout"), 
+            "path": reverse("logout"),
             "name": "Logout",
             "auth": "authenticated"
         },
-        # "register": {
-        #     "url": reverse("index") + "?register=true",
-        #     "name": "Register",
-        #     "auth": "not_authenticated",
-        # },
         "signIn": {
-            "url": reverse("signIn"),
+            "path": reverse("signIn"),
             "name": "Sign In",
             "auth": "not_authenticated",
         },
         "my_profile": {
-            "url": reverse("my_profile"),
+            "path": reverse("my_profile"),
             "name": "My Profile",
             "auth": "authenticated",
         },
@@ -86,7 +76,7 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         """Returns the context data for the index page."""
-
+        print("i am getting this context data")
         user = None
         if self.request.user.is_authenticated:
             user = User.objects.get(username=self.request.user.username)
@@ -106,6 +96,7 @@ class IndexView(TemplateView):
 @login_required
 def logout_view(request):
     """ View for logging out. Logs user out and redirects to index page."""
+    print("LOGGING OUT")
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
@@ -113,6 +104,7 @@ class LoginOrRegisterView(View):
     """View for logging in or registering. Inherits from View."""
 
     def register(self, request, data):
+        print("trying to register")
         data = json.loads(request.body)
         if data.get("username") == "":
             return JsonResponse({"error": "Username required."}, status=400)
@@ -145,6 +137,7 @@ class LoginOrRegisterView(View):
         )
     
     def login(self, request, data):
+        print("trying to login")
         data = json.loads(request.body)
 
         # try to sign user in
@@ -162,34 +155,17 @@ class LoginOrRegisterView(View):
             )
 
     def get(self, request, *args, **kwargs):
+        print("i am getting this view")
         return HttpResponseRedirect(reverse("index"))
     
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         print(data)
 
-        if data.get("register") == "true":
+        if data.get("registering"):
             return self.register(request, data)
         else:
             return self.login(request, data)
-        # try to sign user in
-        # if data.get("username") == "":
-        #     return JsonResponse({"error": "Username required."}, status=400)
-        # if data.get("email") == "":
-        #     return JsonResponse({"error": "Email address required."}, status=400)
-        # if data.get("password") == "":
-        #     return JsonResponse({"error": "Password required."}, status=400)
-        # if data.get("password") != data.get("password_confirm"):
-        #     return JsonResponse({"error": "Passwords must match."}, status=400)
-        # try:
-        #     user = User.objects.create_user(
-        #         data.get("username"), data.get("email"), data.get("password")
-        #     )
-        #     user.save()
-        # except IntegrityError:
-        #     return JsonResponse({"error": "Username already taken."}, status=400)
-        # login(request, user)
-        # return JsonResponse({"message": "Login successful.", "user_id": user.id}, status=200)
 
 
 

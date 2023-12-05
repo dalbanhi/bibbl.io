@@ -8,6 +8,7 @@ urlpatterns = [
     path('my_app', views.IndexView.as_view(), name="index"),
     path('my_app/<path:path>', views.IndexView.as_view(), name="index_with_path"),
 
+    #backend 
     path("signIn", views.LoginOrRegisterView.as_view(), name="signIn"),
     path("login", views.LoginView.as_view(), name="login"),
     path("logout", views.logout_view, name="logout"),

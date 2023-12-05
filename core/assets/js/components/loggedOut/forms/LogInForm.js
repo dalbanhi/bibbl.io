@@ -2,11 +2,13 @@ import React from "react";
 
 import CSRFToken from "../../util/cookies/CSRFToken";
 import Cookies from "js-cookie";
+import { Link } from "react-router-dom";
 
 /**
  * A very small helper component showing text and a link to switch between login and register views of the form
  * @param {object} props - passed in by parent component
  * @param {boolean} props.is_registering - whether the user is viewing the register or login page
+ * @param {function} 
  * @param {object} props.action_urls - the urls for the login/register actions
  * @param {function} props.mode_switch - the function to change the login/register state from the parent
  * @returns {object} - React component
@@ -26,22 +28,18 @@ const ModeSwitch = (props) => {
           string_shown: props.is_registering
             ? "Already have an account? "
             : "Don't have an account? ",
-          title: props.is_registering
-            ? props.action_urls.login.name
-            : props.action_urls.register.name,
+          title: props.title,
           url: props.is_registering
-            ? props.action_urls.login.url
-            : props.action_urls.register.url,
+            ? "../login"
+            : "../register",
+
         });
       }
     }, [props]);
     return (
       <div>
         {state.string_shown}
-        <a href={state.url} onClick={props.mode_switch}>
-          {state.title} here
-        </a>
-        .
+        <Link to={state.url} state={{is_registering: props.is_registering }}>{props.other_title} here</Link>.    
       </div>
     );
   };
@@ -52,6 +50,7 @@ const ModeSwitch = (props) => {
    * @param {boolean} props.is_register_view - whether the user is viewing the register or login version of the form
    * @param {object} props.action_urls - the urls for the login and register actions
    * @param {function} props.auth_change - the function to change the login/out state
+   * @param {function} props.update_register_view - the function to change the register/login view state
    * @returns {object} - React component
    */
   const LogInForm = (props) => {
@@ -59,7 +58,6 @@ const ModeSwitch = (props) => {
       url_to_follow: "",
       title: "",
       is_registering: null,
-      is_logging_in: null,
       username: "",
       email: "",
       password: "",
@@ -68,44 +66,35 @@ const ModeSwitch = (props) => {
     });
   
     React.useEffect(() => {
+     
       //update state on props load
       if (Object.entries(props.action_urls).length !== 0) {
+
         setState({
           ...state,
-          url_to_follow: props.is_register_view
-            ? props.action_urls.register.url
-            : props.action_urls.login.url,
-          title: props.is_register_view
-            ? props.action_urls.register.name
-            : props.action_urls.login.name,
+          url_to_follow: props.action_urls.signIn.path,
           is_registering: props.is_register_view,
-          is_logging_in: !props.is_register_view,
           title: props.is_register_view
-            ? props.action_urls.register.name
-            : props.action_urls.login.name,
+            ? "Register"
+            : "Log In",
+          other_title: !props.is_register_view 
+            ? "Register" 
+            : "Log In",
         });
       }
     }, [props]);
   
     const handle_input_change = (event) => {
       setState({
+
         ...state,
         [event.target.name]: event.target.value,
       });
     };
   
     const mode_switch = () => {
-      setState({
-        ...state,
-        is_registering: !state.is_registering,
-        is_logging_in: !state.is_logging_in,
-        url_to_follow: !state.is_registering
-          ? props.action_urls.register.url
-          : props.action_urls.login.url,
-        title: state.is_registering
-          ? props.action_urls.login.name
-          : props.action_urls.register.name,
-      });
+      console.log("mode switch"); //debug
+      props.update_register_view();
     };
   
     const handle_submit = (event) => {
@@ -122,6 +111,7 @@ const ModeSwitch = (props) => {
           email: state.email,
           password: state.password,
           confirmation: state.confirmation,
+          registering: state.is_registering,
         }),
       })
         .then((response) => response.json())
@@ -198,6 +188,8 @@ const ModeSwitch = (props) => {
         </form>
         <ModeSwitch
           action_urls={props.action_urls}
+          title={state.title}
+          other_title = {state.other_title}
           mode_switch={mode_switch}
           is_registering={state.is_registering}
         />

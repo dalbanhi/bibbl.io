@@ -9,13 +9,14 @@ import SignInView from './components/loggedOut/SignInView';
 
 import Cookies from 'js-cookie';
 
-import { useNavigate, Outlet, Routes, Route } from 'react-router-dom';
+import { useNavigate, Outlet, Routes, Route, useLocation } from 'react-router-dom';
 
 
 
 const App = () => {
 
   const navigate = useNavigate();
+
 
   const [state, setState] = React.useState({
     is_authenticated: null,
@@ -59,20 +60,16 @@ const App = () => {
       });
       navigate("my_profile", { replace: true });
     } else {
-      setState({
-        ...state,
-        is_authenticated: is_authenticated,
-        menu_urls: menu_urls,
-        is_register_view: false,
-        api_urls: api_urls,
-      });
-      // if (is_register_view) {
-      //   navigate("login?register=true", { replace: true });
-      // } else {
-      //   navigate("login", { replace: true });
-      // }
-      navigate("signIn", { replace: true });
-    }
+        setState({
+          ...state,
+          is_authenticated: is_authenticated,
+          menu_urls: menu_urls,
+          is_register_view: false,
+          api_urls: api_urls,
+        });
+        navigate("login", { replace: true });
+      }
+      
   }, []);
 
 
@@ -81,10 +78,17 @@ const App = () => {
    * @param {boolean} is_register_view - whether the register view is active
    */
   const update_register_view = (is_register_view) => {
+    console.log("is_register_view", is_register_view);
     setState({
       ...state,
-      is_register_view: is_register_view,
+      is_register_view: !state.is_register_view,
     });
+
+    if(!state.is_register_view){
+      navigate("login", { replace: true });
+    } else{
+      navigate("register", { replace: true });
+    }
   };
 
 
@@ -145,7 +149,7 @@ const App = () => {
       />
       <div className="container">
         <Routes>
-          <Route 
+          {/* <Route 
             path="login" 
             element={
             <LoggedOutView
@@ -153,8 +157,8 @@ const App = () => {
               menu_urls={state.menu_urls}
               auth_change={handle_login}
               />} 
-          />
-          <Route 
+          /> */}
+          {/* <Route 
             path="login?register=true" 
             element={
             <LoggedOutView
@@ -162,13 +166,30 @@ const App = () => {
               menu_urls={state.menu_urls}
               auth_change={handle_login}
               />} 
-          />
+          /> */}
           <Route 
-            path="signIn" 
+            path="login" 
             element={
             <SignInView
-              is_register_view={state.is_register_view}
-              update_register_view={update_register_view}
+              is_register_view={false}
+              menu_urls={state.menu_urls}
+              auth_change={handle_login}
+              />} 
+          />
+          <Route 
+            path="logout" 
+            element={
+            <SignInView
+              is_register_view={false}
+              menu_urls={state.menu_urls}
+              auth_change={handle_login}
+              />} 
+          />
+          <Route 
+            path="register" 
+            element={
+            <SignInView
+              is_register_view= {true}
               menu_urls={state.menu_urls}
               auth_change={handle_login}
               />} 
