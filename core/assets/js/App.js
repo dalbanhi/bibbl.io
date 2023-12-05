@@ -5,7 +5,7 @@ import NavBar from './components/navigation/NavBar';
 import LoggedOutView from './components/loggedOut/LoggedOutView';
 import LoggedInView from './components/loggedIn/LoggedInView';
 import ErrorPage from './components/error/ErrorPage';
-import SignInView from './components/loggedOut/SignInView';
+// import SignInView from './components/loggedOut/SignInView';
 
 import Cookies from 'js-cookie';
 
@@ -78,7 +78,7 @@ const App = () => {
    * @param {boolean} is_register_view - whether the register view is active
    */
   const update_register_view = (is_register_view) => {
-    console.log("is_register_view", is_register_view);
+    // console.log("is_register_view", is_register_view);
     setState({
       ...state,
       is_register_view: !state.is_register_view,
@@ -149,28 +149,10 @@ const App = () => {
       />
       <div className="container">
         <Routes>
-          {/* <Route 
-            path="login" 
-            element={
-            <LoggedOutView
-              is_register_view={state.is_register_view}
-              menu_urls={state.menu_urls}
-              auth_change={handle_login}
-              />} 
-          /> */}
-          {/* <Route 
-            path="login?register=true" 
-            element={
-            <LoggedOutView
-              is_register_view={state.is_register_view}
-              menu_urls={state.menu_urls}
-              auth_change={handle_login}
-              />} 
-          /> */}
           <Route 
             path="login" 
             element={
-            <SignInView
+            <LoggedOutView
               is_register_view={false}
               menu_urls={state.menu_urls}
               auth_change={handle_login}
@@ -179,7 +161,7 @@ const App = () => {
           <Route 
             path="logout" 
             element={
-            <SignInView
+            <LoggedOutView
               is_register_view={false}
               menu_urls={state.menu_urls}
               auth_change={handle_login}
@@ -188,7 +170,7 @@ const App = () => {
           <Route 
             path="register" 
             element={
-            <SignInView
+            <LoggedOutView
               is_register_view= {true}
               menu_urls={state.menu_urls}
               auth_change={handle_login}

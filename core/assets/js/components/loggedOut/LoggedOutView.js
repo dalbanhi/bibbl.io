@@ -7,11 +7,13 @@ import LogInForm from "./forms/LogInForm";
  * @param {object} props - passed in by parent component
  * @param {boolean} props.is_register_view - whether the user is viewing the register or login page
  * @param {function} props.auth_change - the function to change the login/out state
+ * @param {function} props.update_register_view - the function to change the register view state
  * @returns {object} - React component
  */
 const LoggedOutView = (props) => {
     const [state, setState] = React.useState({
       is_register_view: "",
+      update_register_view: null,
       no_user_urls: {},
       auth_change: null,
     });
@@ -30,6 +32,7 @@ const LoggedOutView = (props) => {
         setState({
           ...state,
           is_register_view: props.is_register_view,
+          update_register_view: props.update_register_view,
           no_user_urls: no_user_urls,
           auth_change: props.auth_change,
         });
@@ -42,6 +45,7 @@ const LoggedOutView = (props) => {
         <h1>Welcome</h1>
         <LogInForm
           is_register_view={state.is_register_view}
+          update_register_view={state.update_register_view}
           action_urls={state.no_user_urls}
           auth_change={state.auth_change}
         />
@@ -50,7 +54,5 @@ const LoggedOutView = (props) => {
       </div>
     );
   };
-
-
   export default LoggedOutView;
   

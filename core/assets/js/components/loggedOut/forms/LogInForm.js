@@ -92,14 +92,8 @@ const ModeSwitch = (props) => {
       });
     };
   
-    const mode_switch = () => {
-      console.log("mode switch"); //debug
-      props.update_register_view();
-    };
-  
     const handle_submit = (event) => {
       event.preventDefault();
-      console.log(state);
       fetch(state.url_to_follow, {
         method: "POST",
         headers: {
@@ -145,6 +139,7 @@ const ModeSwitch = (props) => {
               placeholder="Username"
               onChange={handle_input_change}
               defaultValue={state.username}
+              autoComplete="username"
             ></input>
           </div>
           {state.is_registering && (
@@ -154,6 +149,7 @@ const ModeSwitch = (props) => {
                 type="text"
                 name="email"
                 placeholder="Email"
+                autoComplete="email"
                 onChange={handle_input_change}
                 defaultValue={state.email}
               ></input>
@@ -166,6 +162,7 @@ const ModeSwitch = (props) => {
               name="password"
               placeholder="Password"
               onChange={handle_input_change}
+              autoComplete={state.is_registering ? "new-password" : "current-password"}
               defaultValue={state.password}
             ></input>
           </div>
@@ -177,6 +174,7 @@ const ModeSwitch = (props) => {
                 name="confirmation"
                 placeholder="Confirm Password"
                 onChange={handle_input_change}
+                autoComplete="off"
                 defaultValue={state.confirmation}
               ></input>
             </div>
@@ -190,7 +188,7 @@ const ModeSwitch = (props) => {
           action_urls={props.action_urls}
           title={state.title}
           other_title = {state.other_title}
-          mode_switch={mode_switch}
+          mode_switch={props.update_register_view}
           is_registering={state.is_registering}
         />
       </div>

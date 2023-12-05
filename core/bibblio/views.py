@@ -76,7 +76,6 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         """Returns the context data for the index page."""
-        print("i am getting this context data")
         user = None
         if self.request.user.is_authenticated:
             user = User.objects.get(username=self.request.user.username)
@@ -96,7 +95,6 @@ class IndexView(TemplateView):
 @login_required
 def logout_view(request):
     """ View for logging out. Logs user out and redirects to index page."""
-    print("LOGGING OUT")
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
@@ -104,7 +102,6 @@ class LoginOrRegisterView(View):
     """View for logging in or registering. Inherits from View."""
 
     def register(self, request, data):
-        print("trying to register")
         data = json.loads(request.body)
         if data.get("username") == "":
             return JsonResponse({"error": "Username required."}, status=400)
@@ -137,7 +134,6 @@ class LoginOrRegisterView(View):
         )
     
     def login(self, request, data):
-        print("trying to login")
         data = json.loads(request.body)
 
         # try to sign user in
@@ -155,12 +151,10 @@ class LoginOrRegisterView(View):
             )
 
     def get(self, request, *args, **kwargs):
-        print("i am getting this view")
         return HttpResponseRedirect(reverse("index"))
     
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        print(data)
 
         if data.get("registering"):
             return self.register(request, data)
@@ -518,7 +512,6 @@ def update_book_fields(data, book, user, request):
         # try to update publication year
         book.publication_year = int(data.get("publication_year"))
     if data.get("cover_image_url") != "":
-        print("cover image url: ", data.get("cover_image_url"))
         # try to update cover image url
         book.cover_image_url = data.get("cover_image_url")
     if data.get("read_category") != "":

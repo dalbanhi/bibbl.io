@@ -1,5 +1,4 @@
 import React from 'react';
-import { propTypes } from 'react-bootstrap/esm/Image';
 import { Link, useLocation } from 'react-router-dom';
 
 
@@ -31,7 +30,6 @@ const NavBar = (props) => {
         ...state,
         is_authenticated: props.is_authenticated,
         variable_urls: variable_menu(),
-        path_relative: props.is_authenticated ? "route" : "path",
       });
     }
   }, [props]);
@@ -53,7 +51,6 @@ const NavBar = (props) => {
         }
         return acc;
       }, {});
-      console.log("user urls, ", user_urls);
       return user_urls;
     } else if (!props.is_authenticated) {
       //further reduce the menu items to only those for unauthenticated users
@@ -86,7 +83,6 @@ const NavBar = (props) => {
             
               {state.variable_urls &&
                 Object.entries(state.variable_urls).map(([key, value]) => {
-                  {console.log("is auth, ", state.is_authenticated)}
                   return (
                     <li className="nav-item" key={key}>
                     
