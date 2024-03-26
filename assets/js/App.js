@@ -1,11 +1,8 @@
 import React from 'react';
 
-import MyNavBar from './components/navigation/MyNavBar';
 import NavBar from './components/navigation/NavBar';
 import LoggedOutView from './components/loggedOut/LoggedOutView';
 import LoggedInView from './components/loggedIn/LoggedInView';
-import ErrorPage from './components/error/ErrorPage';
-// import SignInView from './components/loggedOut/SignInView';
 
 import Cookies from 'js-cookie';
 
@@ -187,27 +184,6 @@ const App = () => {
             }
           />
         </Routes>
-        {/* {console.log(state.is_authenticated)}
-        {! state.is_authenticated ? (
-          <Navigate to="/my_app/login" replace={true} />
-        ):(
-          <Navigate to="/my_app/my_profile" replace={true} />
-        )}
-        <Outlet /> */}
-        {/* {!state.is_authenticated ? (
-          <LoggedOutView
-            is_register_view={state.is_register_view}
-            menu_urls={state.menu_urls}
-            auth_change={handle_login}
-          />
-        ) : (
-          // <Navigate to="/my_profile" replace={true} />
-          <LoggedInView
-            user={state.user}
-            api_urls={state.api_urls}
-            update_user={update_user}
-          />
-        )} */}
       </div>
     </main>
   )
