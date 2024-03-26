@@ -20,7 +20,7 @@ jsonschema==4.20.0
 jsonschema-specifications==2023.11.2
 jupyter_core==5.5.0
 markdown2==2.4.9
-multidict==6.0.4
+multidict==6.0.5
 mypy-extensions==1.0.0
 nbformat==5.9.2
 packaging==23.1
