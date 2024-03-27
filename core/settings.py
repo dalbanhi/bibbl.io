@@ -12,22 +12,40 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+env_path = load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(env_path)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+<<<<<<< HEAD
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY","django-insecure-0sq&u0eokv71$a3snu5#g=^cxrb=)1$8@ck#nz*8ird_ezj_vi")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG") == "True"
 
 ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', '.now.sh']
+=======
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&psk#na5l=p3q8_a+-$4w1f^lt3lx1c@d*p4x$ymm_rn7pwb87')
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+
+ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost', ]
+>>>>>>> a74c70282f7107ce363bd4de874062fc1607d224
+
+
+#SUPABASE URI
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+
+DJANGO_ENV = os.environ.get('DJANGO_ENV', 'development')
 
 # Application definition
 
@@ -125,9 +143,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 STATIC_URL = "/static/"
+<<<<<<< HEAD
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+=======
+STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+
+>>>>>>> a74c70282f7107ce363bd4de874062fc1607d224
 
 
 # Default primary key field type

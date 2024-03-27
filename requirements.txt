@@ -6,4 +6,7 @@ psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 sqlparse==0.4.4
 typing_extensions==4.10.0
+<<<<<<< HEAD
 whitenoise==6.6.0
+=======
+>>>>>>> a74c70282f7107ce363bd4de874062fc1607d224
