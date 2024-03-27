@@ -29,10 +29,13 @@ pigar==2.1.1
 pipenv==2023.7.23
 platformdirs==3.9.1
 psycopg2==2.9.9
+psycopg2-binary==2.9.9
 pycodestyle==2.10.0
+python-dotenv==1.0.1
 pytz==2023.3
 referencing==0.31.1
 rpds-py==0.13.2
+setuptools==69.2.0
 sqlparse==0.4.4
 traitlets==5.14.0
 virtualenv==20.24.2
