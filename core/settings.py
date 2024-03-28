@@ -25,21 +25,12 @@ load_dotenv(env_path)
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-<<<<<<< HEAD
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY","django-insecure-0sq&u0eokv71$a3snu5#g=^cxrb=)1$8@ck#nz*8ird_ezj_vi")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG") == "True"
-
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', '.now.sh']
-=======
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&psk#na5l=p3q8_a+-$4w1f^lt3lx1c@d*p4x$ymm_rn7pwb87')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['.vercel.app', '.now.sh', 'localhost', ]
->>>>>>> a74c70282f7107ce363bd4de874062fc1607d224
+ALLOWED_HOSTS = ['*']
 
 
 #SUPABASE URI
@@ -147,14 +138,9 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = "/static/"
-<<<<<<< HEAD
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-=======
-STATICFILES_DIRS = os.path.join(BASE_DIR, 'static'),
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT =os.path.join(BASE_DIR, 'staticfiles')
 
->>>>>>> a74c70282f7107ce363bd4de874062fc1607d224
 
 
 # Default primary key field type
