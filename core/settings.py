@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import dj_database_url
+import logging
 
 LOGGING = { 
     'version': 1, 
@@ -62,6 +63,8 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&psk#na5l=p3q8
 DEBUG = os.environ.get('DJANGO_DEBUG', '') == 'True'
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+logger = logging.getLogger(__name__)
+logger.info(ALLOWED_HOSTS)
 # ALLOWED_HOSTS = ['*']
 
 
@@ -77,12 +80,26 @@ SECURE_SSL_REDIRECT = os.environ.get('DJANGO_DEBUG', '') != 'True'
 LOGGING = {
    'version': 1,
    'disable_existing_loggers': False,
+   'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
    'handlers': {
-      'file': {
-         'level': 'DEBUG',
-         'class': 'logging.FileHandler',
-         'filename': '/tmp/debug.log',
-      },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/path/to/your/file.log',
+            'formatter': 'simple'
+        },
    },
    'loggers': {
       'django': {
@@ -92,6 +109,12 @@ LOGGING = {
       },
    },
 }
+
+
+if DEBUG:
+    # make all loggers use the console.
+    for logger in LOGGING['loggers']:
+        LOGGING['loggers'][logger]['handlers'] = ['console']
 
 
 
