@@ -110,7 +110,10 @@ const ModeSwitch = (props) => {
           registering: state.is_registering,
         }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          return response.json();
+          response.json()})
         .then((data) => {
           if (data.error) {
             setState({
