@@ -15,6 +15,37 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 
+LOGGING = { 
+    'version': 1, 
+    'disable_existing_loggers': False, 
+    'formatters': { 
+        'verbose': { 
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s", 
+            'datefmt' : "%d/%b/%Y %H:%M:%S" 
+        }, 
+        'simple': { 
+            'format': '%(levelname)s %(message)s' 
+        }, 
+    }, 
+    'handlers': { 
+        'file': { 
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler', 
+            'filename': './bibblio.log', 
+        }, 
+    }, 
+    'loggers': { 
+        'django': { 
+            'handlers': ['file'], 
+            'level': 'DEBUG', 
+            'propagate': True, 
+        }, 
+        'bibblio': { 
+            'handlers': ['file'], 
+            'level': 'DEBUG', 
+        }, 
+    }, 
+}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,12 +60,17 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&psk#na5l=p3q8
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') == 'True'
-CSRF_TRUSTED_ORIGINS = os.getenv('ALLOWED_HOSTS').split(',')
-ALLOWED_HOSTS =[os.environ.get('ALLOWED_HOSTS', 'localhost')]
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+# ALLOWED_HOSTS = ['*']
 
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+
+CSRF_COOKIE_SECURE = os.environ.get('DJANGO_DEBUG', '') != 'True'
+SESSION_COOKIE_SECURE = os.environ.get('DJANGO_DEBUG', '') != 'True'
+SECURE_SSL_REDIRECT = os.environ.get('DJANGO_DEBUG', '') != 'True'
+# print(SECURE_SSL_REDIRECT, 'SECURE_SSL_REDIRECT')
+# print(SESSION_COOKIE_SECURE, 'SESSION_COOKIE_SECURE')
+# print(CSRF_COOKIE_SECURE, 'CSRF_COOKIE_SECURE')
 # SECURE_HSTS_SECONDS=15780000
 
 

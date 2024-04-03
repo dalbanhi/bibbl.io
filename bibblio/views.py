@@ -13,6 +13,8 @@ from django.templatetags.static import static
 
 from django.db import IntegrityError
 import json
+import logging
+logger = logging.getLogger(__name__)
 
 from .models import User, Book, Shelf
 
@@ -135,7 +137,7 @@ class LoginOrRegisterView(View):
     
     def login(self, request, data):
         data = json.loads(request.body)
-        print(data)
+        logger.debug(data)
 
         # try to sign user in
         username = data.get("username")
