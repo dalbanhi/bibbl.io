@@ -74,6 +74,27 @@ SECURE_SSL_REDIRECT = os.environ.get('DJANGO_DEBUG', '') != 'True'
 # SECURE_HSTS_SECONDS=15780000
 
 
+LOGGING = {
+   'version': 1,
+   'disable_existing_loggers': False,
+   'handlers': {
+      'file': {
+         'level': 'DEBUG',
+         'class': 'logging.FileHandler',
+         'filename': '/tmp/debug.log',
+      },
+   },
+   'loggers': {
+      'django': {
+         'handlers': ['file'],
+         'level': 'DEBUG',
+         'propagate': True,
+      },
+   },
+}
+
+
+
 # Application definition
 
 INSTALLED_APPS = [
