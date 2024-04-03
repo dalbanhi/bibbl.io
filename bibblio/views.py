@@ -5,6 +5,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
+from django.views.decorators.csrf import ensure_csrf_cookie
+
+
 
 from django.views.generic.base import TemplateView, View
 
@@ -100,6 +103,7 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
+@ensure_csrf_cookie
 class LoginOrRegisterView(View):
     """View for logging in or registering. Inherits from View."""
 
@@ -165,7 +169,7 @@ class LoginOrRegisterView(View):
             return self.login(request, data)
 
 
-
+@ensure_csrf_cookie
 class LoginView(View):
 
     def post(self, request, *args, **kwargs):
@@ -188,6 +192,7 @@ class LoginView(View):
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(reverse("index"))
 
+@ensure_csrf_cookie
 class RegisterView(View):
     """ View for registering a new user. If the request is a POST request, the user is registered and logged in. Otherwise, the user is redirected to the index page, with the view of the register page."""
 

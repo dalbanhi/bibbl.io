@@ -97,6 +97,7 @@ const ModeSwitch = (props) => {
       console.log(state.url_to_follow);
       console.log("HANDLING SUBMIT");
       console.log(Cookies.get("csrftoken"));
+      console.log(state);
       fetch(state.url_to_follow, {
         method: "POST",
         headers: {
