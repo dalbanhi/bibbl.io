@@ -135,6 +135,7 @@ class LoginOrRegisterView(View):
     
     def login(self, request, data):
         data = json.loads(request.body)
+        print(data)
 
         # try to sign user in
         username = data.get("username")

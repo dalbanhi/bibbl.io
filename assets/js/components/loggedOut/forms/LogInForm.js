@@ -94,6 +94,8 @@ const ModeSwitch = (props) => {
   
     const handle_submit = (event) => {
       event.preventDefault();
+      console.log(state.url_to_follow);
+      console.log("HANDLING SUBMIT")
       fetch(state.url_to_follow, {
         method: "POST",
         headers: {
@@ -127,6 +129,7 @@ const ModeSwitch = (props) => {
   
     return (
       <div>
+        {console.log(state)}
         <h2>{state.title}</h2>
         <div>{state.message}</div>
         <form onSubmit={handle_submit}>
