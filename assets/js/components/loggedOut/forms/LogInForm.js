@@ -95,7 +95,8 @@ const ModeSwitch = (props) => {
     const handle_submit = (event) => {
       event.preventDefault();
       console.log(state.url_to_follow);
-      console.log("HANDLING SUBMIT")
+      console.log("HANDLING SUBMIT");
+      console.log(Cookies.get("csrftoken"));
       fetch(state.url_to_follow, {
         method: "POST",
         headers: {
@@ -185,7 +186,7 @@ const ModeSwitch = (props) => {
               ></input>
             </div>
           )}
-          <CSRFToken/>
+          <CSRFToken />
           <button type="submit" className="btn btn-primary">
             {state.title}
           </button>

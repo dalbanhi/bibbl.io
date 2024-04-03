@@ -94,16 +94,16 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': '/path/to/your/file.log',
-            'formatter': 'simple'
-        },
+        # 'file': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.FileHandler',
+        #     'filename': './deploy.log',
+        #     'formatter': 'simple'
+        # },
    },
    'loggers': {
       'django': {
-         'handlers': ['file'],
+         'handlers': ['console'],
          'level': 'DEBUG',
          'propagate': True,
       },
