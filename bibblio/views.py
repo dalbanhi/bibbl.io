@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.utils.decorators import method_decorator
+
 
 
 
@@ -72,6 +74,10 @@ class IndexView(TemplateView):
     register_view_full_path = "/my_app/login?register=true"
     template_name ="bibblio/index.html"
 
+    @method_decorator(ensure_csrf_cookie)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def check_full_path(self) -> bool:
         """Checks if the full path is the register view.
         @return: bool
@@ -106,7 +112,11 @@ def logout_view(request):
 
 class LoginOrRegisterView(View):
     """View for logging in or registering. Inherits from View."""
-    @ensure_csrf_cookie
+
+    @method_decorator(ensure_csrf_cookie)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+   
     def register(self, request, data):
         data = json.loads(request.body)
         if data.get("username") == "":
@@ -138,7 +148,7 @@ class LoginOrRegisterView(View):
             {"message": "Registration and Login succesful", "user_id": user.id},
             status=200,
         )
-    @ensure_csrf_cookie
+
     def login(self, request, data):
         data = json.loads(request.body)
         logger.debug(data)
@@ -156,10 +166,10 @@ class LoginOrRegisterView(View):
             return JsonResponse(
                 {"error": "Invalid username and/or password."}, status=400
             )
-    @ensure_csrf_cookie
+
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(reverse("index"))
-    @ensure_csrf_cookie
+
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
@@ -171,7 +181,7 @@ class LoginOrRegisterView(View):
 
 
 class LoginView(View):
-    @ensure_csrf_cookie
+    
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
