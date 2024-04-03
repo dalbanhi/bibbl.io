@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&psk#na5l=p3q8
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') == 'True'
-
+CSRF_TRUSTED_ORIGINS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(',')
 ALLOWED_HOSTS = ['*']
 
 
@@ -87,7 +87,7 @@ DATABASES = {
         "USER": os.environ.get("PGUSER"),
         "PASSWORD": os.environ.get("PGPASSWORD"),
         "HOST": os.environ.get("PGHOST"),
-        "PORT": os.environ.get("PORT"),
+        "PORT": os.environ.get("PGPORT"),
     }
 }
 
