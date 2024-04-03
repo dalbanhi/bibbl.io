@@ -103,10 +103,10 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
-@ensure_csrf_cookie
+
 class LoginOrRegisterView(View):
     """View for logging in or registering. Inherits from View."""
-
+    @ensure_csrf_cookie
     def register(self, request, data):
         data = json.loads(request.body)
         if data.get("username") == "":
@@ -138,7 +138,7 @@ class LoginOrRegisterView(View):
             {"message": "Registration and Login succesful", "user_id": user.id},
             status=200,
         )
-    
+    @ensure_csrf_cookie
     def login(self, request, data):
         data = json.loads(request.body)
         logger.debug(data)
@@ -156,10 +156,10 @@ class LoginOrRegisterView(View):
             return JsonResponse(
                 {"error": "Invalid username and/or password."}, status=400
             )
-
+    @ensure_csrf_cookie
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(reverse("index"))
-    
+    @ensure_csrf_cookie
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
@@ -169,9 +169,9 @@ class LoginOrRegisterView(View):
             return self.login(request, data)
 
 
-@ensure_csrf_cookie
-class LoginView(View):
 
+class LoginView(View):
+    @ensure_csrf_cookie
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
@@ -192,10 +192,10 @@ class LoginView(View):
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(reverse("index"))
 
-@ensure_csrf_cookie
+
 class RegisterView(View):
     """ View for registering a new user. If the request is a POST request, the user is registered and logged in. Otherwise, the user is redirected to the index page, with the view of the register page."""
-
+    @ensure_csrf_cookie
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         if data.get("username") == "":
