@@ -30,7 +30,12 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-&psk#na5l=p3q8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DJANGO_DEBUG', '') == 'True'
 CSRF_TRUSTED_ORIGINS = os.getenv('ALLOWED_HOSTS').split(',')
-ALLOWED_HOSTS =['*']
+ALLOWED_HOSTS =[os.environ.get('ALLOWED_HOSTS', 'localhost')]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+# SECURE_HSTS_SECONDS=15780000
 
 
 # Application definition
