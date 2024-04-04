@@ -65,17 +65,12 @@ CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 logger = logging.getLogger(__name__)
 logger.info(ALLOWED_HOSTS)
-# ALLOWED_HOSTS = ['*']
 
 
 CSRF_COOKIE_SECURE = os.environ.get('DJANGO_DEBUG', '') != 'True'
 SESSION_COOKIE_SECURE = os.environ.get('DJANGO_DEBUG', '') != 'True'
 SECURE_SSL_REDIRECT = os.environ.get('DJANGO_DEBUG', '') != 'True'
 SESSION_COOKIE_SAMESITE = None
-# print(SECURE_SSL_REDIRECT, 'SECURE_SSL_REDIRECT')
-# print(SESSION_COOKIE_SECURE, 'SESSION_COOKIE_SECURE')
-# print(CSRF_COOKIE_SECURE, 'CSRF_COOKIE_SECURE')
-# SECURE_HSTS_SECONDS=15780000
 
 
 LOGGING = {

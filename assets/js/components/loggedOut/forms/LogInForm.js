@@ -65,21 +65,6 @@ const ModeSwitch = (props) => {
       confirmation: "",
       message: "",
     });
-
-    function getCookie(name){
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== ''){
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++){
-          const cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) === (name + '=')){
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
-        }
-      }
-      return cookieValue;
-    }
   
     React.useEffect(() => {
      
@@ -110,17 +95,12 @@ const ModeSwitch = (props) => {
   
     const handle_submit = (event) => {
       event.preventDefault();
-      console.log(state.url_to_follow);
-      console.log("HANDLING SUBMIT");
-      console.log(Cookies.get("csrftoken"));
-      console.log(state);
-      console.log(getCookie("csrftoken"));
       fetch(state.url_to_follow, {
         method: "POST",
         mode: "same-origin",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": getCookie("csrftoken"),
+          "X-CSRFToken": Cookies.get("csrftoken"),
         },
         body: JSON.stringify({
           username: state.username,
@@ -131,9 +111,8 @@ const ModeSwitch = (props) => {
         }),
       })
         .then((response) => {
-          console.log(response);
           return response.json();
-          response.json()})
+        })
         .then((data) => {
           if (data.error) {
             setState({
@@ -152,7 +131,6 @@ const ModeSwitch = (props) => {
   
     return (
       <div>
-        {console.log(state)}
         <h2>{state.title}</h2>
         <div>{state.message}</div>
         <form onSubmit={handle_submit}>
